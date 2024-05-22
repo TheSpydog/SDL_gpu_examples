@@ -13,6 +13,31 @@ int main(int argc, char **argv)
 	int gotoExampleIndex = 0;
 	int quit = 0;
 
+	for (int i = 1; i < argc; i += 1)
+	{
+		if (SDL_strcmp(argv[i], "-name") == 0 && argc > i + 1)
+		{
+			const char* exampleName = argv[i + 1];
+			int foundExample = 0;
+
+			for (int j = 0; j < SDL_arraysize(Examples); j += 1)
+			{
+				if (SDL_strcmp(Examples[j]->Name, exampleName) == 0)
+				{
+					gotoExampleIndex = j;
+					foundExample = 1;
+					break;
+				}
+			}
+
+			if (!foundExample)
+			{
+				SDL_Log("No example named '%s' exists.", exampleName);
+				return 1;
+			}
+		}
+	}
+
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
