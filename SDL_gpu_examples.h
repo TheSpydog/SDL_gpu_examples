@@ -5,9 +5,18 @@
 
 typedef struct Context
 {
+	const char* ExampleName;
+	const char* BasePath;
 	SDL_Window* Window;
 	SDL_GpuDevice* Device;
+	SDL_bool LeftPressed;
+	SDL_bool RightPressed;
+	SDL_bool DownPressed;
 } Context;
+
+int CommonInit(Context* context, SDL_WindowFlags windowFlags);
+void CommonQuit(Context* context);
+void* LoadAsset(const char* path, size_t* pFileSize);
 
 typedef struct Example
 {
@@ -20,5 +29,6 @@ typedef struct Example
 
 extern Example ClearScreen_Example;
 extern Example ClearScreenMultiWindow_Example;
+extern Example BasicTriangle_Example;
 
 #endif

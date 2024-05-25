@@ -1,28 +1,8 @@
-#include "SDL_gpu_examples.h"
+#include <SDL_gpu_examples.h>
 
 static int Init(Context* context)
 {
-	context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE);
-	if (context->Device == NULL)
-	{
-		SDL_Log("GpuCreateDevice failed");
-		return -1;
-	}
-
-	context->Window = SDL_CreateWindow("ClearScreen", 640, 480, SDL_WINDOW_RESIZABLE);
-	if (context->Window == NULL)
-	{
-		SDL_Log("CreateWindow failed: %s", SDL_GetError());
-		return -1;
-	}
-
-	if (!SDL_GpuClaimWindow(context->Device, context->Window, SDL_GPU_COLORSPACE_NONLINEAR_SRGB, SDL_TRUE))
-	{
-		SDL_Log("GpuClaimWindow failed");
-		return -1;
-	}
-
-	return 0;
+	return CommonInit(context, SDL_WINDOW_RESIZABLE);
 }
 
 static int Update(Context* context)
@@ -58,12 +38,9 @@ static int Draw(Context* context)
 	return 0;
 }
 
-static int Quit(Context* context)
+static void Quit(Context* context)
 {
-	SDL_GpuUnclaimWindow(context->Device, context->Window);
-	SDL_DestroyWindow(context->Window);
-	SDL_GpuDestroyDevice(context->Device);
-	return 0;
+	CommonQuit(context);
 }
 
 Example ClearScreen_Example = { "ClearScreen", Init, Update, Draw, Quit };

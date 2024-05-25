@@ -1,9 +1,10 @@
-#include "SDL_gpu_examples.h"
+#include <SDL_gpu_examples.h>
 
 static Example* Examples[] =
 {
 	&ClearScreen_Example,
 	&ClearScreenMultiWindow_Example,
+	&BasicTriangle_Example,
 };
 
 int main(int argc, char **argv)
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
 	}
 
 	SDL_Log("Welcome to the SDL_Gpu example suite!");
-	SDL_Log("Press LEFT and RIGHT to move between examples!");
+	SDL_Log("Press A/D to move between examples!");
 
 	while (!quit)
 	{
@@ -62,13 +63,31 @@ int main(int argc, char **argv)
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
-				if (evt.key.keysym.sym == SDLK_RIGHT)
+				if (evt.key.keysym.sym == SDLK_d)
 				{
-					gotoExampleIndex = (exampleIndex + 1) % SDL_arraysize(Examples);
+					gotoExampleIndex = exampleIndex + 1;
+					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
+						gotoExampleIndex = 0;
+					}
+				}
+				else if (evt.key.keysym.sym == SDLK_a)
+				{
+					gotoExampleIndex = exampleIndex - 1;
+					if (gotoExampleIndex < 0) {
+						gotoExampleIndex = SDL_arraysize(Examples) - 1;
+					}
 				}
 				else if (evt.key.keysym.sym == SDLK_LEFT)
 				{
-					gotoExampleIndex = (exampleIndex - 1) % SDL_arraysize(Examples);
+					context.LeftPressed = SDL_TRUE;
+				}
+				else if (evt.key.keysym.sym == SDLK_RIGHT)
+				{
+					context.RightPressed = SDL_TRUE;
+				}
+				else if (evt.key.keysym.sym == SDLK_DOWN)
+				{
+					context.DownPressed = SDL_TRUE;
 				}
 			}
 		}
@@ -86,7 +105,8 @@ int main(int argc, char **argv)
 			}
 
 			exampleIndex = gotoExampleIndex;
-			SDL_Log("STARTING EXAMPLE: %s", Examples[exampleIndex]->Name);
+			context.ExampleName = Examples[exampleIndex]->Name;
+			SDL_Log("STARTING EXAMPLE: %s", context.ExampleName);
 			if (Examples[exampleIndex]->Init(&context) < 0)
 			{
 				SDL_Log("Init failed!");
