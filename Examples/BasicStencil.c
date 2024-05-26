@@ -78,7 +78,7 @@ static int Init(Context* context)
 				}
 			}},
 			.hasDepthStencilAttachment = SDL_TRUE,
-			.depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_SFLOAT_S8_UINT
+			.depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT
 		},
 		.depthStencilState = (SDL_GpuDepthStencilState){
 			.stencilTestEnable = SDL_TRUE,
@@ -168,7 +168,7 @@ static int Init(Context* context)
 			.layerCount = 1,
 			.levelCount = 1,
 			.sampleCount = SDL_GPU_SAMPLECOUNT_1,
-			.format = SDL_GPU_TEXTUREFORMAT_D32_SFLOAT_S8_UINT,
+			.format = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
 			.usageFlags = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
 		}
 	);
