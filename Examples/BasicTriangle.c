@@ -2,7 +2,7 @@
 
 static SDL_GpuGraphicsPipeline* FillPipeline;
 static SDL_GpuGraphicsPipeline* LinePipeline;
-static SDL_GpuViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1000.0f };
+static SDL_GpuViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
 static SDL_GpuRect ScissorRect = { 320, 240, 320, 240 };
 
 static SDL_bool UseWireframeMode = SDL_FALSE;
@@ -131,6 +131,10 @@ static int Update(Context* context)
 	{
 		UseScissorRect = !UseScissorRect;
 	}
+
+	context->LeftPressed = 0;
+	context->DownPressed = 0;
+	context->RightPressed = 0;
 
 	return 0;
 }
