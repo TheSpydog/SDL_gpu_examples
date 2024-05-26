@@ -17,7 +17,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	if (!SDL_GpuClaimWindow(context->Device, SecondWindow, SDL_GPU_COLORSPACE_NONLINEAR_SRGB, SDL_TRUE))
+	if (!SDL_GpuClaimWindow(context->Device, SecondWindow, SDL_GPU_COLORSPACE_NONLINEAR_SRGB, SDL_GPU_PRESENTMODE_VSYNC))
 	{
 		SDL_Log("GpuClaimWindow failed");
 		return -1;
