@@ -9,6 +9,7 @@ add_executable(SDL_gpu_examples
     Examples/ClearScreen.c
     Examples/ClearScreenMultiWindow.c
     Examples/BasicTriangle.c
+    Examples/BasicStencil.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE .)
