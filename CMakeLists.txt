@@ -3,7 +3,7 @@ project(SDL_gpu_examples)
 find_package(SDL3 REQUIRED)
 
 add_executable(SDL_gpu_examples
-    Main.c
+    main.c
     SDL_gpu_examples.h
     Examples/Common.c
     Examples/ClearScreen.c
