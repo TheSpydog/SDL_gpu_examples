@@ -11,6 +11,7 @@ add_executable(SDL_gpu_examples
     Examples/BasicTriangle.c
     Examples/BasicStencil.c
     Examples/BasicCompute.c
+    Examples/ToneMapping.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE .)

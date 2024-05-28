@@ -6,7 +6,8 @@ static Example* Examples[] =
 	&ClearScreenMultiWindow_Example,
 	&BasicTriangle_Example,
 	&BasicStencil_Example,
-	&BasicCompute_Example
+	&BasicCompute_Example,
+	&ToneMapping_Example
 };
 
 int main(int argc, char **argv)
