@@ -92,6 +92,10 @@ int main(int argc, char **argv)
 				{
 					context.DownPressed = SDL_TRUE;
 				}
+				else if (evt.key.keysym.sym == SDLK_UP)
+				{
+					context.UpPressed = SDL_TRUE;
+				}
 			}
 		}
 		if (quit)

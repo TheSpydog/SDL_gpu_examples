@@ -12,6 +12,7 @@ typedef struct Context
 	SDL_bool LeftPressed;
 	SDL_bool RightPressed;
 	SDL_bool DownPressed;
+	SDL_bool UpPressed;
 } Context;
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags);
