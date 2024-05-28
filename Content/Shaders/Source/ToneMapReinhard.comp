@@ -1,0 +1,20 @@
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout (set = 0, binding = 0, rgba32f) uniform readonly image2D inImage;
+layout (set = 0, binding = 1, rgba16) uniform writeonly image2D outImage;
+
+vec3 reinhard(vec3 v)
+{
+    return v / (1.0f + v);
+}
+
+void main()
+{
+	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
+	vec4 inPixel = imageLoad(inImage, coord);
+
+	vec3 outColor = reinhard(inPixel.rgb);
+	imageStore(outImage, coord, vec4(outColor, 1.0));
+}

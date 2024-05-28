@@ -4,7 +4,10 @@
 #include "stb_image.h"
 
 static SDL_GpuTexture* HDRTexture;
+static SDL_GpuTexture* ToneMapTexture;
 static SDL_GpuBuffer* QuadBuffer;
+
+static SDL_GpuComputePipeline* ToneMapReinhardHDRExtendedLinear;
 
 static int w, h;
 
@@ -40,7 +43,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	if (!SDL_GpuClaimWindow(context->Device, context->Window, SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED, SDL_GPU_PRESENTMODE_VSYNC))
+	if (!SDL_GpuClaimWindow(context->Device, context->Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR_SRGB, SDL_GPU_PRESENTMODE_VSYNC))
 	{
 		SDL_Log("GpuClaimWindow failed");
 		return -1;
@@ -61,6 +64,14 @@ static int Init(Context* context)
 	if (fsBytes == NULL)
 	{
 		SDL_Log("Could not load fragment shader from disk!");
+		return -1;
+	}
+
+	size_t csCodeSize;
+	void *csBytes = LoadAsset("Content/Shaders/Compiled/ToneMapReinhard.comp.spv", &csCodeSize);
+	if (csBytes == NULL)
+	{
+		SDL_Log("Could not load compute shader from disk!");
 		return -1;
 	}
 
@@ -90,6 +101,19 @@ static int Init(Context* context)
 		return -1;
 	}
 
+	SDL_GpuShader* computeShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
+		.stage = SDL_GPU_SHADERSTAGE_COMPUTE,
+		.code = csBytes,
+		.codeSize = csCodeSize,
+		.entryPointName = "cs_main",
+		.format = SDL_GPU_SHADERFORMAT_SPIRV
+	});
+	if (computeShader == NULL)
+	{
+		SDL_Log("Failed to create compute shader!");
+		return -1;
+	}
+
     HDRTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
         .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_SFLOAT,
         .width = img_x,
@@ -97,8 +121,18 @@ static int Init(Context* context)
         .depth = 1,
         .layerCount = 1,
         .levelCount = 1,
-        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
+        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT
     });
+
+	ToneMapTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_SFLOAT,
+		.width = img_x,
+		.height = img_y,
+		.depth = 1,
+		.layerCount = 1,
+		.levelCount = 1,
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
+	});
 
 	QuadBuffer = SDL_GpuCreateGpuBuffer(
 		context->Device,
@@ -106,10 +140,18 @@ static int Init(Context* context)
 		sizeof(PositionTextureVertex) * 6
 	);
 
+	ToneMapReinhardHDRExtendedLinear = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
+		.computeShader = computeShader,
+		.pipelineResourceLayoutInfo.readOnlyStorageTextureCount = 1,
+		.pipelineResourceLayoutInfo.readWriteStorageTextureCount = 1
+	});
+
     SDL_GpuQueueDestroyShader(context->Device, vertexShader);
     SDL_GpuQueueDestroyShader(context->Device, fragmentShader);
+	SDL_GpuQueueDestroyShader(context->Device, computeShader);
     SDL_free(vsBytes);
     SDL_free(fsBytes);
+	SDL_free(csBytes);
 
     SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
         context->Device,
@@ -216,23 +258,50 @@ static int Draw(Context* context)
     SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &swapchainWidth, &swapchainHeight);
     if (swapchainTexture != NULL)
     {
-        SDL_GpuBlit(
-            cmdbuf,
-            &(SDL_GpuTextureRegion){
-                .textureSlice.texture = HDRTexture,
-                .w = w,
-                .h = h,
-                .d = 1
-            },
-            &(SDL_GpuTextureRegion){
-                .textureSlice.texture = swapchainTexture,
-                .w = swapchainWidth,
-                .h = swapchainHeight,
-                .d = 1
-            },
-            SDL_GPU_FILTER_LINEAR,
-            SDL_FALSE
-        );
+		SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(cmdbuf);
+
+		SDL_GpuBindComputePipeline(computePass, ToneMapReinhardHDRExtendedLinear);
+
+		SDL_GpuBindComputeStorageTextures(
+			computePass,
+			0,
+			&(SDL_GpuTextureSlice){
+				.texture = HDRTexture
+			},
+			1
+		);
+
+		SDL_GpuBindComputeRWStorageTextures(
+			computePass,
+			0,
+			&(SDL_GpuStorageTextureReadWriteBinding){
+				.textureSlice.texture = ToneMapTexture,
+				.cycle = SDL_TRUE
+			},
+			1
+		);
+
+		SDL_GpuDispatchCompute(computePass, swapchainWidth / 8, swapchainHeight / 8, 1);
+
+		SDL_GpuEndComputePass(computePass);
+
+		SDL_GpuBlit(
+			cmdbuf,
+			&(SDL_GpuTextureRegion){
+				.textureSlice.texture = ToneMapTexture,
+				.w = w,
+				.h = h,
+				.d = 1,
+			},
+			&(SDL_GpuTextureRegion){
+				.textureSlice.texture = swapchainTexture,
+				.w = swapchainWidth,
+				.h = swapchainHeight,
+				.d = 1
+			},
+			SDL_GPU_FILTER_NEAREST,
+			SDL_FALSE
+		);
     }
 
     SDL_GpuSubmit(cmdbuf);
@@ -242,8 +311,10 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
+	SDL_GpuQueueDestroyComputePipeline(context->Device, ToneMapReinhardHDRExtendedLinear);
     SDL_GpuQueueDestroyGpuBuffer(context->Device, QuadBuffer);
     SDL_GpuQueueDestroyTexture(context->Device, HDRTexture);
+	SDL_GpuQueueDestroyTexture(context->Device, ToneMapTexture);
 
     SDL_GpuUnclaimWindow(context->Device, context->Window);
     SDL_DestroyWindow(context->Window);
