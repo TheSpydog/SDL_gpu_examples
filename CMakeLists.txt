@@ -5,6 +5,7 @@ find_package(SDL3 REQUIRED)
 add_executable(SDL_gpu_examples
     main.c
     SDL_gpu_examples.h
+    stb_image.h
     Examples/Common.c
     Examples/ClearScreen.c
     Examples/ClearScreenMultiWindow.c
