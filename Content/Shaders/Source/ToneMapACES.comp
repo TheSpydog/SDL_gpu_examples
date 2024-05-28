@@ -28,9 +28,9 @@ vec3 rtt_and_odt_fit(vec3 v)
 
 vec3 aces_fitted(vec3 v)
 {
-    v = aces_input_matrix * v;
+    v = v * aces_input_matrix;
     v = rtt_and_odt_fit(v);
-    return aces_output_matrix * v;
+    return v * aces_output_matrix;
 }
 
 void main()

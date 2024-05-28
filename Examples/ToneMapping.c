@@ -24,6 +24,7 @@ static Sint32 swapchainCompositionCount = sizeof(swapchainCompositions)/sizeof(S
 static const char* tonemapOperatorNames[] =
 {
 	"Reinhard",
+	"ExtendedReinhardLuminance",
 	"Hable",
 	"ACES"
 };
@@ -240,8 +241,9 @@ static int Init(Context* context)
     SDL_GpuQueueDestroyTransferBuffer(context->Device, imageDataTransferBuffer);
 
 	tonemapOperators[0] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapReinhard.comp.spv");
-	tonemapOperators[1] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapHable.comp.spv");
-	tonemapOperators[2] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapACES.comp.spv");
+	tonemapOperators[1] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapExtendedReinhardLuminance.comp.spv");
+	tonemapOperators[2] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapHable.comp.spv");
+	tonemapOperators[3] = BuildTonemapPipeline(context->Device, "Content/Shaders/Compiled/ToneMapACES.comp.spv");
 
 	currentTonemapOperator = tonemapOperators[0];
 
