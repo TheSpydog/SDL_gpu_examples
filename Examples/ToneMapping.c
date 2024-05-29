@@ -7,7 +7,7 @@
 
 static SDL_GpuTexture* HDRTexture;
 static SDL_GpuTexture* ToneMapTexture;
-static SDL_GpuTexture* TransformTexture;
+static SDL_GpuTexture* TransferTexture;
 
 static SDL_GpuSwapchainComposition swapchainCompositions[] =
 {
@@ -202,7 +202,7 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});
 
-	TransformTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+	TransferTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
 		.width = img_x,
 		.height = img_y,
@@ -357,7 +357,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
 
-		/* Transform to target color space if necessary */
+		/* Transfer to target color space if necessary */
 		if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR)
 		{
 			SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
@@ -373,7 +373,7 @@ static int Draw(Context* context)
 				computePass,
 				0,
 				&(SDL_GpuStorageTextureReadWriteBinding){
-					.textureSlice.texture = TransformTexture
+					.textureSlice.texture = TransferTexture
 				},
 				1
 			);
@@ -394,7 +394,7 @@ static int Draw(Context* context)
 				computePass,
 				0,
 				&(SDL_GpuStorageTextureReadWriteBinding){
-					.textureSlice.texture = TransformTexture
+					.textureSlice.texture = TransferTexture
 				},
 				1
 			);
@@ -411,7 +411,7 @@ static int Draw(Context* context)
 			SDL_GpuBlit(
 				cmdbuf,
 				&(SDL_GpuTextureRegion){
-					.textureSlice.texture = TransformTexture,
+					.textureSlice.texture = TransferTexture,
 					.w = w,
 					.h = h,
 					.d = 1,
@@ -465,7 +465,7 @@ static void Quit(Context* context)
 
     SDL_GpuQueueDestroyTexture(context->Device, HDRTexture);
 	SDL_GpuQueueDestroyTexture(context->Device, ToneMapTexture);
-	SDL_GpuQueueDestroyTexture(context->Device, TransformTexture);
+	SDL_GpuQueueDestroyTexture(context->Device, TransferTexture);
 
     SDL_GpuUnclaimWindow(context->Device, context->Window);
     SDL_DestroyWindow(context->Window);
