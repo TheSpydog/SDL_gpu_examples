@@ -77,7 +77,7 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 	SDL_GpuShader* computeShader = SDL_GpuCreateShader(
 		device,
 		&(SDL_GpuShaderCreateInfo){
-			.format = SDL_GPU_SHADERSTAGE_COMPUTE,
+			.stage = SDL_GPU_SHADERSTAGE_COMPUTE,
 			.code = csBytes,
 			.codeSize = csCodeSize,
 			.entryPointName = "cs_main",
@@ -109,7 +109,7 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 static int Init(Context* context)
 {
     /* Manually set up example for HDR rendering */
-    context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE);
+    context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_D3D11, SDL_TRUE);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");
@@ -385,7 +385,7 @@ static int Draw(Context* context)
 		}
 		else if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED)
 		{
-			SDL_GpuBindComputePipeline(computePass, LinearToST2084Pipeline);
+			SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
 			SDL_GpuBindComputeStorageTextures(
 				computePass,
 				0,
