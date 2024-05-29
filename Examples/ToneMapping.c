@@ -357,6 +357,8 @@ static int Draw(Context* context)
 		);
 		SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
 
+		SDL_GpuTexture* BlitSourceTexture = ToneMapTexture;
+
 		/* Transfer to target color space if necessary */
 		if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR)
 		{
@@ -378,6 +380,8 @@ static int Draw(Context* context)
 				1
 			);
 			SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
+
+			BlitSourceTexture = TransferTexture;
 		}
 		else if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED)
 		{
@@ -399,53 +403,30 @@ static int Draw(Context* context)
 				1
 			);
 			SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
+
+			BlitSourceTexture = TransferTexture;
 		}
 
 		SDL_GpuEndComputePass(computePass);
 
 		/* Blit to swapchain */
-		if (
-			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR ||
-			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED
-		) {
-			SDL_GpuBlit(
-				cmdbuf,
-				&(SDL_GpuTextureRegion){
-					.textureSlice.texture = TransferTexture,
-					.w = w,
-					.h = h,
-					.d = 1,
-				},
-				&(SDL_GpuTextureRegion){
-					.textureSlice.texture = swapchainTexture,
-					.w = swapchainWidth,
-					.h = swapchainHeight,
-					.d = 1
-				},
-				SDL_GPU_FILTER_NEAREST,
-				SDL_FALSE
-			);
-		}
-		else
-		{
-			SDL_GpuBlit(
-				cmdbuf,
-				&(SDL_GpuTextureRegion){
-					.textureSlice.texture = ToneMapTexture,
-					.w = w,
-					.h = h,
-					.d = 1,
-				},
-				&(SDL_GpuTextureRegion){
-					.textureSlice.texture = swapchainTexture,
-					.w = swapchainWidth,
-					.h = swapchainHeight,
-					.d = 1
-				},
-				SDL_GPU_FILTER_NEAREST,
-				SDL_FALSE
-			);
-		}
+		SDL_GpuBlit(
+			cmdbuf,
+			&(SDL_GpuTextureRegion){
+				.textureSlice.texture = BlitSourceTexture,
+				.w = w,
+				.h = h,
+				.d = 1,
+			},
+			&(SDL_GpuTextureRegion){
+				.textureSlice.texture = swapchainTexture,
+				.w = swapchainWidth,
+				.h = swapchainHeight,
+				.d = 1
+			},
+			SDL_GPU_FILTER_NEAREST,
+			SDL_FALSE
+		);
     }
 
     SDL_GpuSubmit(cmdbuf);
