@@ -1,0 +1,28 @@
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8) in;
+layout (set = 0, binding = 0, rgba16) uniform readonly image2D inImage;
+layout (set = 0, binding = 1, rgba8) uniform writeonly image2D outImage;
+
+vec3 LinearToST2084(vec3 normalizedLinearValue)
+{
+    return pow(
+		(0.8359375f + 18.8515625f * pow(
+			abs(normalizedLinearValue),
+			vec3(0.1593017578f)
+		)) / (1.0f + 18.6875f * pow(
+			abs(normalizedLinearValue),
+			vec3(0.1593017578f)
+		)),
+		vec3(78.84375f)
+	);
+}
+
+void main()
+{
+	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
+	vec4 inPixel = imageLoad(inImage, coord);
+
+	vec3 outColor = LinearToST2084(inPixel.rgb);
+	imageStore(outImage, coord, vec4(outColor, 1.0));
+}
