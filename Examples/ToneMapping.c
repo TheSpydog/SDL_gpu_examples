@@ -12,16 +12,16 @@ static SDL_GpuTexture* TransferTexture;
 static SDL_GpuSwapchainComposition swapchainCompositions[] =
 {
 	SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
-	SDL_GPU_SWAPCHAINCOMPOSITION_SDR_SRGB,
-	SDL_GPU_SWAPCHAINCOMPOSITION_HDR,
-	SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED
+	SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
+	SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
+	SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048
 };
 static const char* swapchainCompositionNames[] =
 {
 	"SDL_GPU_SWAPCHAINCOMPOSITION_SDR",
-	"SDL_GPU_SWAPCHAINCOMPOSITION_SDR_SRGB",
-	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR",
-	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED"
+	"SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR",
+	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR",
+	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048"
 };
 static Sint32 swapchainCompositionCount = sizeof(swapchainCompositions)/sizeof(SDL_GpuSwapchainComposition);
 static Sint32 swapchainCompositionSelectionIndex = 0;
@@ -363,7 +363,7 @@ static int Draw(Context* context)
 		/* Transfer to target color space if necessary */
 		if (
 			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR ||
-			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED
+			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048
 		) {
 			computePass = SDL_GpuBeginComputePass(
 				cmdbuf,
@@ -376,7 +376,15 @@ static int Draw(Context* context)
 				0
 			);
 
-			SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
+			if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR)
+			{
+				SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
+			}
+			else
+			{
+				SDL_GpuBindComputePipeline(computePass, LinearToST2084Pipeline);
+			}
+
 			SDL_GpuBindComputeStorageTextures(
 				computePass,
 				0,
