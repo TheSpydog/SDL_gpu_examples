@@ -1,5 +1,11 @@
 #include <SDL_gpu_examples.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_MALLOC SDL_malloc
+#define STBI_REALLOC SDL_realloc
+#define STBI_FREE SDL_free
+#include "stb_image.h"
+
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
 	context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE);
@@ -33,16 +39,21 @@ void CommonQuit(Context* context)
 }
 
 static char* BasePath = NULL;
-void* LoadAsset(const char* relativePath, size_t* pFileSize)
+void InitializeAssetLoader()
 {
-	if (!BasePath)
-	{
-		BasePath = SDL_GetBasePath();
-	}
+	BasePath = SDL_GetBasePath();
+}
 
+void* LoadShader(const char* shaderFilename, size_t* pSizeInBytes)
+{
 	char fullPath[256];
-	SDL_snprintf(fullPath, sizeof(fullPath), "%s%s", BasePath, relativePath);
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s", BasePath, shaderFilename);
+	return SDL_LoadFile(fullPath, pSizeInBytes);
+}
 
-	void* result = SDL_LoadFile(fullPath, pFileSize);
-	return result;
+void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels)
+{
+	char fullPath[256];
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
+	return stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels);
 }

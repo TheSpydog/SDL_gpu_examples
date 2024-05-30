@@ -19,7 +19,7 @@ static int Init(Context* context)
 
 	// Load vertex shader
 	size_t vsCodeSize;
-	void* vsBytes = LoadAsset("Content/Shaders/Compiled/RawTriangle.vert.spv", &vsCodeSize);
+	void* vsBytes = LoadShader("RawTriangle.vert.spv", &vsCodeSize);
 	if (vsBytes == NULL)
 	{
 		SDL_Log("Could not load vertex shader from disk!");
@@ -41,7 +41,7 @@ static int Init(Context* context)
 
 	// Load fragment shader
 	size_t fsCodeSize;
-	void* fsBytes = LoadAsset("Content/Shaders/Compiled/SolidColor.frag.spv", &fsCodeSize);
+	void* fsBytes = LoadShader("SolidColor.frag.spv", &fsCodeSize);
 	if (fsBytes == NULL)
 	{
 		SDL_Log("Could not load fragment shader from disk!");

@@ -20,7 +20,7 @@ static int Init(Context* context)
     }
 
     size_t csCodeSize;
-    void* csBytes = LoadAsset("Content/Shaders/Compiled/FillTexture.comp.spv", &csCodeSize);
+    void* csBytes = LoadShader("FillTexture.comp.spv", &csCodeSize);
     if (csBytes == NULL)
     {
         SDL_Log("Could not load compute shader from disk!");
@@ -28,7 +28,7 @@ static int Init(Context* context)
     }
 
     size_t vsCodeSize;
-    void* vsBytes = LoadAsset("Content/Shaders/Compiled/TexturedQuad.vert.spv", &vsCodeSize);
+    void* vsBytes = LoadShader("TexturedQuad.vert.spv", &vsCodeSize);
     if (vsBytes == NULL)
     {
         SDL_Log("Could not load vertex shader from disk!");
@@ -36,7 +36,7 @@ static int Init(Context* context)
     }
 
     size_t fsCodeSize;
-    void* fsBytes = LoadAsset("Content/Shaders/Compiled/TexturedQuad.frag.spv", &fsCodeSize);
+    void* fsBytes = LoadShader("TexturedQuad.frag.spv", &fsCodeSize);
     if (fsBytes == NULL)
     {
         SDL_Log("Could not load fragment shader from disk!");

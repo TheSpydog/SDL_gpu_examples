@@ -2,9 +2,6 @@
 
 #include <SDL_gpu_examples.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 static SDL_GpuTexture* HDRTexture;
 static SDL_GpuTexture* ToneMapTexture;
 static SDL_GpuTexture* TransferTexture;
@@ -67,7 +64,7 @@ static void ChangeTonemapOperator(Context* context, Uint32 selectionIndex)
 static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *device, const char* spvFile)
 {
 	size_t csCodeSize;
-	void *csBytes = LoadAsset(spvFile, &csCodeSize);
+	void *csBytes = LoadShader(spvFile, &csCodeSize);
 	if (csBytes == NULL)
 	{
 		SDL_Log("Could not load compute shader from disk!");
@@ -117,7 +114,7 @@ static int Init(Context* context)
 	}
 
     int img_x, img_y, n;
-    float *hdrImageData = stbi_loadf("Content/Images/memorial.hdr", &img_x, &img_y, &n, 4);
+    float *hdrImageData = LoadImage("memorial.hdr", &img_x, &img_y, &n, 4);
 
     if (hdrImageData == NULL)
     {
@@ -141,7 +138,7 @@ static int Init(Context* context)
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
 	size_t vsCodeSize;
-	void* vsBytes = LoadAsset("Content/Shaders/Compiled/PositionColorTransform.vert.spv", &vsCodeSize);
+	void* vsBytes = LoadShader("PositionColorTransform.vert.spv", &vsCodeSize);
 	if (vsBytes == NULL)
 	{
 		SDL_Log("Could not load vertex shader from disk!");
@@ -149,7 +146,7 @@ static int Init(Context* context)
 	}
 
 	size_t fsCodeSize;
-	void *fsBytes = LoadAsset("Content/Shaders/Compiled/SolidColor.frag.spv", &fsCodeSize);
+	void *fsBytes = LoadShader("SolidColor.frag.spv", &fsCodeSize);
 	if (fsBytes == NULL)
 	{
 		SDL_Log("Could not load fragment shader from disk!");
@@ -236,6 +233,8 @@ static int Init(Context* context)
         SDL_FALSE
     );
 
+    SDL_free(hdrImageData);
+
     SDL_GpuCommandBuffer* uploadCmdBuf = SDL_GpuAcquireCommandBuffer(context->Device);
     SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(uploadCmdBuf);
 
@@ -260,15 +259,15 @@ static int Init(Context* context)
 
     SDL_GpuQueueDestroyTransferBuffer(context->Device, imageDataTransferBuffer);
 
-	tonemapOperators[0] = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/ToneMapReinhard.comp.spv");
-	tonemapOperators[1] = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/ToneMapExtendedReinhardLuminance.comp.spv");
-	tonemapOperators[2] = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/ToneMapHable.comp.spv");
-	tonemapOperators[3] = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/ToneMapACES.comp.spv");
+	tonemapOperators[0] = BuildPostProcessComputePipeline(context->Device, "ToneMapReinhard.comp.spv");
+	tonemapOperators[1] = BuildPostProcessComputePipeline(context->Device, "ToneMapExtendedReinhardLuminance.comp.spv");
+	tonemapOperators[2] = BuildPostProcessComputePipeline(context->Device, "ToneMapHable.comp.spv");
+	tonemapOperators[3] = BuildPostProcessComputePipeline(context->Device, "ToneMapACES.comp.spv");
 
 	currentTonemapOperator = tonemapOperators[0];
 
-	LinearToSRGBPipeline = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/LinearToSRGB.comp.spv");
-	LinearToST2084Pipeline = BuildPostProcessComputePipeline(context->Device, "Content/Shaders/Compiled/LinearToST2084.comp.spv");
+	LinearToSRGBPipeline = BuildPostProcessComputePipeline(context->Device, "LinearToSRGB.comp.spv");
+	LinearToST2084Pipeline = BuildPostProcessComputePipeline(context->Device, "LinearToST2084.comp.spv");
 
 	SDL_Log("Press Left/Right to cycle swapchain composition");
 	SDL_Log("Press Up/Down to cycle tonemap operators");

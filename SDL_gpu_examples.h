@@ -17,7 +17,9 @@ typedef struct Context
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags);
 void CommonQuit(Context* context);
-void* LoadAsset(const char* path, size_t* pFileSize);
+void InitializeAssetLoader();
+void* LoadShader(const char* shaderFilename, size_t* pSizeInBytes);
+void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels);
 
 typedef struct Example
 {

@@ -48,6 +48,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	InitializeAssetLoader();
+
 	SDL_Log("Welcome to the SDL_Gpu example suite!");
 	SDL_Log("Press A/D to move between examples!");
 

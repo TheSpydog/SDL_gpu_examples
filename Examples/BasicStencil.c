@@ -20,7 +20,7 @@ static int Init(Context* context)
 	}
 
 	size_t vsCodeSize;
-	void* vsBytes = LoadAsset("Content/Shaders/Compiled/PositionColor.vert.spv", &vsCodeSize);
+	void* vsBytes = LoadShader("PositionColor.vert.spv", &vsCodeSize);
 	if (vsBytes == NULL)
 	{
 		SDL_Log("Could not load vertex shader from disk!");
@@ -41,7 +41,7 @@ static int Init(Context* context)
 	}
 
 	size_t fsCodeSize;
-	void *fsBytes = LoadAsset("Content/Shaders/Compiled/SolidColor.frag.spv", &fsCodeSize);
+	void *fsBytes = LoadShader("SolidColor.frag.spv", &fsCodeSize);
 	if (fsBytes == NULL)
 	{
 		SDL_Log("Could not load fragment shader from disk!");
