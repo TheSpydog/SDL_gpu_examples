@@ -199,7 +199,7 @@ static int Init(Context* context)
 		.depth = 1,
 		.layerCount = 1,
 		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});
 
 	TransferTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
@@ -209,7 +209,7 @@ static int Init(Context* context)
 		.depth = 1,
 		.layerCount = 1,
 		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});
 
     SDL_GpuQueueDestroyShader(context->Device, vertexShader);
@@ -334,9 +334,18 @@ static int Draw(Context* context)
     SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &swapchainWidth, &swapchainHeight);
     if (swapchainTexture != NULL)
     {
-		SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(cmdbuf);
-
 		/* Tonemap */
+		SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
+			cmdbuf,
+			(SDL_GpuStorageTextureReadWriteBinding[]){{
+				.textureSlice.texture = ToneMapTexture,
+				.cycle = SDL_TRUE
+			}},
+			1,
+			NULL,
+			0
+		);
+
 		SDL_GpuBindComputePipeline(computePass, currentTonemapOperator);
 		SDL_GpuBindComputeStorageTextures(
 			computePass,
@@ -346,22 +355,27 @@ static int Draw(Context* context)
 			},
 			1
 		);
-		SDL_GpuBindComputeRWStorageTextures(
-			computePass,
-			0,
-			&(SDL_GpuStorageTextureReadWriteBinding){
-				.textureSlice.texture = ToneMapTexture,
-				.cycle = SDL_TRUE
-			},
-			1
-		);
 		SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
+		SDL_GpuEndComputePass(computePass);
 
 		SDL_GpuTexture* BlitSourceTexture = ToneMapTexture;
 
 		/* Transfer to target color space if necessary */
-		if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR)
-		{
+		if (
+			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR ||
+			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED
+		) {
+			computePass = SDL_GpuBeginComputePass(
+				cmdbuf,
+				(SDL_GpuStorageTextureReadWriteBinding[]){{
+					.textureSlice.texture = TransferTexture,
+					.cycle = SDL_TRUE
+				}},
+				1,
+				NULL,
+				0
+			);
+
 			SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
 			SDL_GpuBindComputeStorageTextures(
 				computePass,
@@ -371,43 +385,11 @@ static int Draw(Context* context)
 				},
 				1
 			);
-			SDL_GpuBindComputeRWStorageTextures(
-				computePass,
-				0,
-				&(SDL_GpuStorageTextureReadWriteBinding){
-					.textureSlice.texture = TransferTexture
-				},
-				1
-			);
 			SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
+			SDL_GpuEndComputePass(computePass);
 
 			BlitSourceTexture = TransferTexture;
 		}
-		else if (currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR_ADVANCED)
-		{
-			SDL_GpuBindComputePipeline(computePass, LinearToSRGBPipeline);
-			SDL_GpuBindComputeStorageTextures(
-				computePass,
-				0,
-				&(SDL_GpuTextureSlice){
-					.texture = ToneMapTexture
-				},
-				1
-			);
-			SDL_GpuBindComputeRWStorageTextures(
-				computePass,
-				0,
-				&(SDL_GpuStorageTextureReadWriteBinding){
-					.textureSlice.texture = TransferTexture
-				},
-				1
-			);
-			SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
-
-			BlitSourceTexture = TransferTexture;
-		}
-
-		SDL_GpuEndComputePass(computePass);
 
 		/* Blit to swapchain */
 		SDL_GpuBlit(

@@ -211,21 +211,20 @@ static int Init(Context* context)
 
 	SDL_GpuEndCopyPass(copyPass);
 
-    SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(cmdBuf);
+    SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
+        cmdBuf,
+        (SDL_GpuStorageTextureReadWriteBinding[]){{
+            .textureSlice.texture = Texture
+        }},
+        1,
+        NULL,
+        0
+    );
 
     SDL_GpuBindComputePipeline(computePass, fillTexturePipeline);
-    SDL_GpuBindComputeRWStorageTextures(
-        computePass,
-        0,
-        (SDL_GpuStorageTextureReadWriteBinding[]) {{
-            .textureSlice.texture = Texture,
-            .cycle = SDL_FALSE
-        }},
-        1
-    );
     SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
-
     SDL_GpuEndComputePass(computePass);
+
 	SDL_GpuSubmit(cmdBuf);
 
     SDL_GpuQueueDestroyComputePipeline(context->Device, fillTexturePipeline);
