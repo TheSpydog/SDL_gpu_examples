@@ -6,7 +6,8 @@ static Example* Examples[] =
 	&ClearScreenMultiWindow_Example,
 	&BasicTriangle_Example,
 	&BasicStencil_Example,
-	&BasicCompute_Example
+	&BasicCompute_Example,
+	&ToneMapping_Example
 };
 
 int main(int argc, char **argv)
@@ -90,6 +91,10 @@ int main(int argc, char **argv)
 				else if (evt.key.keysym.sym == SDLK_DOWN)
 				{
 					context.DownPressed = SDL_TRUE;
+				}
+				else if (evt.key.keysym.sym == SDLK_UP)
+				{
+					context.UpPressed = SDL_TRUE;
 				}
 			}
 		}

@@ -65,7 +65,7 @@ static int Init(Context* context)
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
 			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GpuGetSwapchainFormat(context->Device, context->Window),
+				.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,

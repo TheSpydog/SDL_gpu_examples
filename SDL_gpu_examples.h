@@ -12,6 +12,7 @@ typedef struct Context
 	SDL_bool LeftPressed;
 	SDL_bool RightPressed;
 	SDL_bool DownPressed;
+	SDL_bool UpPressed;
 } Context;
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags);
@@ -32,5 +33,6 @@ extern Example ClearScreenMultiWindow_Example;
 extern Example BasicTriangle_Example;
 extern Example BasicStencil_Example;
 extern Example BasicCompute_Example;
+extern Example ToneMapping_Example;
 
 #endif
