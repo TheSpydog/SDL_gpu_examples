@@ -12,6 +12,7 @@ add_executable(SDL_gpu_examples
     Examples/BasicTriangle.c
     Examples/BasicStencil.c
     Examples/BasicCompute.c
+    Examples/ComputeUniforms.c
     Examples/ToneMapping.c
 )
 

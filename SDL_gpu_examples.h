@@ -35,6 +35,7 @@ extern Example ClearScreenMultiWindow_Example;
 extern Example BasicTriangle_Example;
 extern Example BasicStencil_Example;
 extern Example BasicCompute_Example;
+extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
 
 #endif

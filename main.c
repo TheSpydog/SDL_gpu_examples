@@ -7,6 +7,7 @@ static Example* Examples[] =
 	&BasicTriangle_Example,
 	&BasicStencil_Example,
 	&BasicCompute_Example,
+	&ComputeUniforms_Example,
 	&ToneMapping_Example
 };
 
