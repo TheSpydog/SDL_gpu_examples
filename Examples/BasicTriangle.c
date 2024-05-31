@@ -102,8 +102,8 @@ static int Init(Context* context)
 	}
 
 	// Clean up shader resources
-	SDL_GpuQueueDestroyShader(context->Device, vertexShader);
-	SDL_GpuQueueDestroyShader(context->Device, fragmentShader);
+	SDL_GpuReleaseShader(context->Device, vertexShader);
+	SDL_GpuReleaseShader(context->Device, fragmentShader);
 	SDL_free(vsBytes);
 	SDL_free(fsBytes);
 
@@ -179,8 +179,8 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	SDL_GpuQueueDestroyGraphicsPipeline(context->Device, FillPipeline);
-	SDL_GpuQueueDestroyGraphicsPipeline(context->Device, LinePipeline);
+	SDL_GpuReleaseGraphicsPipeline(context->Device, FillPipeline);
+	SDL_GpuReleaseGraphicsPipeline(context->Device, LinePipeline);
 
 	UseWireframeMode = SDL_FALSE;
 	UseSmallViewport = SDL_FALSE;

@@ -145,8 +145,8 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	SDL_GpuQueueDestroyShader(context->Device, vertexShader);
-	SDL_GpuQueueDestroyShader(context->Device, fragmentShader);
+	SDL_GpuReleaseShader(context->Device, vertexShader);
+	SDL_GpuReleaseShader(context->Device, fragmentShader);
 	SDL_free(vsBytes);
 	SDL_free(fsBytes);
 
@@ -215,7 +215,7 @@ static int Init(Context* context)
 
 	SDL_GpuEndCopyPass(copyPass);
 	SDL_GpuSubmit(uploadCmdBuf);
-	SDL_GpuQueueDestroyTransferBuffer(context->Device, transferBuffer);
+	SDL_GpuReleaseTransferBuffer(context->Device, transferBuffer);
 
 	return 0;
 }
@@ -277,11 +277,11 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	SDL_GpuQueueDestroyGraphicsPipeline(context->Device, MaskeePipeline);
-	SDL_GpuQueueDestroyGraphicsPipeline(context->Device, MaskerPipeline);
+	SDL_GpuReleaseGraphicsPipeline(context->Device, MaskeePipeline);
+	SDL_GpuReleaseGraphicsPipeline(context->Device, MaskerPipeline);
 
-	SDL_GpuQueueDestroyTexture(context->Device, DepthStencilTexture);
-	SDL_GpuQueueDestroyGpuBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseTexture(context->Device, DepthStencilTexture);
+	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
 
 	CommonQuit(context);
 }

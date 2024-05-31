@@ -40,7 +40,7 @@ static int Init(Context* context)
         .pipelineResourceLayoutInfo.uniformBufferCount = 1
     });
 
-    SDL_GpuQueueDestroyShader(context->Device, computeShader);
+    SDL_GpuReleaseShader(context->Device, computeShader);
     SDL_free(csBytes);
 
     int w, h;
@@ -123,8 +123,8 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-    SDL_GpuQueueDestroyComputePipeline(context->Device, GradientPipeline);
-    SDL_GpuQueueDestroyTexture(context->Device, GradientRenderTexture);
+    SDL_GpuReleaseComputePipeline(context->Device, GradientPipeline);
+    SDL_GpuReleaseTexture(context->Device, GradientRenderTexture);
 
     CommonQuit(context);
 }

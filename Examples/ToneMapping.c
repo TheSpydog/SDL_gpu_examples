@@ -97,7 +97,7 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 		}
 	);
 
-	SDL_GpuQueueDestroyShader(device, computeShader);
+	SDL_GpuReleaseShader(device, computeShader);
 	SDL_free(csBytes);
 
 	return computePipeline;
@@ -209,8 +209,8 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});
 
-    SDL_GpuQueueDestroyShader(context->Device, vertexShader);
-    SDL_GpuQueueDestroyShader(context->Device, fragmentShader);
+    SDL_GpuReleaseShader(context->Device, vertexShader);
+    SDL_GpuReleaseShader(context->Device, fragmentShader);
     SDL_free(vsBytes);
     SDL_free(fsBytes);
 
@@ -257,7 +257,7 @@ static int Init(Context* context)
 
     SDL_GpuSubmit(uploadCmdBuf);
 
-    SDL_GpuQueueDestroyTransferBuffer(context->Device, imageDataTransferBuffer);
+    SDL_GpuReleaseTransferBuffer(context->Device, imageDataTransferBuffer);
 
 	tonemapOperators[0] = BuildPostProcessComputePipeline(context->Device, "ToneMapReinhard.comp.spv");
 	tonemapOperators[1] = BuildPostProcessComputePipeline(context->Device, "ToneMapExtendedReinhardLuminance.comp.spv");
@@ -427,15 +427,15 @@ static void Quit(Context* context)
 {
 	for (Sint32 i = 0; i < tonemapOperatorCount; i += 1)
 	{
-		SDL_GpuQueueDestroyComputePipeline(context->Device, tonemapOperators[i]);
+		SDL_GpuReleaseComputePipeline(context->Device, tonemapOperators[i]);
 	}
 
-	SDL_GpuQueueDestroyComputePipeline(context->Device, LinearToSRGBPipeline);
-	SDL_GpuQueueDestroyComputePipeline(context->Device, LinearToST2084Pipeline);
+	SDL_GpuReleaseComputePipeline(context->Device, LinearToSRGBPipeline);
+	SDL_GpuReleaseComputePipeline(context->Device, LinearToST2084Pipeline);
 
-    SDL_GpuQueueDestroyTexture(context->Device, HDRTexture);
-	SDL_GpuQueueDestroyTexture(context->Device, ToneMapTexture);
-	SDL_GpuQueueDestroyTexture(context->Device, TransferTexture);
+    SDL_GpuReleaseTexture(context->Device, HDRTexture);
+	SDL_GpuReleaseTexture(context->Device, ToneMapTexture);
+	SDL_GpuReleaseTexture(context->Device, TransferTexture);
 
     SDL_GpuUnclaimWindow(context->Device, context->Window);
     SDL_DestroyWindow(context->Window);

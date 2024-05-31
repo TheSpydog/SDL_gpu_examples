@@ -138,9 +138,9 @@ static int Init(Context* context)
         .fragmentResourceLayoutInfo.samplerCount = 1
     });
 
-    SDL_GpuQueueDestroyShader(context->Device, computeShader);
-    SDL_GpuQueueDestroyShader(context->Device, vertexShader);
-    SDL_GpuQueueDestroyShader(context->Device, fragmentShader);
+    SDL_GpuReleaseShader(context->Device, computeShader);
+    SDL_GpuReleaseShader(context->Device, vertexShader);
+    SDL_GpuReleaseShader(context->Device, fragmentShader);
     SDL_free(csBytes);
     SDL_free(vsBytes);
     SDL_free(fsBytes);
@@ -227,8 +227,8 @@ static int Init(Context* context)
 
 	SDL_GpuSubmit(cmdBuf);
 
-    SDL_GpuQueueDestroyComputePipeline(context->Device, fillTexturePipeline);
-	SDL_GpuQueueDestroyTransferBuffer(context->Device, transferBuffer);
+    SDL_GpuReleaseComputePipeline(context->Device, fillTexturePipeline);
+	SDL_GpuReleaseTransferBuffer(context->Device, transferBuffer);
 
     return 0;
 }
@@ -279,10 +279,10 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-    SDL_GpuQueueDestroyGraphicsPipeline(context->Device, DrawPipeline);
-    SDL_GpuQueueDestroyTexture(context->Device, Texture);
-    SDL_GpuQueueDestroySampler(context->Device, Sampler);
-    SDL_GpuQueueDestroyGpuBuffer(context->Device, VertexBuffer);
+    SDL_GpuReleaseGraphicsPipeline(context->Device, DrawPipeline);
+    SDL_GpuReleaseTexture(context->Device, Texture);
+    SDL_GpuReleaseSampler(context->Device, Sampler);
+    SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
 
     CommonQuit(context);
 }
