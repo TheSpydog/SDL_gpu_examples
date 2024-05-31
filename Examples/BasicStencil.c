@@ -251,6 +251,7 @@ static int Draw(Context* context)
 		depthStencilAttachmentInfo.depthStencilClearValue.stencil = 0;
 		depthStencilAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		depthStencilAttachmentInfo.storeOp = SDL_GPU_STOREOP_DONT_CARE;
+		depthStencilAttachmentInfo.stencilLoadOp = SDL_GPU_LOADOP_CLEAR;
 		depthStencilAttachmentInfo.stencilStoreOp = SDL_GPU_STOREOP_DONT_CARE;
 
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(
