@@ -71,10 +71,10 @@ static int Init(Context* context)
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
 					.colorBlendOp = SDL_GPU_BLENDOP_ADD,
 					.colorWriteMask = 0xF,
-					.srcColorBlendFactor = SDL_BLENDFACTOR_ONE,
-					.srcAlphaBlendFactor = SDL_BLENDFACTOR_ONE,
-					.dstColorBlendFactor = SDL_BLENDFACTOR_ZERO,
-					.dstAlphaBlendFactor = SDL_BLENDFACTOR_ZERO
+					.srcColorBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
+					.srcAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
+					.dstColorBlendFactor = SDL_GPU_BLENDFACTOR_ZERO,
+					.dstAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ZERO
 				}
 			}},
 			.hasDepthStencilAttachment = SDL_TRUE,
