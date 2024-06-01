@@ -30,7 +30,7 @@ static int Init(Context* context)
         .stage = SDL_GPU_SHADERSTAGE_COMPUTE,
         .code = csBytes,
         .codeSize = csCodeSize,
-        .entryPointName = "cs_main",
+        .entryPointName = "main",
         .format = SDL_GPU_SHADERFORMAT_SPIRV
     });
 

@@ -31,7 +31,7 @@ static int Init(Context* context)
 		.stage = SDL_GPU_SHADERSTAGE_VERTEX,
 		.code = vsBytes,
 		.codeSize = vsCodeSize,
-		.entryPointName = "vs_main",
+		.entryPointName = "main",
 		.format = SDL_GPU_SHADERFORMAT_SPIRV,
 	});
 	if (vertexShader == NULL)
@@ -52,7 +52,7 @@ static int Init(Context* context)
 		.stage = SDL_GPU_SHADERSTAGE_FRAGMENT,
 		.code = fsBytes,
 		.codeSize = fsCodeSize,
-		.entryPointName = "fs_main",
+		.entryPointName = "main",
 		.format = SDL_GPU_SHADERFORMAT_SPIRV
 	});
 	if (fragmentShader == NULL)
