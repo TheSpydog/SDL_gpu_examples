@@ -5,12 +5,6 @@ static SDL_GpuTexture* Texture;
 static SDL_GpuSampler* Sampler;
 static SDL_GpuBuffer* VertexBuffer;
 
-typedef struct PositionTextureVertex
-{
-    float x, y, z;
-    float u, v;
-} PositionTextureVertex;
-
 static int Init(Context* context)
 {
     int result = CommonInit(context, 0);

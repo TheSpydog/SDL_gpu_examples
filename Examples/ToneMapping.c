@@ -95,7 +95,7 @@ static int Init(Context* context)
 	}
 
     int img_x, img_y, n;
-    float *hdrImageData = LoadImage("memorial.hdr", &img_x, &img_y, &n, 4);
+    float *hdrImageData = LoadImage("memorial.hdr", &img_x, &img_y, &n, 4, SDL_TRUE);
 
     if (hdrImageData == NULL)
     {

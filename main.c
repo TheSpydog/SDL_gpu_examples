@@ -9,6 +9,7 @@ static Example* Examples[] =
 	&CullMode_Example,
 	&BasicStencil_Example,
 	&InstancedIndexed_Example,
+	&TexturedQuad_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,
 	&ToneMapping_Example

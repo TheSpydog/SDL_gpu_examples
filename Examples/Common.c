@@ -96,9 +96,11 @@ SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 	return shader;
 }
 
-void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels)
+void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels, SDL_bool hdr)
 {
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
-	return stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels);
+	return hdr ?
+		stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels) :
+		stbi_load(fullPath, pWidth, pHeight, pChannels, desiredChannels);
 }
