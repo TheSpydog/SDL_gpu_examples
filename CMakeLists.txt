@@ -12,6 +12,7 @@ add_executable(SDL_gpu_examples
     Examples/BasicTriangle.c
     Examples/BasicVertexBuffer.c
     Examples/CullMode.c
+    Examples/InstancedIndexed.c
     Examples/BasicStencil.c
     Examples/BasicCompute.c
     Examples/ComputeUniforms.c

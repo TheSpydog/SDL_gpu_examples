@@ -8,6 +8,7 @@ static Example* Examples[] =
 	&BasicVertexBuffer_Example,
 	&CullMode_Example,
 	&BasicStencil_Example,
+	&InstancedIndexed_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,
 	&ToneMapping_Example
