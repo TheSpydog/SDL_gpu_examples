@@ -10,6 +10,8 @@ add_executable(SDL_gpu_examples
     Examples/ClearScreen.c
     Examples/ClearScreenMultiWindow.c
     Examples/BasicTriangle.c
+    Examples/BasicVertexBuffer.c
+    Examples/CullMode.c
     Examples/BasicStencil.c
     Examples/BasicCompute.c
     Examples/ComputeUniforms.c

@@ -5,6 +5,8 @@ static Example* Examples[] =
 	&ClearScreen_Example,
 	&ClearScreenMultiWindow_Example,
 	&BasicTriangle_Example,
+	&BasicVertexBuffer_Example,
+	&CullMode_Example,
 	&BasicStencil_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,

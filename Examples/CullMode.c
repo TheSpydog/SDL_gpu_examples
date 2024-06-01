@@ -1,9 +1,20 @@
 #include <SDL_gpu_examples.h>
 
-static SDL_GpuGraphicsPipeline* MaskerPipeline;
-static SDL_GpuGraphicsPipeline* MaskeePipeline;
-static SDL_GpuBuffer* VertexBuffer;
-static SDL_GpuTexture* DepthStencilTexture;
+static const char* ModeNames[] =
+{
+	"CW_CullNone",
+	"CW_CullFront",
+	"CW_CullBack",
+	"CCW_CullNone",
+	"CCW_CullFront",
+	"CCW_CullBack"
+};
+
+static SDL_GpuGraphicsPipeline* Pipelines[SDL_arraysize(ModeNames)];
+static int CurrentMode = 0;
+
+static SDL_GpuBuffer* VertexBufferCW;
+static SDL_GpuBuffer* VertexBufferCCW;
 
 static int Init(Context* context)
 {
@@ -13,6 +24,7 @@ static int Init(Context* context)
 		return result;
 	}
 
+	// Create the shaders
 	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColor.vert.spv");
 	if (vertexShader == NULL)
 	{
@@ -27,6 +39,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
+	// Create the pipelines
 	SDL_GpuGraphicsPipelineCreateInfo pipelineCreateInfo = {
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
@@ -43,22 +56,6 @@ static int Init(Context* context)
 					.dstAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ZERO
 				}
 			}},
-			.hasDepthStencilAttachment = SDL_TRUE,
-			.depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT
-		},
-		.depthStencilState = (SDL_GpuDepthStencilState){
-			.stencilTestEnable = SDL_TRUE,
-			.frontStencilState = (SDL_GpuStencilOpState){
-				.compareOp = SDL_GPU_COMPAREOP_NEVER,
-				.failOp = SDL_GPU_STENCILOP_REPLACE
-			},
-			.reference = 1,
-			.writeMask = 0xFF
-		},
-		.rasterizerState = (SDL_GpuRasterizerState){
-			.cullMode = SDL_GPU_CULLMODE_NONE,
-			.fillMode = SDL_GPU_FILLMODE_FILL,
-			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE
 		},
 		.vertexInputState = (SDL_GpuVertexInputState){
 			.vertexBindingCount = 1,
@@ -84,59 +81,42 @@ static int Init(Context* context)
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
-		.fragmentShader = fragmentShader
+		.fragmentShader = fragmentShader,
 	};
 
-	MaskerPipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
-	if (MaskerPipeline == NULL)
+	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
-		SDL_Log("Failed to create masker pipeline!");
-		return -1;
+		pipelineCreateInfo.rasterizerState.cullMode = (SDL_GpuCullMode) (i % 3);
+		pipelineCreateInfo.rasterizerState.frontFace = (i > 2) ?
+			SDL_GPU_FRONTFACE_CLOCKWISE :
+			SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
+
+		Pipelines[i] = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
+		if (Pipelines[i] == NULL)
+		{
+			SDL_Log("Failed to create pipeline!");
+			return -1;
+		}
 	}
 
-	pipelineCreateInfo.depthStencilState = (SDL_GpuDepthStencilState){
-		.stencilTestEnable = SDL_TRUE,
-		.frontStencilState = (SDL_GpuStencilOpState){
-			.compareOp = SDL_GPU_COMPAREOP_EQUAL
-		},
-		.reference = 0,
-		.compareMask = 0xFF,
-		.writeMask = 0
-	};
-
-	MaskeePipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
-	if (MaskeePipeline == NULL)
-	{
-		SDL_Log("Failed to create maskee pipeline!");
-		return -1;
-	}
-
+	// Clean up shader resources
 	SDL_GpuReleaseShader(context->Device, vertexShader);
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
-	VertexBuffer = SDL_GpuCreateGpuBuffer(
+	// Create the vertex buffers. They're the same except for the vertex order.
+	// FIXME: Needs error handling!
+	VertexBufferCW = SDL_GpuCreateGpuBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionColorVertex) * 6
+		sizeof(PositionColorVertex) * 3
 	);
-
-	int w, h;
-	SDL_GetWindowSizeInPixels(context->Window, &w, &h);
-
-	DepthStencilTexture = SDL_GpuCreateTexture(
+	VertexBufferCCW = SDL_GpuCreateGpuBuffer(
 		context->Device,
-		&(SDL_GpuTextureCreateInfo) {
-			.width = w,
-			.height = h,
-			.depth = 1,
-			.layerCount = 1,
-			.levelCount = 1,
-			.sampleCount = SDL_GPU_SAMPLECOUNT_1,
-			.format = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
-		}
+		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+		sizeof(PositionColorVertex) * 3
 	);
 
+	// Set up the transfer buffer
 	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERUSAGE_BUFFER,
@@ -145,7 +125,6 @@ static int Init(Context* context)
 	);
 
 	PositionColorVertex* transferData;
-
 	SDL_GpuMapTransferBuffer(
 		context->Device,
 		transferBuffer,
@@ -153,26 +132,38 @@ static int Init(Context* context)
 		(void**) &transferData
 	);
 
-	transferData[0] = (PositionColorVertex) { -0.5f, -0.5f, 0, 255, 255,   0, 255 };
-	transferData[1] = (PositionColorVertex) {  0.5f, -0.5f, 0, 255, 255,   0, 255 };
-	transferData[2] = (PositionColorVertex) {     0,  0.5f, 0, 255, 255,   0, 255 };
-	transferData[3] = (PositionColorVertex) {    -1,    -1, 0, 255,   0,   0, 255 };
+	transferData[0] = (PositionColorVertex) {    -1,    -1, 0, 255,   0,   0, 255 };
+	transferData[1] = (PositionColorVertex) {     1,    -1, 0,   0, 255,   0, 255 };
+	transferData[2] = (PositionColorVertex) {     0,     1, 0,   0,   0, 255, 255 };
+	transferData[3] = (PositionColorVertex) {     0,     1, 0, 255,   0,   0, 255 };
 	transferData[4] = (PositionColorVertex) {     1,    -1, 0,   0, 255,   0, 255 };
-	transferData[5] = (PositionColorVertex) {     0,     1, 0,   0,   0, 255, 255 };
+	transferData[5] = (PositionColorVertex) {    -1,    -1, 0,   0,   0, 255, 255 };
 
 	SDL_GpuUnmapTransferBuffer(context->Device, transferBuffer);
 
+	// Upload the transfer data to the vertex buffer
 	SDL_GpuCommandBuffer* uploadCmdBuf = SDL_GpuAcquireCommandBuffer(context->Device);
 	SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(uploadCmdBuf);
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
 		transferBuffer,
-		VertexBuffer,
+		VertexBufferCW,
 		&(SDL_GpuBufferCopy) {
 			.srcOffset = 0,
 			.dstOffset = 0,
-			.size = sizeof(PositionColorVertex) * 6
+			.size = sizeof(PositionColorVertex) * 3
+		},
+		SDL_FALSE
+	);
+	SDL_GpuUploadToBuffer(
+		copyPass,
+		transferBuffer,
+		VertexBufferCCW,
+		&(SDL_GpuBufferCopy) {
+			.srcOffset = sizeof(PositionColorVertex) * 3,
+			.dstOffset = 0,
+			.size = sizeof(PositionColorVertex) * 3
 		},
 		SDL_FALSE
 	);
@@ -181,11 +172,31 @@ static int Init(Context* context)
 	SDL_GpuSubmit(uploadCmdBuf);
 	SDL_GpuReleaseTransferBuffer(context->Device, transferBuffer);
 
+	// Finally, print instructions!
+	SDL_Log("Press Left/Right to switch between modes");
+	SDL_Log("Current Mode: %s", ModeNames[0]);
+
 	return 0;
 }
 
 static int Update(Context* context)
 {
+	if (context->LeftPressed)
+	{
+		CurrentMode -= 1;
+		if (CurrentMode < 0)
+		{
+			CurrentMode = SDL_arraysize(Pipelines) - 1;
+		}
+		SDL_Log("Current Mode: %s", ModeNames[CurrentMode]);
+	}
+
+	if (context->RightPressed)
+	{
+		CurrentMode = (CurrentMode + 1) % SDL_arraysize(Pipelines);
+		SDL_Log("Current Mode: %s", ModeNames[CurrentMode]);
+	}
+
 	return 0;
 }
 
@@ -208,29 +219,14 @@ static int Draw(Context* context)
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuDepthStencilAttachmentInfo depthStencilAttachmentInfo = { 0 };
-		depthStencilAttachmentInfo.textureSlice.texture = DepthStencilTexture;
-		depthStencilAttachmentInfo.cycle = SDL_TRUE;
-		depthStencilAttachmentInfo.depthStencilClearValue.depth = 0;
-		depthStencilAttachmentInfo.depthStencilClearValue.stencil = 0;
-		depthStencilAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
-		depthStencilAttachmentInfo.storeOp = SDL_GPU_STOREOP_DONT_CARE;
-		depthStencilAttachmentInfo.stencilLoadOp = SDL_GPU_LOADOP_CLEAR;
-		depthStencilAttachmentInfo.stencilStoreOp = SDL_GPU_STOREOP_DONT_CARE;
-
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(
-			cmdbuf,
-			&colorAttachmentInfo,
-			1,
-			&depthStencilAttachmentInfo
-		);
-
-		SDL_GpuBindGraphicsPipeline(renderPass, MaskerPipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_GpuBindGraphicsPipeline(renderPass, Pipelines[CurrentMode]);
+		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 0, 0, 320, 480 });
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBufferCW, .offset = 0 }, 1);
 		SDL_GpuDrawPrimitives(renderPass, 0, 1);
-		SDL_GpuBindGraphicsPipeline(renderPass, MaskeePipeline);
-		SDL_GpuDrawPrimitives(renderPass, 3, 1);
-
+		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 320, 0, 320, 480 });
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBufferCCW, .offset = 0 }, 1);
+		SDL_GpuDrawPrimitives(renderPass, 0, 1);
 		SDL_GpuEndRenderPass(renderPass);
 	}
 
@@ -241,13 +237,17 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	SDL_GpuReleaseGraphicsPipeline(context->Device, MaskeePipeline);
-	SDL_GpuReleaseGraphicsPipeline(context->Device, MaskerPipeline);
+	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
+	{
+		SDL_GpuReleaseGraphicsPipeline(context->Device, Pipelines[i]);
+	}
 
-	SDL_GpuReleaseTexture(context->Device, DepthStencilTexture);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseGpuBuffer(context->Device, VertexBufferCW);
+	SDL_GpuReleaseGpuBuffer(context->Device, VertexBufferCCW);
+
+	CurrentMode = 0;
 
 	CommonQuit(context);
 }
 
-Example BasicStencil_Example = { "BasicStencil", Init, Update, Draw, Quit };
+Example CullMode_Example = { "CullMode", Init, Update, Draw, Quit };

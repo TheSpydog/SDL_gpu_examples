@@ -21,6 +21,14 @@ void InitializeAssetLoader();
 SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename);
 void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels);
 
+// Vertex Formats
+typedef struct PositionColorVertex
+{
+	float x, y, z;
+	Uint8 r, g, b, a;
+} PositionColorVertex;
+
+// Examples
 typedef struct Example
 {
 	const char* Name;
@@ -33,6 +41,8 @@ typedef struct Example
 extern Example ClearScreen_Example;
 extern Example ClearScreenMultiWindow_Example;
 extern Example BasicTriangle_Example;
+extern Example BasicVertexBuffer_Example;
+extern Example CullMode_Example;
 extern Example BasicStencil_Example;
 extern Example BasicCompute_Example;
 extern Example ComputeUniforms_Example;
