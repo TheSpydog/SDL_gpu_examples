@@ -63,25 +63,7 @@ static void ChangeTonemapOperator(Context* context, Uint32 selectionIndex)
 
 static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *device, const char* spvFile)
 {
-	size_t csCodeSize;
-	void *csBytes = LoadShader(spvFile, &csCodeSize);
-	if (csBytes == NULL)
-	{
-		SDL_Log("Could not load compute shader from disk!");
-		return NULL;
-	}
-
-	SDL_GpuShader* computeShader = SDL_GpuCreateShader(
-		device,
-		&(SDL_GpuShaderCreateInfo){
-			.stage = SDL_GPU_SHADERSTAGE_COMPUTE,
-			.code = csBytes,
-			.codeSize = csCodeSize,
-			.entryPointName = "main",
-			.format = SDL_GPU_SHADERFORMAT_SPIRV
-		}
-	);
-
+	SDL_GpuShader* computeShader = LoadShader(device, spvFile);
 	if (computeShader == NULL)
 	{
 		SDL_Log("Failed to create compute shader!");
@@ -98,7 +80,6 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 	);
 
 	SDL_GpuReleaseShader(device, computeShader);
-	SDL_free(csBytes);
 
 	return computePipeline;
 }
@@ -137,42 +118,14 @@ static int Init(Context* context)
 
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
-	size_t vsCodeSize;
-	void* vsBytes = LoadShader("PositionColorTransform.vert.spv", &vsCodeSize);
-	if (vsBytes == NULL)
-	{
-		SDL_Log("Could not load vertex shader from disk!");
-		return -1;
-	}
-
-	size_t fsCodeSize;
-	void *fsBytes = LoadShader("SolidColor.frag.spv", &fsCodeSize);
-	if (fsBytes == NULL)
-	{
-		SDL_Log("Could not load fragment shader from disk!");
-		return -1;
-	}
-
-	SDL_GpuShader* vertexShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
-		.stage = SDL_GPU_SHADERSTAGE_VERTEX,
-		.code = vsBytes,
-		.codeSize = vsCodeSize,
-		.entryPointName = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV,
-	});
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert.spv");
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
-		.stage = SDL_GPU_SHADERSTAGE_FRAGMENT,
-		.code = fsBytes,
-		.codeSize = fsCodeSize,
-		.entryPointName = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV
-	});
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag.spv");
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -211,8 +164,6 @@ static int Init(Context* context)
 
     SDL_GpuReleaseShader(context->Device, vertexShader);
     SDL_GpuReleaseShader(context->Device, fragmentShader);
-    SDL_free(vsBytes);
-    SDL_free(fsBytes);
 
     SDL_GpuTransferBuffer* imageDataTransferBuffer = SDL_GpuCreateTransferBuffer(
         context->Device,

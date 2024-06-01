@@ -17,44 +17,15 @@ static int Init(Context* context)
 		return result;
 	}
 
-	// Load vertex shader
-	size_t vsCodeSize;
-	void* vsBytes = LoadShader("RawTriangle.vert.spv", &vsCodeSize);
-	if (vsBytes == NULL)
-	{
-		SDL_Log("Could not load vertex shader from disk!");
-		return -1;
-	}
-
-	SDL_GpuShader* vertexShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
-		.stage = SDL_GPU_SHADERSTAGE_VERTEX,
-		.code = vsBytes,
-		.codeSize = vsCodeSize,
-		.entryPointName = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV,
-	});
+	// Create the shaders
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert.spv");
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	// Load fragment shader
-	size_t fsCodeSize;
-	void* fsBytes = LoadShader("SolidColor.frag.spv", &fsCodeSize);
-	if (fsBytes == NULL)
-	{
-		SDL_Log("Could not load fragment shader from disk!");
-		return -1;
-	}
-
-	SDL_GpuShader* fragmentShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
-		.stage = SDL_GPU_SHADERSTAGE_FRAGMENT,
-		.code = fsBytes,
-		.codeSize = fsCodeSize,
-		.entryPointName = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV,
-	});
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag.spv");
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -89,7 +60,7 @@ static int Init(Context* context)
 	FillPipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (FillPipeline == NULL)
 	{
-		SDL_Log("Could not create fill pipeline!");
+		SDL_Log("Failed to create fill pipeline!");
 		return -1;
 	}
 
@@ -97,15 +68,13 @@ static int Init(Context* context)
 	LinePipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (LinePipeline == NULL)
 	{
-		SDL_Log("Could not create line pipeline!");
+		SDL_Log("Failed to create line pipeline!");
 		return -1;
 	}
 
 	// Clean up shader resources
 	SDL_GpuReleaseShader(context->Device, vertexShader);
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
-	SDL_free(vsBytes);
-	SDL_free(fsBytes);
 
 	// Finally, print instructions!
 	SDL_Log("Press Left to toggle wireframe mode");

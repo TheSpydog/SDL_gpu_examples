@@ -44,11 +44,56 @@ void InitializeAssetLoader()
 	BasePath = SDL_GetBasePath();
 }
 
-void* LoadShader(const char* shaderFilename, size_t* pSizeInBytes)
+SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 {
+	// Auto-detect the shader type from the file name for convenience
+	SDL_GpuShaderStageFlagBits stage;
+	if (SDL_strstr(shaderFilename, ".vert"))
+	{
+		stage = SDL_GPU_SHADERSTAGE_VERTEX;
+	}
+	else if (SDL_strstr(shaderFilename, ".frag"))
+	{
+		stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
+	}
+	else if (SDL_strstr(shaderFilename, ".comp"))
+	{
+		stage = SDL_GPU_SHADERSTAGE_COMPUTE;
+	}
+	else
+	{
+		SDL_Log("Invalid shader stage!");
+		return NULL;
+	}
+
+
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s", BasePath, shaderFilename);
-	return SDL_LoadFile(fullPath, pSizeInBytes);
+
+	size_t codeSize;
+	void* code = SDL_LoadFile(fullPath, &codeSize);
+	if (code == NULL)
+	{
+		SDL_Log("Failed to load shader from disk! %s", fullPath);
+		return NULL;
+	}
+
+	SDL_GpuShader* shader = SDL_GpuCreateShader(device, &(SDL_GpuShaderCreateInfo){
+		.stage = stage,
+		.code = code,
+		.codeSize = codeSize,
+		.entryPointName = "main",
+		.format = SDL_GPU_SHADERFORMAT_SPIRV
+	});
+	if (shader == NULL)
+	{
+		SDL_Log("Failed to create shader!");
+		SDL_free(code);
+		return NULL;
+	}
+
+	SDL_free(code);
+	return shader;
 }
 
 void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels)

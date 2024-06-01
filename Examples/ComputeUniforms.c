@@ -18,21 +18,12 @@ static int Init(Context* context)
         return result;
     }
 
-    size_t csCodeSize;
-    void* csBytes = LoadShader("GradientTexture.comp.spv", &csCodeSize);
-    if (csBytes == NULL)
+    SDL_GpuShader* computeShader = LoadShader(context->Device, "GradientTexture.comp.spv");
+    if (computeShader == NULL)
     {
-        SDL_Log("Could not load compute shader from disk!");
+        SDL_Log("Failed to create compute shader!");
         return -1;
     }
-
-    SDL_GpuShader* computeShader = SDL_GpuCreateShader(context->Device, &(SDL_GpuShaderCreateInfo){
-        .stage = SDL_GPU_SHADERSTAGE_COMPUTE,
-        .code = csBytes,
-        .codeSize = csCodeSize,
-        .entryPointName = "main",
-        .format = SDL_GPU_SHADERFORMAT_SPIRV
-    });
 
     GradientPipeline = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
         .computeShader = computeShader,
@@ -41,7 +32,6 @@ static int Init(Context* context)
     });
 
     SDL_GpuReleaseShader(context->Device, computeShader);
-    SDL_free(csBytes);
 
     int w, h;
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
