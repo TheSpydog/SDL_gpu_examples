@@ -263,11 +263,6 @@ static int Update(Context* context)
 		ChangeTonemapOperator(context, tonemapOperatorSelectionIndex);
 	}
 
-	context->LeftPressed = 0;
-	context->RightPressed = 0;
-	context->DownPressed = 0;
-	context->UpPressed = 0;
-
     return 0;
 }
 

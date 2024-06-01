@@ -56,6 +56,11 @@ int main(int argc, char **argv)
 
 	while (!quit)
 	{
+		context.LeftPressed = 0;
+		context.RightPressed = 0;
+		context.DownPressed = 0;
+		context.UpPressed = 0;
+
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt))
 		{

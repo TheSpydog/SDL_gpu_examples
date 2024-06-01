@@ -101,10 +101,6 @@ static int Update(Context* context)
 		UseScissorRect = !UseScissorRect;
 	}
 
-	context->LeftPressed = 0;
-	context->DownPressed = 0;
-	context->RightPressed = 0;
-
 	return 0;
 }
 
