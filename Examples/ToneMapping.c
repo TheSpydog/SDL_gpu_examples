@@ -118,14 +118,14 @@ static int Init(Context* context)
 
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert.spv");
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert");
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag.spv");
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag");
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -210,15 +210,15 @@ static int Init(Context* context)
 
     SDL_GpuReleaseTransferBuffer(context->Device, imageDataTransferBuffer);
 
-	tonemapOperators[0] = BuildPostProcessComputePipeline(context->Device, "ToneMapReinhard.comp.spv");
-	tonemapOperators[1] = BuildPostProcessComputePipeline(context->Device, "ToneMapExtendedReinhardLuminance.comp.spv");
-	tonemapOperators[2] = BuildPostProcessComputePipeline(context->Device, "ToneMapHable.comp.spv");
-	tonemapOperators[3] = BuildPostProcessComputePipeline(context->Device, "ToneMapACES.comp.spv");
+	tonemapOperators[0] = BuildPostProcessComputePipeline(context->Device, "ToneMapReinhard.comp");
+	tonemapOperators[1] = BuildPostProcessComputePipeline(context->Device, "ToneMapExtendedReinhardLuminance.comp");
+	tonemapOperators[2] = BuildPostProcessComputePipeline(context->Device, "ToneMapHable.comp");
+	tonemapOperators[3] = BuildPostProcessComputePipeline(context->Device, "ToneMapACES.comp");
 
 	currentTonemapOperator = tonemapOperators[0];
 
-	LinearToSRGBPipeline = BuildPostProcessComputePipeline(context->Device, "LinearToSRGB.comp.spv");
-	LinearToST2084Pipeline = BuildPostProcessComputePipeline(context->Device, "LinearToST2084.comp.spv");
+	LinearToSRGBPipeline = BuildPostProcessComputePipeline(context->Device, "LinearToSRGB.comp");
+	LinearToST2084Pipeline = BuildPostProcessComputePipeline(context->Device, "LinearToST2084.comp");
 
 	SDL_Log("Press Left/Right to cycle swapchain composition");
 	SDL_Log("Press Up/Down to cycle tonemap operators");

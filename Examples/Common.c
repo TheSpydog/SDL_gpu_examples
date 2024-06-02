@@ -68,7 +68,7 @@ SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 
 
 	char fullPath[256];
-	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s", BasePath, shaderFilename);
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
 
 	size_t codeSize;
 	void* code = SDL_LoadFile(fullPath, &codeSize);

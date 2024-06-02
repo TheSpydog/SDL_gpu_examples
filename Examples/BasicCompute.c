@@ -13,21 +13,21 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuShader* computeShader = LoadShader(context->Device, "FillTexture.comp.spv");
+    SDL_GpuShader* computeShader = LoadShader(context->Device, "FillTexture.comp");
     if (computeShader == NULL)
     {
         SDL_Log("Failed to create compute shader!");
         return -1;
     }
 
-    SDL_GpuShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert.spv");
+    SDL_GpuShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert");
     if (vertexShader == NULL)
     {
         SDL_Log("Failed to create vertex shader!");
         return -1;
     }
 
-    SDL_GpuShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag.spv");
+    SDL_GpuShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag");
     if (fragmentShader == NULL)
     {
         SDL_Log("Failed to create fragment shader!");

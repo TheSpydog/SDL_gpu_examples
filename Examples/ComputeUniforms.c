@@ -18,7 +18,7 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuShader* computeShader = LoadShader(context->Device, "GradientTexture.comp.spv");
+    SDL_GpuShader* computeShader = LoadShader(context->Device, "GradientTexture.comp");
     if (computeShader == NULL)
     {
         SDL_Log("Failed to create compute shader!");

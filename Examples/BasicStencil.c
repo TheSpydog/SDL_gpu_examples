@@ -13,14 +13,14 @@ static int Init(Context* context)
 		return result;
 	}
 
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColor.vert.spv");
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColor.vert");
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag.spv");
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag");
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
