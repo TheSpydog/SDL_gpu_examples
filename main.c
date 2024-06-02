@@ -10,6 +10,7 @@ static Example* Examples[] =
 	&BasicStencil_Example,
 	&InstancedIndexed_Example,
 	&TexturedQuad_Example,
+	&TexturedAnimatedQuad_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,
 	&ToneMapping_Example
@@ -21,6 +22,7 @@ int main(int argc, char **argv)
 	int exampleIndex = -1;
 	int gotoExampleIndex = 0;
 	int quit = 0;
+	float lastTime = 0;
 
 	for (int i = 1; i < argc; i += 1)
 	{
@@ -134,6 +136,10 @@ int main(int argc, char **argv)
 
 			gotoExampleIndex = -1;
 		}
+
+		float newTime = SDL_GetTicks() / 1000.0f;
+		context.DeltaTime = newTime - lastTime;
+		lastTime = newTime;
 
 		if (Examples[exampleIndex]->Update(&context) < 0)
 		{

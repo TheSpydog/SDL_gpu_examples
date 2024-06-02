@@ -15,6 +15,7 @@ add_executable(SDL_gpu_examples
     Examples/BasicStencil.c
     Examples/InstancedIndexed.c
     Examples/TexturedQuad.c
+    Examples/TexturedAnimatedQuad.c
     Examples/BasicCompute.c
     Examples/ComputeUniforms.c
     Examples/ToneMapping.c

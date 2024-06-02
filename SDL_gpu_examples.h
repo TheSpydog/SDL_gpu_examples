@@ -13,6 +13,7 @@ typedef struct Context
 	SDL_bool RightPressed;
 	SDL_bool DownPressed;
 	SDL_bool UpPressed;
+	float DeltaTime;
 } Context;
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags);
@@ -34,6 +35,19 @@ typedef struct PositionTextureVertex
     float u, v;
 } PositionTextureVertex;
 
+// Matrix Math
+typedef struct Matrix4x4
+{
+	float m11, m12, m13, m14;
+	float m21, m22, m23, m24;
+	float m31, m32, m33, m34;
+	float m41, m42, m43, m44;
+} Matrix4x4;
+
+Matrix4x4 Matrix4x4_Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
+Matrix4x4 Matrix4x4_CreateRotationZ(float radians);
+Matrix4x4 Matrix4x4_CreateTranslation(float x, float y, float z);
+
 // Examples
 typedef struct Example
 {
@@ -52,6 +66,7 @@ extern Example CullMode_Example;
 extern Example BasicStencil_Example;
 extern Example InstancedIndexed_Example;
 extern Example TexturedQuad_Example;
+extern Example TexturedAnimatedQuad_Example;
 extern Example BasicCompute_Example;
 extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
