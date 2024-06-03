@@ -87,10 +87,10 @@ static int Init(Context* context)
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
-        .vertexResourceLayoutInfo.uniformBufferCount = 1,
+        .vertexResourceInfo.uniformBufferCount = 1,
 		.fragmentShader = fragmentShader,
-		.fragmentResourceLayoutInfo.samplerCount = 1,
-        .fragmentResourceLayoutInfo.uniformBufferCount = 1,
+		.fragmentResourceInfo.samplerCount = 1,
+        .fragmentResourceInfo.uniformBufferCount = 1,
 	};
 
 	Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
@@ -104,13 +104,13 @@ static int Init(Context* context)
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
 	// Create the GPU resources
-	VertexBuffer = SDL_GpuCreateGpuBuffer(
+	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionTextureVertex) * 4
 	);
 
-	IndexBuffer = SDL_GpuCreateGpuBuffer(
+	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
 		sizeof(Uint16) * 6
@@ -126,7 +126,7 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
 
-    Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+    Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
 		.magFilter = SDL_GPU_FILTER_NEAREST,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
@@ -251,10 +251,10 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .gpuBuffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
-		
+
         // Top-left
         Matrix4x4 matrixUniform = Matrix4x4_Multiply(
             Matrix4x4_CreateRotationZ(t),
@@ -262,7 +262,7 @@ static int Draw(Context* context)
         );
         SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
         SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawInstancedPrimitives(renderPass, 0, 0, 2, 1);
+        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
         // Top-right
         matrixUniform = Matrix4x4_Multiply(
@@ -271,7 +271,7 @@ static int Draw(Context* context)
         );
         SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
         SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawInstancedPrimitives(renderPass, 0, 0, 2, 1);
+        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
         // Bottom-left
         matrixUniform = Matrix4x4_Multiply(
@@ -280,7 +280,7 @@ static int Draw(Context* context)
         );
         SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
         SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawInstancedPrimitives(renderPass, 0, 0, 2, 1);
+        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
         // Bottom-right
         matrixUniform = Matrix4x4_Multiply(
@@ -289,7 +289,7 @@ static int Draw(Context* context)
         );
         SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
         SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 1.0f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawInstancedPrimitives(renderPass, 0, 0, 2, 1);
+        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -302,8 +302,8 @@ static int Draw(Context* context)
 static void Quit(Context* context)
 {
 	SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
-	SDL_GpuReleaseGpuBuffer(context->Device, IndexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 	SDL_GpuReleaseTexture(context->Device, Texture);
     SDL_GpuReleaseSampler(context->Device, Sampler);
 

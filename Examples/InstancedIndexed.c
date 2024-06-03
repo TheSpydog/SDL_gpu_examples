@@ -87,13 +87,13 @@ static int Init(Context* context)
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
 	// Create the vertex and index buffers
-	VertexBuffer = SDL_GpuCreateGpuBuffer(
+	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionColorVertex) * 9
 	);
 
-    IndexBuffer = SDL_GpuCreateGpuBuffer(
+    IndexBuffer = SDL_GpuCreateBuffer(
         context->Device,
         SDL_GPU_BUFFERUSAGE_INDEX_BIT,
         sizeof(Uint16) * 6
@@ -212,9 +212,9 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .gpuBuffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-        SDL_GpuDrawInstancedPrimitives(renderPass, vertexOffset, indexOffset, 1, 16);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+        SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 1, 16);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -227,8 +227,8 @@ static int Draw(Context* context)
 static void Quit(Context* context)
 {
 	SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
-    SDL_GpuReleaseGpuBuffer(context->Device, IndexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
+    SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 
     UseVertexOffset = SDL_FALSE;
     UseIndexOffset = SDL_FALSE;

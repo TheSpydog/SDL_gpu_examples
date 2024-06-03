@@ -36,7 +36,7 @@ static int Init(Context* context)
 
     SDL_GpuComputePipeline* fillTexturePipeline = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
         .computeShader = computeShader,
-        .pipelineResourceLayoutInfo = (SDL_GpuComputePipelineResourceLayoutInfo){
+        .pipelineResourceInfo = (SDL_GpuComputePipelineResourceInfo){
             .readOnlyStorageBufferCount = 0,
             .readOnlyStorageTextureCount = 0,
             .readWriteStorageBufferCount = 0,
@@ -87,7 +87,7 @@ static int Init(Context* context)
         .multisampleState.sampleMask = 0xFFFF,
         .vertexShader = vertexShader,
         .fragmentShader = fragmentShader,
-        .fragmentResourceLayoutInfo.samplerCount = 1
+        .fragmentResourceInfo.samplerCount = 1
     });
 
     SDL_GpuReleaseShader(context->Device, computeShader);
@@ -107,12 +107,12 @@ static int Init(Context* context)
         .usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
     });
 
-    Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+    Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
         .addressModeU = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
         .addressModeV = SDL_GPU_SAMPLERADDRESSMODE_REPEAT
     });
 
-    VertexBuffer = SDL_GpuCreateGpuBuffer(
+    VertexBuffer = SDL_GpuCreateBuffer(
         context->Device,
         SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
         sizeof(PositionTextureVertex) * 6
@@ -214,7 +214,7 @@ static int Draw(Context* context)
         );
 
         SDL_GpuBindGraphicsPipeline(renderPass, DrawPipeline);
-        SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
+        SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
         SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
         SDL_GpuDrawPrimitives(renderPass, 0, 2);
 
@@ -231,7 +231,7 @@ static void Quit(Context* context)
     SDL_GpuReleaseGraphicsPipeline(context->Device, DrawPipeline);
     SDL_GpuReleaseTexture(context->Device, Texture);
     SDL_GpuReleaseSampler(context->Device, Sampler);
-    SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
+    SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
 
     CommonQuit(context);
 }

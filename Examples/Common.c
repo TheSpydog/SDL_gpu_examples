@@ -47,7 +47,7 @@ void InitializeAssetLoader()
 SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 {
 	// Auto-detect the shader type from the file name for convenience
-	SDL_GpuShaderStageFlagBits stage;
+	SDL_GpuShaderStage stage;
 	if (SDL_strstr(shaderFilename, ".vert"))
 	{
 		stage = SDL_GPU_SHADERSTAGE_VERTEX;

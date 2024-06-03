@@ -105,12 +105,12 @@ static int Init(Context* context)
 
 	// Create the vertex buffers. They're the same except for the vertex order.
 	// FIXME: Needs error handling!
-	VertexBufferCW = SDL_GpuCreateGpuBuffer(
+	VertexBufferCW = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionColorVertex) * 3
 	);
-	VertexBufferCCW = SDL_GpuCreateGpuBuffer(
+	VertexBufferCCW = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionColorVertex) * 3
@@ -222,10 +222,10 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipelines[CurrentMode]);
 		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 0, 0, 320, 480 });
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBufferCW, .offset = 0 }, 1);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBufferCW, .offset = 0 }, 1);
 		SDL_GpuDrawPrimitives(renderPass, 0, 1);
 		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 320, 0, 320, 480 });
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBufferCCW, .offset = 0 }, 1);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBufferCCW, .offset = 0 }, 1);
 		SDL_GpuDrawPrimitives(renderPass, 0, 1);
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -242,8 +242,8 @@ static void Quit(Context* context)
 		SDL_GpuReleaseGraphicsPipeline(context->Device, Pipelines[i]);
 	}
 
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBufferCW);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBufferCCW);
+	SDL_GpuReleaseBuffer(context->Device, VertexBufferCW);
+	SDL_GpuReleaseBuffer(context->Device, VertexBufferCCW);
 
 	CurrentMode = 0;
 

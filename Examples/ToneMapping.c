@@ -74,8 +74,8 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 		device,
 		&(SDL_GpuComputePipelineCreateInfo){
 			.computeShader = computeShader,
-			.pipelineResourceLayoutInfo.readOnlyStorageTextureCount = 1,
-			.pipelineResourceLayoutInfo.readWriteStorageTextureCount = 1
+			.pipelineResourceInfo.readOnlyStorageTextureCount = 1,
+			.pipelineResourceInfo.readWriteStorageTextureCount = 1
 		}
 	);
 

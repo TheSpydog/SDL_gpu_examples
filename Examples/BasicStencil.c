@@ -114,7 +114,7 @@ static int Init(Context* context)
 	SDL_GpuReleaseShader(context->Device, vertexShader);
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
-	VertexBuffer = SDL_GpuCreateGpuBuffer(
+	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionColorVertex) * 6
@@ -226,7 +226,7 @@ static int Draw(Context* context)
 		);
 
 		SDL_GpuBindGraphicsPipeline(renderPass, MaskerPipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
 		SDL_GpuDrawPrimitives(renderPass, 0, 1);
 		SDL_GpuBindGraphicsPipeline(renderPass, MaskeePipeline);
 		SDL_GpuDrawPrimitives(renderPass, 3, 1);
@@ -245,7 +245,7 @@ static void Quit(Context* context)
 	SDL_GpuReleaseGraphicsPipeline(context->Device, MaskerPipeline);
 
 	SDL_GpuReleaseTexture(context->Device, DepthStencilTexture);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
 
 	CommonQuit(context);
 }

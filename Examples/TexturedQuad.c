@@ -93,7 +93,7 @@ static int Init(Context* context)
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
 		.fragmentShader = fragmentShader,
-		.fragmentResourceLayoutInfo.samplerCount = 1
+		.fragmentResourceInfo.samplerCount = 1
 	};
 
 	Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
@@ -107,7 +107,7 @@ static int Init(Context* context)
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
 	// PointClamp
-	Samplers[0] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[0] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
 		.magFilter = SDL_GPU_FILTER_NEAREST,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
@@ -116,7 +116,7 @@ static int Init(Context* context)
 		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 	});
 	// PointWrap
-	Samplers[1] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[1] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
 		.magFilter = SDL_GPU_FILTER_NEAREST,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
@@ -125,7 +125,7 @@ static int Init(Context* context)
 		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
 	});
 	// LinearClamp
-	Samplers[2] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[2] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_LINEAR,
 		.magFilter = SDL_GPU_FILTER_LINEAR,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR,
@@ -134,7 +134,7 @@ static int Init(Context* context)
 		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 	});
 	// LinearWrap
-	Samplers[3] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[3] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_LINEAR,
 		.magFilter = SDL_GPU_FILTER_LINEAR,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR,
@@ -143,7 +143,7 @@ static int Init(Context* context)
 		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
 	});
 	// AnisotropicClamp
-	Samplers[4] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[4] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_LINEAR,
 		.magFilter = SDL_GPU_FILTER_LINEAR,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR,
@@ -154,7 +154,7 @@ static int Init(Context* context)
 		.maxAnisotropy = 4
 	});
 	// AnisotropicWrap
-	Samplers[5] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerStateCreateInfo){
+	Samplers[5] = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_LINEAR,
 		.magFilter = SDL_GPU_FILTER_LINEAR,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR,
@@ -166,13 +166,13 @@ static int Init(Context* context)
 	});
 
 	// Create the GPU resources
-	VertexBuffer = SDL_GpuCreateGpuBuffer(
+	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionTextureVertex) * 4
 	);
 
-	IndexBuffer = SDL_GpuCreateGpuBuffer(
+	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
 		sizeof(Uint16) * 6
@@ -323,10 +323,10 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .gpuBuffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .gpuBuffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Samplers[CurrentSamplerIndex] }, 1);
-		SDL_GpuDrawInstancedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -339,8 +339,8 @@ static int Draw(Context* context)
 static void Quit(Context* context)
 {
 	SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
-	SDL_GpuReleaseGpuBuffer(context->Device, VertexBuffer);
-	SDL_GpuReleaseGpuBuffer(context->Device, IndexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 	SDL_GpuReleaseTexture(context->Device, Texture);
 
 	for (int i = 0; i < SDL_arraysize(Samplers); i += 1)

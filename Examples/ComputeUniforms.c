@@ -27,8 +27,8 @@ static int Init(Context* context)
 
     GradientPipeline = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
         .computeShader = computeShader,
-        .pipelineResourceLayoutInfo.readWriteStorageTextureCount = 1,
-        .pipelineResourceLayoutInfo.uniformBufferCount = 1
+        .pipelineResourceInfo.readWriteStorageTextureCount = 1,
+        .pipelineResourceInfo.uniformBufferCount = 1
     });
 
     SDL_GpuReleaseShader(context->Device, computeShader);
