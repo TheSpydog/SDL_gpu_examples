@@ -188,20 +188,18 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
 
-	// Upload GPU data
-	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
+	// Set up buffer data
+	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERUSAGE_BUFFER,
 		SDL_GPU_TRANSFER_MAP_WRITE,
-		(sizeof(PositionTextureVertex) * 4) +
-			(sizeof(Uint16) * 6) +
-			(img_x * img_y * 4)
+		(sizeof(PositionTextureVertex) * 4) + (sizeof(Uint16) * 6)
 	);
 
 	PositionTextureVertex* transferData;
 	SDL_GpuMapTransferBuffer(
 		context->Device,
-		transferBuffer,
+		bufferTransferBuffer,
 		SDL_FALSE,
 		(void**) &transferData
 	);
@@ -219,9 +217,26 @@ static int Init(Context* context)
 	indexData[4] = 2;
 	indexData[5] = 3;
 
-	SDL_memcpy((void*) &indexData[6], imageData, img_x * img_y * 4);
+	SDL_GpuUnmapTransferBuffer(context->Device, bufferTransferBuffer);
 
-	SDL_GpuUnmapTransferBuffer(context->Device, transferBuffer);
+	// Set up texture data
+	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
+		context->Device,
+		SDL_GPU_TRANSFERUSAGE_TEXTURE,
+		SDL_GPU_TRANSFER_MAP_WRITE,
+		img_x * img_y * 4
+	);
+	SDL_GpuSetTransferData(
+		context->Device,
+		imageData,
+		textureTransferBuffer,
+		&(SDL_GpuBufferCopy){
+			.srcOffset = 0,
+			.dstOffset = 0,
+			.size = img_x * img_y * 4
+		},
+		SDL_FALSE
+	);
 	SDL_free(imageData);
 
 	// Upload the transfer data to the GPU resources
@@ -230,7 +245,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
+		bufferTransferBuffer,
 		VertexBuffer,
 		&(SDL_GpuBufferCopy){
 			.srcOffset = 0,
@@ -242,7 +257,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
+		bufferTransferBuffer,
 		IndexBuffer,
 		&(SDL_GpuBufferCopy){
 			.srcOffset = sizeof(PositionTextureVertex) * 4,
@@ -254,7 +269,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToTexture(
 		copyPass,
-		transferBuffer,
+		textureTransferBuffer,
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = Texture,
 			.w = img_x,
@@ -262,16 +277,15 @@ static int Init(Context* context)
 			.d = 1
 		},
 		&(SDL_GpuBufferImageCopy){
-			.bufferOffset =
-				(sizeof(PositionTextureVertex) * 4) +
-				(sizeof(Uint16) * 6),
+			.bufferOffset = 0,
 		},
 		SDL_FALSE
 	);
 
 	SDL_GpuEndCopyPass(copyPass);
 	SDL_GpuSubmit(uploadCmdBuf);
-	SDL_GpuReleaseTransferBuffer(context->Device, transferBuffer);
+	SDL_GpuReleaseTransferBuffer(context->Device, bufferTransferBuffer);
+	SDL_GpuReleaseTransferBuffer(context->Device, textureTransferBuffer);
 
 	// Finally, print instructions!
 	SDL_Log("Press Left/Right to switch between sampler states");

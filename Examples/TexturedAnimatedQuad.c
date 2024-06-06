@@ -10,7 +10,7 @@ static float t = 0;
 
 typedef struct FragMultiplyUniform
 {
-    float r, g, b, a;
+	float r, g, b, a;
 } FragMultiplyUniform;
 
 static int Init(Context* context)
@@ -87,10 +87,10 @@ static int Init(Context* context)
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
-        .vertexResourceInfo.uniformBufferCount = 1,
+		.vertexResourceInfo.uniformBufferCount = 1,
 		.fragmentShader = fragmentShader,
 		.fragmentResourceInfo.samplerCount = 1,
-        .fragmentResourceInfo.uniformBufferCount = 1,
+		.fragmentResourceInfo.uniformBufferCount = 1,
 	};
 
 	Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
@@ -126,7 +126,7 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
 
-    Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
+	Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
 		.magFilter = SDL_GPU_FILTER_NEAREST,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
@@ -135,28 +135,26 @@ static int Init(Context* context)
 		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 	});
 
-	// Upload GPU data
-	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
+	// Set up buffer data
+	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERUSAGE_BUFFER,
 		SDL_GPU_TRANSFER_MAP_WRITE,
-		(sizeof(PositionTextureVertex) * 4) +
-			(sizeof(Uint16) * 6) +
-			(img_x * img_y * 4)
+		(sizeof(PositionTextureVertex) * 4) + (sizeof(Uint16) * 6)
 	);
 
 	PositionTextureVertex* transferData;
 	SDL_GpuMapTransferBuffer(
 		context->Device,
-		transferBuffer,
+		bufferTransferBuffer,
 		SDL_FALSE,
 		(void**) &transferData
 	);
 
-	transferData[0] = (PositionTextureVertex) { -0.5f, -0.5f, 0, 0, 0 };
-	transferData[1] = (PositionTextureVertex) {  0.5f, -0.5f, 0, 1, 0 };
-	transferData[2] = (PositionTextureVertex) {  0.5f,  0.5f, 0, 1, 1 };
-	transferData[3] = (PositionTextureVertex) { -0.5f,  0.5f, 0, 0, 1 };
+	transferData[0] = (PositionTextureVertex){ -0.5f, -0.5f, 0, 0, 0 };
+	transferData[1] = (PositionTextureVertex){  0.5f, -0.5f, 0, 1, 0 };
+	transferData[2] = (PositionTextureVertex){  0.5f,  0.5f, 0, 1, 1 };
+	transferData[3] = (PositionTextureVertex){ -0.5f,  0.5f, 0, 0, 1 };
 
 	Uint16* indexData = (Uint16*) &transferData[4];
 	indexData[0] = 0;
@@ -166,9 +164,26 @@ static int Init(Context* context)
 	indexData[4] = 2;
 	indexData[5] = 3;
 
-	SDL_memcpy((void*) &indexData[6], imageData, img_x * img_y * 4);
+	SDL_GpuUnmapTransferBuffer(context->Device, bufferTransferBuffer);
 
-	SDL_GpuUnmapTransferBuffer(context->Device, transferBuffer);
+	// Set up texture data
+	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
+		context->Device,
+		SDL_GPU_TRANSFERUSAGE_TEXTURE,
+		SDL_GPU_TRANSFER_MAP_WRITE,
+		img_x * img_y * 4
+	);
+	SDL_GpuSetTransferData(
+		context->Device,
+		imageData,
+		textureTransferBuffer,
+		&(SDL_GpuBufferCopy){
+			.srcOffset = 0,
+			.dstOffset = 0,
+			.size = img_x * img_y * 4
+		},
+		SDL_FALSE
+	);
 	SDL_free(imageData);
 
 	// Upload the transfer data to the GPU resources
@@ -177,7 +192,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
+		bufferTransferBuffer,
 		VertexBuffer,
 		&(SDL_GpuBufferCopy){
 			.srcOffset = 0,
@@ -189,7 +204,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
+		bufferTransferBuffer,
 		IndexBuffer,
 		&(SDL_GpuBufferCopy){
 			.srcOffset = sizeof(PositionTextureVertex) * 4,
@@ -201,7 +216,7 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToTexture(
 		copyPass,
-		transferBuffer,
+		textureTransferBuffer,
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = Texture,
 			.w = img_x,
@@ -209,16 +224,15 @@ static int Init(Context* context)
 			.d = 1
 		},
 		&(SDL_GpuBufferImageCopy){
-			.bufferOffset =
-				(sizeof(PositionTextureVertex) * 4) +
-				(sizeof(Uint16) * 6),
+			.bufferOffset = 0,
 		},
 		SDL_FALSE
 	);
 
 	SDL_GpuEndCopyPass(copyPass);
 	SDL_GpuSubmit(uploadCmdBuf);
-	SDL_GpuReleaseTransferBuffer(context->Device, transferBuffer);
+	SDL_GpuReleaseTransferBuffer(context->Device, bufferTransferBuffer);
+	SDL_GpuReleaseTransferBuffer(context->Device, textureTransferBuffer);
 
 	return 0;
 }
@@ -255,41 +269,41 @@ static int Draw(Context* context)
 		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
 
-        // Top-left
-        Matrix4x4 matrixUniform = Matrix4x4_Multiply(
-            Matrix4x4_CreateRotationZ(t),
-            Matrix4x4_CreateTranslation(-0.5f, -0.5f, 0)
-        );
-        SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
-        SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		// Top-left
+		Matrix4x4 matrixUniform = Matrix4x4_Multiply(
+			Matrix4x4_CreateRotationZ(t),
+			Matrix4x4_CreateTranslation(-0.5f, -0.5f, 0)
+		);
+		SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
+		SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
-        // Top-right
-        matrixUniform = Matrix4x4_Multiply(
-            Matrix4x4_CreateRotationZ((2.0f * SDL_PI_F) - t),
-            Matrix4x4_CreateTranslation(0.5f, -0.5f, 0)
-        );
-        SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
-        SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		// Top-right
+		matrixUniform = Matrix4x4_Multiply(
+			Matrix4x4_CreateRotationZ((2.0f * SDL_PI_F) - t),
+			Matrix4x4_CreateTranslation(0.5f, -0.5f, 0)
+		);
+		SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
+		SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
-        // Bottom-left
-        matrixUniform = Matrix4x4_Multiply(
-            Matrix4x4_CreateRotationZ(t),
-            Matrix4x4_CreateTranslation(-0.5f, 0.5f, 0)
-        );
-        SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
-        SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		// Bottom-left
+		matrixUniform = Matrix4x4_Multiply(
+			Matrix4x4_CreateRotationZ(t),
+			Matrix4x4_CreateTranslation(-0.5f, 0.5f, 0)
+		);
+		SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
+		SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
-        // Bottom-right
-        matrixUniform = Matrix4x4_Multiply(
-            Matrix4x4_CreateRotationZ(t),
-            Matrix4x4_CreateTranslation(0.5f, 0.5f, 0)
-        );
-        SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
-        SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 1.0f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-        SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		// Bottom-right
+		matrixUniform = Matrix4x4_Multiply(
+			Matrix4x4_CreateRotationZ(t),
+			Matrix4x4_CreateTranslation(0.5f, 0.5f, 0)
+		);
+		SDL_GpuPushVertexUniformData(renderPass, 0, &matrixUniform, sizeof(matrixUniform));
+		SDL_GpuPushFragmentUniformData(renderPass, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 1.0f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -305,9 +319,9 @@ static void Quit(Context* context)
 	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
 	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 	SDL_GpuReleaseTexture(context->Device, Texture);
-    SDL_GpuReleaseSampler(context->Device, Sampler);
+	SDL_GpuReleaseSampler(context->Device, Sampler);
 
-    t = 0;
+	t = 0;
 
 	CommonQuit(context);
 }
