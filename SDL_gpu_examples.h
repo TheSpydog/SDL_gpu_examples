@@ -18,9 +18,23 @@ typedef struct Context
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags);
 void CommonQuit(Context* context);
+
 void InitializeAssetLoader();
-SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename);
 void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels, SDL_bool hdr);
+
+SDL_GpuShader* LoadShader(
+	SDL_GpuDevice* device,
+	const char* shaderFilename,
+	Uint32 samplerCount,
+	Uint32 uniformBufferCount,
+	Uint32 storageBufferCount,
+	Uint32 storageTextureCount
+);
+SDL_GpuComputePipeline* CreateComputePipelineFromShader(
+	SDL_GpuDevice* device,
+	const char* shaderFilename,
+	SDL_GpuComputePipelineCreateInfo* createInfo
+);
 
 // Vertex Formats
 typedef struct PositionColorVertex

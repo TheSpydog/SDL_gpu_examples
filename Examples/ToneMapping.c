@@ -63,25 +63,14 @@ static void ChangeTonemapOperator(Context* context, Uint32 selectionIndex)
 
 static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *device, const char* spvFile)
 {
-	SDL_GpuShader* computeShader = LoadShader(device, spvFile);
-	if (computeShader == NULL)
-	{
-		SDL_Log("Failed to create compute shader!");
-		return NULL;
-	}
-
-	SDL_GpuComputePipeline* computePipeline = SDL_GpuCreateComputePipeline(
+	return CreateComputePipelineFromShader(
 		device,
+		spvFile,
 		&(SDL_GpuComputePipelineCreateInfo){
-			.computeShader = computeShader,
-			.pipelineResourceInfo.readOnlyStorageTextureCount = 1,
-			.pipelineResourceInfo.readWriteStorageTextureCount = 1
+			.readOnlyStorageTextureCount = 1,
+			.readWriteStorageTextureCount = 1
 		}
 	);
-
-	SDL_GpuReleaseShader(device, computeShader);
-
-	return computePipeline;
 }
 
 static int Init(Context* context)
@@ -118,14 +107,14 @@ static int Init(Context* context)
 
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert");
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert", 0, 0, 0, 0);
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag");
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
