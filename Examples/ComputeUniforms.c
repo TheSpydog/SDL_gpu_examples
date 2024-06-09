@@ -23,7 +23,10 @@ static int Init(Context* context)
         "GradientTexture.comp",
         &(SDL_GpuComputePipelineCreateInfo) {
             .readWriteStorageTextureCount = 1,
-            .uniformBufferCount = 1
+            .uniformBufferCount = 1,
+            .threadCountX = 8,
+            .threadCountY = 8,
+            .threadCountZ = 1,
         }
     );
 

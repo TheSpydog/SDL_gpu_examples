@@ -68,7 +68,10 @@ static SDL_GpuComputePipeline* BuildPostProcessComputePipeline(SDL_GpuDevice *de
 		spvFile,
 		&(SDL_GpuComputePipelineCreateInfo){
 			.readOnlyStorageTextureCount = 1,
-			.readWriteStorageTextureCount = 1
+			.readWriteStorageTextureCount = 1,
+			.threadCountX = 8,
+			.threadCountY = 8,
+			.threadCountZ = 1,
 		}
 	);
 }

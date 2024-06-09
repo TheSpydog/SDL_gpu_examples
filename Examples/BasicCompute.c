@@ -31,7 +31,10 @@ static int Init(Context* context)
 	context->Device,
 	"FillTexture.comp",
 	&(SDL_GpuComputePipelineCreateInfo) {
-		.readWriteStorageTextureCount = 1
+		.readWriteStorageTextureCount = 1,
+		.threadCountX = 8,
+		.threadCountY = 8,
+		.threadCountZ = 1,
 	}
     );
 
