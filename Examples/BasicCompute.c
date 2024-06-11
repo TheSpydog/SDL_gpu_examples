@@ -13,37 +13,30 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuShader* computeShader = LoadShader(context->Device, "FillTexture.comp");
-    if (computeShader == NULL)
-    {
-        SDL_Log("Failed to create compute shader!");
-        return -1;
-    }
-
-    SDL_GpuShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert");
+    SDL_GpuShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert", 0, 0, 0, 0);
     if (vertexShader == NULL)
     {
         SDL_Log("Failed to create vertex shader!");
         return -1;
     }
 
-    SDL_GpuShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag");
+    SDL_GpuShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag", 1, 0, 0, 0);
     if (fragmentShader == NULL)
     {
         SDL_Log("Failed to create fragment shader!");
         return -1;
     }
 
-    SDL_GpuComputePipeline* fillTexturePipeline = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
-        .computeShader = computeShader,
-        .pipelineResourceInfo = (SDL_GpuComputePipelineResourceInfo){
-            .readOnlyStorageBufferCount = 0,
-            .readOnlyStorageTextureCount = 0,
-            .readWriteStorageBufferCount = 0,
-            .readWriteStorageTextureCount = 1,
-            .uniformBufferCount = 0
-        }
-    });
+    SDL_GpuComputePipeline* fillTexturePipeline = CreateComputePipelineFromShader(
+	context->Device,
+	"FillTexture.comp",
+	&(SDL_GpuComputePipelineCreateInfo) {
+		.readWriteStorageTextureCount = 1,
+		.threadCountX = 8,
+		.threadCountY = 8,
+		.threadCountZ = 1,
+	}
+    );
 
     DrawPipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &(SDL_GpuGraphicsPipelineCreateInfo){
 		.attachmentInfo = {
@@ -86,11 +79,9 @@ static int Init(Context* context)
 		},
         .multisampleState.sampleMask = 0xFFFF,
         .vertexShader = vertexShader,
-        .fragmentShader = fragmentShader,
-        .fragmentResourceInfo.samplerCount = 1
+        .fragmentShader = fragmentShader
     });
 
-    SDL_GpuReleaseShader(context->Device, computeShader);
     SDL_GpuReleaseShader(context->Device, vertexShader);
     SDL_GpuReleaseShader(context->Device, fragmentShader);
 

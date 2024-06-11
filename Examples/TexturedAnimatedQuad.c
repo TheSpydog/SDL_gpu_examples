@@ -22,14 +22,14 @@ static int Init(Context* context)
 	}
 
 	// Create the shaders
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "TexturedQuadWithMatrix.vert");
+	SDL_GpuShader* vertexShader = LoadShader(context->Device, "TexturedQuadWithMatrix.vert", 0, 1, 0, 0);
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "TexturedQuadWithMultiplyColor.frag");
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "TexturedQuadWithMultiplyColor.frag", 1, 1, 0, 0);
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -87,10 +87,7 @@ static int Init(Context* context)
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
-		.vertexResourceInfo.uniformBufferCount = 1,
 		.fragmentShader = fragmentShader,
-		.fragmentResourceInfo.samplerCount = 1,
-		.fragmentResourceInfo.uniformBufferCount = 1,
 	};
 
 	Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);

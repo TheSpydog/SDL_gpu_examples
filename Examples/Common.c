@@ -44,9 +44,15 @@ void InitializeAssetLoader()
 	BasePath = SDL_GetBasePath();
 }
 
-SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
-{
-	// Auto-detect the shader type from the file name for convenience
+SDL_GpuShader* LoadShader(
+	SDL_GpuDevice* device,
+	const char* shaderFilename,
+	Uint32 samplerCount,
+	Uint32 uniformBufferCount,
+	Uint32 storageBufferCount,
+	Uint32 storageTextureCount
+) {
+	// Auto-detect the shader stage from the file name for convenience
 	SDL_GpuShaderStage stage;
 	if (SDL_strstr(shaderFilename, ".vert"))
 	{
@@ -56,16 +62,11 @@ SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 	{
 		stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
 	}
-	else if (SDL_strstr(shaderFilename, ".comp"))
-	{
-		stage = SDL_GPU_SHADERSTAGE_COMPUTE;
-	}
 	else
 	{
 		SDL_Log("Invalid shader stage!");
 		return NULL;
 	}
-
 
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
@@ -79,11 +80,15 @@ SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 	}
 
 	SDL_GpuShader* shader = SDL_GpuCreateShader(device, &(SDL_GpuShaderCreateInfo){
-		.stage = stage,
 		.code = code,
 		.codeSize = codeSize,
 		.entryPointName = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV
+		.format = SDL_GPU_SHADERFORMAT_SPIRV,
+		.stage = stage,
+		.samplerCount = samplerCount,
+		.uniformBufferCount = uniformBufferCount,
+		.storageBufferCount = storageBufferCount,
+		.storageTextureCount = storageTextureCount
 	});
 	if (shader == NULL)
 	{
@@ -94,6 +99,41 @@ SDL_GpuShader* LoadShader(SDL_GpuDevice* device, const char* shaderFilename)
 
 	SDL_free(code);
 	return shader;
+}
+
+SDL_GpuComputePipeline* CreateComputePipelineFromShader(
+	SDL_GpuDevice* device,
+	const char* shaderFilename,
+	SDL_GpuComputePipelineCreateInfo *createInfo
+) {
+	char fullPath[256];
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
+
+	size_t codeSize;
+	void* code = SDL_LoadFile(fullPath, &codeSize);
+	if (code == NULL)
+	{
+		SDL_Log("Failed to load compute shader from disk! %s", fullPath);
+		return NULL;
+	}
+
+	// Make a copy of the create data, then overwrite the parts we need
+	SDL_GpuComputePipelineCreateInfo newCreateInfo = *createInfo;
+	newCreateInfo.code = code;
+	newCreateInfo.codeSize = codeSize;
+	newCreateInfo.entryPointName = "main";
+	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
+
+	SDL_GpuComputePipeline* pipeline = SDL_GpuCreateComputePipeline(device, &newCreateInfo);
+	if (pipeline == NULL)
+	{
+		SDL_Log("Failed to create compute pipeline!");
+		SDL_free(code);
+		return NULL;
+	}
+
+	SDL_free(code);
+	return pipeline;
 }
 
 void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels, SDL_bool hdr)

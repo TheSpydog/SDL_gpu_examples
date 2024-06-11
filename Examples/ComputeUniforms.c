@@ -18,20 +18,17 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuShader* computeShader = LoadShader(context->Device, "GradientTexture.comp");
-    if (computeShader == NULL)
-    {
-        SDL_Log("Failed to create compute shader!");
-        return -1;
-    }
-
-    GradientPipeline = SDL_GpuCreateComputePipeline(context->Device, &(SDL_GpuComputePipelineCreateInfo){
-        .computeShader = computeShader,
-        .pipelineResourceInfo.readWriteStorageTextureCount = 1,
-        .pipelineResourceInfo.uniformBufferCount = 1
-    });
-
-    SDL_GpuReleaseShader(context->Device, computeShader);
+    GradientPipeline = CreateComputePipelineFromShader(
+        context->Device,
+        "GradientTexture.comp",
+        &(SDL_GpuComputePipelineCreateInfo) {
+            .readWriteStorageTextureCount = 1,
+            .uniformBufferCount = 1,
+            .threadCountX = 8,
+            .threadCountY = 8,
+            .threadCountZ = 1,
+        }
+    );
 
     int w, h;
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
