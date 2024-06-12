@@ -170,6 +170,11 @@ static int Init(Context* context)
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
 		sizeof(PositionTextureVertex) * 4
 	);
+	SDL_GpuSetBufferName(
+		context->Device,
+		VertexBuffer,
+		"Ravioli Vertex Buffer 🥣"
+	);
 
 	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
@@ -186,6 +191,11 @@ static int Init(Context* context)
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
+	SDL_GpuSetTextureName(
+		context->Device,
+		Texture,
+		"Ravioli Texture 🖼️"
+	);
 
 	// Set up buffer data
 	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
