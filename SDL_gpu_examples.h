@@ -84,5 +84,6 @@ extern Example TexturedAnimatedQuad_Example;
 extern Example BasicCompute_Example;
 extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
+extern Example CustomSampling_Example;
 
 #endif
