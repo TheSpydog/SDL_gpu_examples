@@ -13,7 +13,8 @@ static Example* Examples[] =
 	&TexturedAnimatedQuad_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,
-	&ToneMapping_Example
+	&ToneMapping_Example,
+	&CustomSampling_Example,
 };
 
 int main(int argc, char **argv)
