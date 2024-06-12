@@ -2,6 +2,7 @@
 
 static SDL_GpuGraphicsPipeline* Pipeline;
 static SDL_GpuBuffer* VertexBuffer;
+static SDL_GpuBuffer* IndexBuffer;
 static SDL_GpuBuffer* DrawBuffer;
 
 static int Init(Context* context)
@@ -84,16 +85,25 @@ static int Init(Context* context)
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
 
 	// Create the buffers
+	const Uint32 vertexBufferSize = sizeof(PositionColorVertex) * 10;
 	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionColorVertex) * 6
+		vertexBufferSize
 	);
 
+	const Uint32 indexBufferSize = sizeof(Uint16) * 6;
+	IndexBuffer = SDL_GpuCreateBuffer(
+		context->Device,
+		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+		indexBufferSize
+	);
+
+	const Uint32 drawBufferSize = (sizeof(SDL_GpuIndexedIndirectDrawCommand) * 1) + (sizeof(SDL_GpuIndirectDrawCommand) * 2);
 	DrawBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_INDIRECT_BIT,
-		sizeof(SDL_GpuIndirectDrawCommand) * 2
+		drawBufferSize
 	);
 
 	// Set the buffer data
@@ -101,7 +111,7 @@ static int Init(Context* context)
 		context->Device,
 		SDL_GPU_TRANSFERUSAGE_BUFFER,
 		SDL_GPU_TRANSFER_MAP_WRITE,
-		(sizeof(PositionColorVertex) * 6) + (sizeof(SDL_GpuIndirectDrawCommand) * 2)
+		vertexBufferSize + indexBufferSize + drawBufferSize
 	);
 
 	PositionColorVertex* transferData;
@@ -112,16 +122,32 @@ static int Init(Context* context)
 		(void**) &transferData
 	);
 
-	transferData[0] = (PositionColorVertex) { -0.5f,  1, 0,	 255,   0,   0, 255 };
-	transferData[1] = (PositionColorVertex) {	-1, -1, 0,	   0, 255,   0, 255 };
-	transferData[2] = (PositionColorVertex) {	 0, -1, 0,	   0,   0, 255, 255 };
-	transferData[3] = (PositionColorVertex) {  0.5f,  1, 0,	 255,   0,   0, 255 };
-	transferData[4] = (PositionColorVertex) {	 1, -1, 0,	   0, 255,   0, 255 };
-	transferData[5] = (PositionColorVertex) {	 0, -1, 0,	   0,   0, 255, 255 };
+	transferData[0] = (PositionColorVertex) {    -1, -1, 0,	 255,   0,   0, 255 };
+	transferData[1] = (PositionColorVertex) {     1, -1, 0,	   0, 255,   0, 255 };
+	transferData[2] = (PositionColorVertex) {     1,  1, 0,	   0,   0, 255, 255 };
+	transferData[3] = (PositionColorVertex) {    -1,  1, 0,	 255, 255, 255, 255 };
 
-	SDL_GpuIndirectDrawCommand* drawCommands = (SDL_GpuIndirectDrawCommand*) &transferData[6];
-	drawCommands[0] = (SDL_GpuIndirectDrawCommand) { 3, 1, 0, 0 };
-	drawCommands[1] = (SDL_GpuIndirectDrawCommand) { 3, 1, 3, 0 };
+	transferData[4] = (PositionColorVertex) {     1, -1, 0,	   0, 255,   0, 255 };
+	transferData[5] = (PositionColorVertex) {     0, -1, 0,	   0,   0, 255, 255 };
+	transferData[6] = (PositionColorVertex) {  0.5f,  1, 0,	 255,   0,   0, 255 };
+	transferData[7] = (PositionColorVertex) {    -1, -1, 0,	   0, 255,   0, 255 };
+	transferData[8] = (PositionColorVertex) {     0, -1, 0,	   0,   0, 255, 255 };
+	transferData[9] = (PositionColorVertex) { -0.5f,  1, 0,	 255,   0,   0, 255 };
+
+	Uint16* indexData = (Uint16*) &transferData[10];
+	indexData[0] = 0;
+	indexData[1] = 1;
+	indexData[2] = 2;
+	indexData[3] = 0;
+	indexData[4] = 2;
+	indexData[5] = 3;
+
+	SDL_GpuIndexedIndirectDrawCommand* indexedDrawCommand = (SDL_GpuIndexedIndirectDrawCommand*) &indexData[6];
+	indexedDrawCommand[0] = (SDL_GpuIndexedIndirectDrawCommand) { 6, 1, 0, 0, 0 };
+
+	SDL_GpuIndirectDrawCommand* drawCommands = (SDL_GpuIndirectDrawCommand*) &indexedDrawCommand[1];
+	drawCommands[0] = (SDL_GpuIndirectDrawCommand) { 3, 1, 4, 0 };
+	drawCommands[1] = (SDL_GpuIndirectDrawCommand) { 3, 1, 7, 0 };
 
 	SDL_GpuUnmapTransferBuffer(context->Device, transferBuffer);
 
@@ -136,7 +162,19 @@ static int Init(Context* context)
 		&(SDL_GpuBufferCopy) {
 			.srcOffset = 0,
 			.dstOffset = 0,
-			.size = sizeof(PositionColorVertex) * 6
+			.size = vertexBufferSize
+		},
+		SDL_FALSE
+	);
+
+	SDL_GpuUploadToBuffer(
+		copyPass,
+		transferBuffer,
+		IndexBuffer,
+		&(SDL_GpuBufferCopy) {
+			.srcOffset = vertexBufferSize,
+			.dstOffset = 0,
+			.size = indexBufferSize
 		},
 		SDL_FALSE
 	);
@@ -146,9 +184,9 @@ static int Init(Context* context)
 		transferBuffer,
 		DrawBuffer,
 		&(SDL_GpuBufferCopy) {
-			.srcOffset = sizeof(PositionColorVertex) * 6,
+			.srcOffset = vertexBufferSize + indexBufferSize,
 			.dstOffset = 0,
-			.size = sizeof(SDL_GpuIndirectDrawCommand) * 2
+			.size = drawBufferSize
 		},
 		SDL_FALSE
 	);
@@ -188,7 +226,9 @@ static int Draw(Context* context)
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuDrawPrimitivesIndirect(renderPass, DrawBuffer, 0, 2, sizeof(SDL_GpuIndirectDrawCommand));
+		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding) {.buffer = IndexBuffer }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_GpuDrawIndexedPrimitivesIndirect(renderPass, DrawBuffer, 0, 1, sizeof(SDL_GpuIndexedIndirectDrawCommand));
+		SDL_GpuDrawPrimitivesIndirect(renderPass, DrawBuffer, sizeof(SDL_GpuIndexedIndirectDrawCommand), 2, sizeof(SDL_GpuIndirectDrawCommand));
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -202,6 +242,7 @@ static void Quit(Context* context)
 {
 	SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
 	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 	SDL_GpuReleaseBuffer(context->Device, DrawBuffer);
 
 	CommonQuit(context);
