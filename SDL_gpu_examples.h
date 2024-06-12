@@ -85,5 +85,6 @@ extern Example BasicCompute_Example;
 extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
 extern Example CustomSampling_Example;
+extern Example DrawIndirect_Example;
 
 #endif

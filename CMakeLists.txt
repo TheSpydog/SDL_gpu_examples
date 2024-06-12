@@ -20,6 +20,7 @@ add_executable(SDL_gpu_examples
     Examples/ComputeUniforms.c
     Examples/ToneMapping.c
     Examples/CustomSampling.c
+    Examples/DrawIndirect.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE .)
