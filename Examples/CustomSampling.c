@@ -5,6 +5,8 @@ static SDL_GpuBuffer* VertexBuffer;
 static SDL_GpuBuffer* IndexBuffer;
 static SDL_GpuTexture* Texture;
 
+static int SamplerMode;
+
 static int Init(Context* context)
 {
 	int result = CommonInit(context, 0);
@@ -21,7 +23,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "CustomSampling.frag", 0, 0, 0, 1);
+	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "CustomSampling.frag", 0, 1, 0, 1);
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -30,7 +32,7 @@ static int Init(Context* context)
 
 	// Load the image
 	int img_x, img_y, n;
-	char *imageData = LoadImage("cliffs.jpg", &img_x, &img_y, &n, 4, SDL_FALSE);
+	char *imageData = LoadImage("ravioli.png", &img_x, &img_y, &n, 4, SDL_FALSE);
 	if (imageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
@@ -214,11 +216,20 @@ static int Init(Context* context)
 	SDL_GpuReleaseTransferBuffer(context->Device, bufferTransferBuffer);
 	SDL_GpuReleaseTransferBuffer(context->Device, textureTransferBuffer);
 
+	SDL_Log("Press Left/Right to switch sampler modes");
+	SDL_Log("Setting sampler mode to: %d", SamplerMode);
+
 	return 0;
 }
 
 static int Update(Context* context)
 {
+	if (context->LeftPressed || context->RightPressed)
+	{
+		SamplerMode = !SamplerMode;
+		SDL_Log("Setting sampler mode to: %d", SamplerMode);
+	}
+
 	return 0;
 }
 
@@ -247,6 +258,7 @@ static int Draw(Context* context)
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
 		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_GpuBindFragmentStorageTextures(renderPass, 0, &(SDL_GpuTextureSlice){ Texture }, 1);
+		SDL_GpuPushFragmentUniformData(renderPass, 0, &SamplerMode, sizeof(SamplerMode));
 		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
@@ -263,6 +275,8 @@ static void Quit(Context* context)
 	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
 	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
 	SDL_GpuReleaseTexture(context->Device, Texture);
+
+	SamplerMode = 0;
 
 	CommonQuit(context);
 }
