@@ -194,7 +194,7 @@ static int Init(Context* context)
 	SpriteVertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
 		SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		SPRITE_COUNT * sizeof(PositionTextureColorVertex)
+		SPRITE_COUNT * 4 * sizeof(PositionTextureColorVertex)
 	);
 
 	SpriteIndexBuffer = SDL_GpuCreateBuffer(
