@@ -432,7 +432,16 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
+	SDL_GpuReleaseComputePipeline(context->Device, ComputePipeline);
+	SDL_GpuReleaseGraphicsPipeline(context->Device, RenderPipeline);
+	SDL_GpuReleaseSampler(context->Device, Sampler);
+	SDL_GpuReleaseTexture(context->Device, Texture);
+	SDL_GpuReleaseTransferBuffer(context->Device, SpriteComputeTransferBuffer);
+	SDL_GpuReleaseBuffer(context->Device, SpriteComputeBuffer);
+	SDL_GpuReleaseBuffer(context->Device, SpriteVertexBuffer);
+	SDL_GpuReleaseBuffer(context->Device, SpriteIndexBuffer);
 
+	CommonQuit(context);
 }
 
 Example ComputeSpriteBatch_Example = { "ComputeSpriteBatch", Init, Update, Draw, Quit };
