@@ -61,6 +61,7 @@ typedef struct Matrix4x4
 Matrix4x4 Matrix4x4_Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
 Matrix4x4 Matrix4x4_CreateRotationZ(float radians);
 Matrix4x4 Matrix4x4_CreateTranslation(float x, float y, float z);
+Matrix4x4 Matrix4x4_CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane);
 
 // Examples
 typedef struct Example
@@ -86,5 +87,6 @@ extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
 extern Example CustomSampling_Example;
 extern Example DrawIndirect_Example;
+extern Example ComputeSpriteBatch_Example;
 
 #endif

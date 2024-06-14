@@ -16,6 +16,7 @@ static Example* Examples[] =
 	&ToneMapping_Example,
 	&CustomSampling_Example,
 	&DrawIndirect_Example,
+	&ComputeSpriteBatch_Example,
 };
 
 int main(int argc, char **argv)

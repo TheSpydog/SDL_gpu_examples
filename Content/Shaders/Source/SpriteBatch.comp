@@ -1,0 +1,79 @@
+#version 450
+
+struct SpriteComputeData
+{
+	vec3 position;
+	float rotation;
+	vec2 scale;
+	vec4 color;
+};
+
+struct SpriteVertex
+{
+	vec4 position;
+	vec2 texcoord;
+	vec4 color;
+};
+
+layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+layout (std430, set = 0, binding = 0) readonly buffer inBuffer
+{
+	SpriteComputeData computeData[];
+};
+layout (std430, set = 1, binding = 0) writeonly buffer outBuffer
+{
+	SpriteVertex vertexData[];
+};
+
+void main()
+{
+	uint n = gl_GlobalInvocationID.x;
+
+	SpriteComputeData currentSpriteData = computeData[n];
+
+	mat4 Scale = mat4(
+		currentSpriteData.scale.x, 0, 0, 0,
+		0, currentSpriteData.scale.y, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	);
+
+	float c = cos(currentSpriteData.rotation);
+	float s = sin(currentSpriteData.rotation);
+
+	mat4 Rotation = mat4(
+		c, s, 0, 0,
+		-s, c, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	);
+
+	mat4 Translation = mat4(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		currentSpriteData.position.x, currentSpriteData.position.y, currentSpriteData.position.z, 1
+	);
+
+	mat4 Model = Translation * Rotation * Scale;
+
+	vec4 topLeft = vec4(0, 0, 0, 1);
+	vec4 topRight = vec4(1, 0, 0, 1);
+	vec4 bottomLeft = vec4(0, 1, 0, 1);
+	vec4 bottomRight = vec4(1, 1, 0, 1);
+
+	vertexData[n*4]  .position = Model * topLeft;
+	vertexData[n*4+1].position = Model * topRight;
+	vertexData[n*4+2].position = Model * bottomLeft;
+	vertexData[n*4+3].position = Model * bottomRight;
+
+	vertexData[n*4]  .texcoord = vec2(0, 0);
+	vertexData[n*4+1].texcoord = vec2(1, 0);
+	vertexData[n*4+2].texcoord = vec2(0, 1);
+	vertexData[n*4+3].texcoord = vec2(1, 1);
+
+	vertexData[n*4]  .color = currentSpriteData.color;
+	vertexData[n*4+1].color = currentSpriteData.color;
+	vertexData[n*4+2].color = currentSpriteData.color;
+	vertexData[n*4+3].color = currentSpriteData.color;
+}
