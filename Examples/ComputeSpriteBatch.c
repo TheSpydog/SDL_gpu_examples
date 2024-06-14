@@ -35,6 +35,13 @@ static int Init(Context* context)
 		return result;
 	}
 
+	SDL_GpuSetSwapchainParameters(
+		context->Device,
+		context->Window,
+		SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
+		SDL_GPU_PRESENTMODE_IMMEDIATE
+	);
+
 	srand(0);
 
 	// Create the shaders
@@ -216,7 +223,7 @@ static int Init(Context* context)
 		context->Device,
 		indexBufferTransferBuffer,
 		SDL_FALSE,
-		&indexTransferPtr
+		(void**) &indexTransferPtr
 	);
 
 	for (Uint32 i = 0, j = 0; i < SPRITE_COUNT * 6; i += 6, j += 4)
@@ -304,7 +311,7 @@ static int Draw(Context* context)
 			context->Device,
 			SpriteComputeTransferBuffer,
 			SDL_TRUE,
-			&dataPtr
+			(void**) &dataPtr
 		);
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
@@ -353,9 +360,9 @@ static int Draw(Context* context)
 		SDL_GpuBindComputeStorageBuffers(
 			computePass,
 			0,
-			(SDL_GpuBuffer*[]){{
+			&(SDL_GpuBuffer*){
 				SpriteComputeBuffer
-			}},
+			},
 			1
 		);
 		SDL_GpuDispatchCompute(computePass, SPRITE_COUNT / 64, 1, 1);
