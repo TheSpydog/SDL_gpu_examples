@@ -4,6 +4,9 @@ static SDL_GpuTexture* OriginalTexture;
 static SDL_GpuTexture* TextureCopy;
 static SDL_GpuTexture* TextureSmall;
 
+static SDL_GpuBuffer* OriginalBuffer;
+static SDL_GpuBuffer* BufferCopy;
+
 Uint32 TextureWidth, TextureHeight;
 
 static int Init(Context* context)
@@ -66,16 +69,30 @@ static int Init(Context* context)
 		}
 	);
 
+	Uint32 bufferData[8] = { 2, 4, 8, 16, 32, 64, 128 };
+
+	OriginalBuffer = SDL_GpuCreateBuffer(
+		context->Device,
+		SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+		sizeof(bufferData)
+	);
+
+	BufferCopy = SDL_GpuCreateBuffer(
+		context->Device,
+		SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+		sizeof(bufferData)
+	);
+
 	SDL_GpuTransferBuffer* downloadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
-		img_x * img_y * 4
+		img_x * img_y * 4 + sizeof(bufferData)
 	);
 
 	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		img_x * img_y * 4
+		img_x * img_y * 4 + sizeof(bufferData)
 	);
 
 	SDL_GpuSetTransferData(
@@ -88,10 +105,22 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
+	SDL_GpuSetTransferData(
+		context->Device,
+		bufferData,
+		uploadTransferBuffer,
+		&(SDL_GpuBufferCopy){
+			.srcOffset = 0,
+			.dstOffset = img_x * img_y * 4,
+			.size = sizeof(bufferData)
+		},
+		SDL_FALSE
+	);
+
 	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
 	SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(cmdbuf);
 
-	// Upload original
+	// Upload original texture
 	SDL_GpuUploadToTexture(
 		copyPass,
 		uploadTransferBuffer,
@@ -121,6 +150,30 @@ static int Init(Context* context)
 			.w = img_x,
 			.h = img_y,
 			.d = 1
+		},
+		SDL_FALSE
+	);
+
+	// Upload original buffer
+	SDL_GpuUploadToBuffer(
+		copyPass,
+		uploadTransferBuffer,
+		OriginalBuffer,
+		&(SDL_GpuBufferCopy){
+			.srcOffset = img_x * img_y * 4,
+			.dstOffset = 0,
+			.size = sizeof(bufferData)
+		},
+		SDL_FALSE
+	);
+
+	// Copy original to copy
+	SDL_GpuCopyBufferToBuffer(
+		copyPass,
+		OriginalBuffer,
+		BufferCopy,
+		&(SDL_GpuBufferCopy){
+			.size = sizeof(bufferData)
 		},
 		SDL_FALSE
 	);
@@ -163,6 +216,16 @@ static int Init(Context* context)
 		}
 	);
 
+	SDL_GpuDownloadFromBuffer(
+		copyPass,
+		BufferCopy,
+		downloadTransferBuffer,
+		&(SDL_GpuBufferCopy){
+			.dstOffset = img_x * img_y * 4,
+			.size = sizeof(bufferData)
+		}
+	);
+
 	SDL_GpuEndCopyPass(copyPass);
 
 	SDL_GpuFence* fence = SDL_GpuSubmitAndAcquireFence(cmdbuf);
@@ -186,6 +249,15 @@ static int Init(Context* context)
 	else
 	{
 		SDL_Log("FAILURE! Original texture bytes do not match downloaded bytes!");
+	}
+
+	if (SDL_memcmp(downloadedData + (img_x * img_y * 4), bufferData, sizeof(bufferData)) == 0)
+	{
+		SDL_Log("SUCCESS! Original buffer bytes and the downloaded bytes match!");
+	}
+	else
+	{
+		SDL_Log("FAILURE! Original buffer bytes do not match downloaded bytes!");
 	}
 
 	SDL_GpuUnmapTransferBuffer(context->Device, downloadTransferBuffer);
@@ -298,4 +370,4 @@ static void Quit(Context* context)
 	CommonQuit(context);
 }
 
-Example CopyAndReadback_Example = { "CopyTextureAndReadback", Init, Update, Draw, Quit };
+Example CopyAndReadback_Example = { "CopyAndReadback", Init, Update, Draw, Quit };
