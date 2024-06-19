@@ -135,8 +135,7 @@ static int Init(Context* context)
 	// Set up buffer data
 	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_BUFFER,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		(sizeof(PositionTextureVertex) * 4) + (sizeof(Uint16) * 6)
 	);
 
@@ -166,8 +165,7 @@ static int Init(Context* context)
 	// Set up texture data
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_TEXTURE,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		img_x * img_y * 4
 	);
 	SDL_GpuSetTransferData(
