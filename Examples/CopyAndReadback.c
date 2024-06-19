@@ -367,6 +367,9 @@ static void Quit(Context* context)
 	SDL_GpuReleaseTexture(context->Device, TextureCopy);
 	SDL_GpuReleaseTexture(context->Device, TextureSmall);
 
+	SDL_GpuReleaseBuffer(context->Device, OriginalBuffer);
+	SDL_GpuReleaseBuffer(context->Device, BufferCopy);
+
 	CommonQuit(context);
 }
 
