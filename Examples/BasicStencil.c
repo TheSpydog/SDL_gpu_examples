@@ -139,8 +139,7 @@ static int Init(Context* context)
 
 	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_BUFFER,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		sizeof(PositionColorVertex) * 6
 	);
 

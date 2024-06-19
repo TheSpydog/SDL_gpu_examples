@@ -143,8 +143,7 @@ static int Init(Context* context)
 
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_TEXTURE,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		img_x * img_y * 4
 	);
 
@@ -187,8 +186,7 @@ static int Init(Context* context)
 
 	SpriteComputeTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_BUFFER,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		SPRITE_COUNT * sizeof(ComputeSpriteInstance)
 	);
 
@@ -213,8 +211,7 @@ static int Init(Context* context)
 	// Transfer the up-front data
 	SDL_GpuTransferBuffer* indexBufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERUSAGE_BUFFER,
-		SDL_GPU_TRANSFER_MAP_WRITE,
+		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		SPRITE_COUNT * 6 * sizeof(Uint32)
 	);
 

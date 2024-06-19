@@ -22,6 +22,7 @@ add_executable(SDL_gpu_examples
     Examples/CustomSampling.c
     Examples/DrawIndirect.c
 	Examples/ComputeSpriteBatch.c
+	Examples/CopyAndReadback.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE .)
