@@ -140,23 +140,27 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		VertexBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = 0,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = 0
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = VertexBuffer,
+			.offset = 0,
 			.size = sizeof(PositionColorVertex) * 9
 		},
 		SDL_FALSE
 	);
 
-    SDL_GpuUploadToBuffer(
+	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		IndexBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = sizeof(PositionColorVertex) * 9,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = sizeof(PositionColorVertex) * 9
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = IndexBuffer,
+			.offset = 0,
 			.size = sizeof(Uint16) * 6
 		},
 		SDL_FALSE

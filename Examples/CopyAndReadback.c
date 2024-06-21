@@ -98,8 +98,9 @@ static int Init(Context* context)
 	SDL_GpuSetTransferData(
 		context->Device,
 		imageData,
-		uploadTransferBuffer,
-		&(SDL_GpuBufferCopy){
+		&(SDL_GpuTransferBufferRegion) {
+			.transferBuffer = uploadTransferBuffer,
+			.offset = 0,
 			.size = img_x * img_y * 4
 		},
 		SDL_FALSE
@@ -108,10 +109,9 @@ static int Init(Context* context)
 	SDL_GpuSetTransferData(
 		context->Device,
 		bufferData,
-		uploadTransferBuffer,
-		&(SDL_GpuBufferCopy){
-			.srcOffset = 0,
-			.dstOffset = img_x * img_y * 4,
+		&(SDL_GpuTransferBufferRegion) {
+			.transferBuffer = uploadTransferBuffer,
+			.offset = img_x * img_y * 4,
 			.size = sizeof(bufferData)
 		},
 		SDL_FALSE
@@ -123,15 +123,15 @@ static int Init(Context* context)
 	// Upload original texture
 	SDL_GpuUploadToTexture(
 		copyPass,
-		uploadTransferBuffer,
+		&(SDL_GpuTextureTransferInfo) {
+			.transferBuffer = uploadTransferBuffer,
+			.offset = 0, /* Zeroes out the rest */
+		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = OriginalTexture,
 			.w = img_x,
 			.h = img_y,
 			.d = 1
-		},
-		&(SDL_GpuBufferImageCopy){
-			.bufferOffset = 0
 		},
 		SDL_FALSE
 	);
@@ -139,29 +139,34 @@ static int Init(Context* context)
 	// Copy original to copy
 	SDL_GpuCopyTextureToTexture(
 		copyPass,
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuTextureLocation){
 			.textureSlice.texture = OriginalTexture,
-			.w = img_x,
-			.h = img_y,
-			.d = 1
+			.x = 0,
+			.y = 0,
+			.z = 0
 		},
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuTextureLocation){
 			.textureSlice.texture = TextureCopy,
-			.w = img_x,
-			.h = img_y,
-			.d = 1
+			.x = 0,
+			.y = 0,
+			.z = 0
 		},
+		img_x,
+		img_y,
+		1,
 		SDL_FALSE
 	);
 
 	// Upload original buffer
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		uploadTransferBuffer,
-		OriginalBuffer,
-		&(SDL_GpuBufferCopy){
-			.srcOffset = img_x * img_y * 4,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = uploadTransferBuffer,
+			.offset = img_x * img_y * 4,
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = OriginalBuffer,
+			.offset = 0,
 			.size = sizeof(bufferData)
 		},
 		SDL_FALSE
@@ -170,11 +175,15 @@ static int Init(Context* context)
 	// Copy original to copy
 	SDL_GpuCopyBufferToBuffer(
 		copyPass,
-		OriginalBuffer,
-		BufferCopy,
-		&(SDL_GpuBufferCopy){
-			.size = sizeof(bufferData)
+		&(SDL_GpuBufferLocation) {
+			.buffer = OriginalBuffer,
+			.offset = 0
 		},
+		&(SDL_GpuBufferLocation) {
+			.buffer = BufferCopy,
+			.offset = 0
+		},
+		sizeof(bufferData),
 		SDL_FALSE
 	);
 
@@ -210,19 +219,22 @@ static int Init(Context* context)
 			.h = img_y,
 			.d = 1
 		},
-		downloadTransferBuffer,
-		&(SDL_GpuBufferImageCopy){
-			.bufferOffset = 0
+		&(SDL_GpuTextureTransferInfo) {
+			.transferBuffer = downloadTransferBuffer,
+			.offset = 0, /* Zeroes out the rest */
 		}
 	);
 
 	SDL_GpuDownloadFromBuffer(
 		copyPass,
-		BufferCopy,
-		downloadTransferBuffer,
-		&(SDL_GpuBufferCopy){
-			.dstOffset = img_x * img_y * 4,
+		&(SDL_GpuBufferRegion) {
+			.buffer = BufferCopy,
+			.offset = 0,
 			.size = sizeof(bufferData)
+		},
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = downloadTransferBuffer,
+			.offset = img_x * img_y * 4
 		}
 	);
 
@@ -239,7 +251,7 @@ static int Init(Context* context)
 		context->Device,
 		downloadTransferBuffer,
 		SDL_FALSE,
-		&downloadedData
+		(void**) &downloadedData
 	);
 
 	if (SDL_memcmp(downloadedData, imageData, img_x * img_y * 4) == 0)

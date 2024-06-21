@@ -150,8 +150,9 @@ static int Init(Context* context)
 	SDL_GpuSetTransferData(
 		context->Device,
 		imageData,
-		textureTransferBuffer,
-		&(SDL_GpuBufferCopy){
+		&(SDL_GpuTransferBufferRegion) {
+			.transferBuffer = textureTransferBuffer,
+			.offset = 0,
 			.size = img_x * img_y * 4
 		},
 		SDL_FALSE
@@ -243,24 +244,28 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToTexture(
 		copyPass,
-		textureTransferBuffer,
+		&(SDL_GpuTextureTransferInfo) {
+			.transferBuffer = textureTransferBuffer,
+			.offset = 0, /* Zeroes out the rest */
+		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = Texture,
 			.w = img_x,
 			.h = img_y,
 			.d = 1
 		},
-		&(SDL_GpuBufferImageCopy){
-			.bufferOffset = 0
-		},
 		SDL_FALSE
 	);
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		indexBufferTransferBuffer,
-		SpriteIndexBuffer,
-		&(SDL_GpuBufferCopy){
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = indexBufferTransferBuffer,
+			.offset = 0
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = SpriteIndexBuffer,
+			.offset = 0,
 			.size = SPRITE_COUNT * 6 * sizeof(Uint32)
 		},
 		SDL_FALSE
@@ -332,9 +337,13 @@ static int Draw(Context* context)
 		SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(cmdBuf);
 		SDL_GpuUploadToBuffer(
 			copyPass,
-			SpriteComputeTransferBuffer,
-			SpriteComputeBuffer,
-			&(SDL_GpuBufferCopy){
+			&(SDL_GpuTransferBufferLocation) {
+				.transferBuffer = SpriteComputeTransferBuffer,
+				.offset = 0
+			},
+			&(SDL_GpuBufferRegion) {
+				.buffer = SpriteComputeBuffer,
+				.offset = 0,
 				.size = SPRITE_COUNT * sizeof(ComputeSpriteInstance)
 			},
 			SDL_TRUE

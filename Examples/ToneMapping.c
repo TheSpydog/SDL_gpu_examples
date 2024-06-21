@@ -166,10 +166,9 @@ static int Init(Context* context)
     SDL_GpuSetTransferData(
         context->Device,
         hdrImageData,
-        imageDataTransferBuffer,
-        &(SDL_GpuBufferCopy){
-            .srcOffset = 0,
-            .dstOffset = 0,
+        &(SDL_GpuTransferBufferRegion) {
+            .transferBuffer = imageDataTransferBuffer,
+            .offset = 0,
             .size = sizeof(float) * 4 * img_x * img_y
         },
         SDL_FALSE
@@ -182,15 +181,15 @@ static int Init(Context* context)
 
     SDL_GpuUploadToTexture(
         copyPass,
-        imageDataTransferBuffer,
+        &(SDL_GpuTextureTransferInfo) {
+        	.transferBuffer = imageDataTransferBuffer,
+        	.offset = 0, /* Zeroes out the rest */
+        },
         &(SDL_GpuTextureRegion){
             .textureSlice.texture = HDRTexture,
             .w = img_x,
             .h = img_y,
             .d = 1
-        },
-        &(SDL_GpuBufferImageCopy){
-            .bufferOffset = 0
         },
         SDL_FALSE
     );

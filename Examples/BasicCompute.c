@@ -138,11 +138,13 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		VertexBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = 0,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = 0
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = VertexBuffer,
+			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 6
 		},
 		SDL_FALSE

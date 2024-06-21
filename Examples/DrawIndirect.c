@@ -156,11 +156,13 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		VertexBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = 0,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = 0
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = VertexBuffer,
+			.offset = 0,
 			.size = vertexBufferSize
 		},
 		SDL_FALSE
@@ -168,11 +170,13 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		IndexBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = vertexBufferSize,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = vertexBufferSize
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = IndexBuffer,
+			.offset = 0,
 			.size = indexBufferSize
 		},
 		SDL_FALSE
@@ -180,11 +184,13 @@ static int Init(Context* context)
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
-		transferBuffer,
-		DrawBuffer,
-		&(SDL_GpuBufferCopy) {
-			.srcOffset = vertexBufferSize + indexBufferSize,
-			.dstOffset = 0,
+		&(SDL_GpuTransferBufferLocation) {
+			.transferBuffer = transferBuffer,
+			.offset = vertexBufferSize + indexBufferSize
+		},
+		&(SDL_GpuBufferRegion) {
+			.buffer = DrawBuffer,
+			.offset = 0,
 			.size = drawBufferSize
 		},
 		SDL_FALSE
