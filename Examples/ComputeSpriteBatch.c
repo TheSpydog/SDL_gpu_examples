@@ -35,11 +35,27 @@ static int Init(Context* context)
 		return result;
 	}
 
+	SDL_GpuPresentMode presentMode = SDL_GPU_PRESENTMODE_VSYNC;
+	if (SDL_GpuSupportsPresentMode(
+		context->Device,
+		context->Window,
+		SDL_GPU_PRESENTMODE_IMMEDIATE
+	)) {
+		presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
+	}
+	else if (SDL_GpuSupportsPresentMode(
+		context->Device,
+		context->Window,
+		SDL_GPU_PRESENTMODE_MAILBOX
+	)) {
+		presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
+	}
+
 	SDL_GpuSetSwapchainParameters(
 		context->Device,
 		context->Window,
 		SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
-		SDL_GPU_PRESENTMODE_IMMEDIATE
+		presentMode
 	);
 
 	srand(0);
