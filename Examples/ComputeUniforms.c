@@ -79,7 +79,7 @@ static int Draw(Context* context)
         );
 
         SDL_GpuBindComputePipeline(computePass, GradientPipeline);
-        SDL_GpuPushComputeUniformData(computePass, 0, &GradientUniformValues, sizeof(GradientUniforms));
+        SDL_GpuPushComputeUniformData(cmdbuf, 0, &GradientUniformValues, sizeof(GradientUniforms));
         SDL_GpuDispatchCompute(computePass, w / 8 , h / 8 , 1);
 
         SDL_GpuEndComputePass(computePass);
