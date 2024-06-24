@@ -431,7 +431,7 @@ static int Draw(Context* context)
 			1
 		);
 		SDL_GpuPushVertexUniformData(
-			renderPass,
+			cmdBuf,
 			0,
 			&cameraMatrix,
 			sizeof(Matrix4x4)
