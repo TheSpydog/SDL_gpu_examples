@@ -17,7 +17,8 @@ static Example* Examples[] =
 	&CustomSampling_Example,
 	&DrawIndirect_Example,
 	&ComputeSpriteBatch_Example,
-	&CopyAndReadback_Example
+	&CopyAndReadback_Example,
+	&CopyConsistency_Example
 };
 
 int main(int argc, char **argv)
