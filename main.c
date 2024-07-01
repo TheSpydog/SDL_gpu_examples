@@ -84,33 +84,33 @@ int main(int argc, char **argv)
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
-				if (evt.key.keysym.sym == SDLK_d)
+				if (evt.key.key == SDLK_d)
 				{
 					gotoExampleIndex = exampleIndex + 1;
 					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
 						gotoExampleIndex = 0;
 					}
 				}
-				else if (evt.key.keysym.sym == SDLK_a)
+				else if (evt.key.key == SDLK_a)
 				{
 					gotoExampleIndex = exampleIndex - 1;
 					if (gotoExampleIndex < 0) {
 						gotoExampleIndex = SDL_arraysize(Examples) - 1;
 					}
 				}
-				else if (evt.key.keysym.sym == SDLK_LEFT)
+				else if (evt.key.key == SDLK_LEFT)
 				{
 					context.LeftPressed = SDL_TRUE;
 				}
-				else if (evt.key.keysym.sym == SDLK_RIGHT)
+				else if (evt.key.key == SDLK_RIGHT)
 				{
 					context.RightPressed = SDL_TRUE;
 				}
-				else if (evt.key.keysym.sym == SDLK_DOWN)
+				else if (evt.key.key == SDLK_DOWN)
 				{
 					context.DownPressed = SDL_TRUE;
 				}
-				else if (evt.key.keysym.sym == SDLK_UP)
+				else if (evt.key.key == SDLK_UP)
 				{
 					context.UpPressed = SDL_TRUE;
 				}
