@@ -89,5 +89,6 @@ extern Example CustomSampling_Example;
 extern Example DrawIndirect_Example;
 extern Example ComputeSpriteBatch_Example;
 extern Example CopyAndReadback_Example;
+extern Example CopyConsistency_Example;
 
 #endif
