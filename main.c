@@ -85,14 +85,14 @@ int main(int argc, char **argv)
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
-				if (evt.key.key == SDLK_d)
+				if (evt.key.key == SDLK_D)
 				{
 					gotoExampleIndex = exampleIndex + 1;
 					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
 						gotoExampleIndex = 0;
 					}
 				}
-				else if (evt.key.key == SDLK_a)
+				else if (evt.key.key == SDLK_A)
 				{
 					gotoExampleIndex = exampleIndex - 1;
 					if (gotoExampleIndex < 0) {

@@ -11,7 +11,7 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 #if 0
 	SDL_setenv("SDL_GPU_BACKEND", "D3D11");
 #endif
-	context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE);
+	context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE, SDL_FALSE);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");
