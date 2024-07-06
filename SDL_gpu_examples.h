@@ -91,5 +91,6 @@ extern Example ComputeSpriteBatch_Example;
 extern Example CopyAndReadback_Example;
 extern Example CopyConsistency_Example;
 extern Example Texture2DArray_Example;
+extern Example TriangleMSAA_Example;
 
 #endif

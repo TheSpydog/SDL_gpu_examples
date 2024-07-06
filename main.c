@@ -20,6 +20,7 @@ static Example* Examples[] =
 	&CopyAndReadback_Example,
 	&CopyConsistency_Example,
 	&Texture2DArray_Example,
+	&TriangleMSAA_Example,
 };
 
 int main(int argc, char **argv)
