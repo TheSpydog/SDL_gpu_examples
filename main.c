@@ -21,6 +21,7 @@ static Example* Examples[] =
 	&CopyConsistency_Example,
 	&Texture2DArray_Example,
 	&TriangleMSAA_Example,
+	&Cubemap_Example,
 };
 
 int main(int argc, char **argv)

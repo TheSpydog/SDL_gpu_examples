@@ -289,3 +289,64 @@ Matrix4x4 Matrix4x4_CreateOrthographicOffCenter(
 		(left + right) / (left - right), (top + bottom) / (bottom - top), zNearPlane / (zNearPlane - zFarPlane), 1
 	};
 }
+
+Matrix4x4 Matrix4x4_CreatePerspectiveFieldOfView(
+	float fieldOfView,
+	float aspectRatio,
+	float nearPlaneDistance,
+	float farPlaneDistance
+) {
+	float num = 1.0f / ((float) SDL_tanf(fieldOfView * 0.5f));
+	return (Matrix4x4) {
+		num / aspectRatio, 0, 0, 0,
+		0, num, 0, 0,
+		0, 0, farPlaneDistance / (nearPlaneDistance - farPlaneDistance), -1,
+		0, 0, (nearPlaneDistance * farPlaneDistance) / (nearPlaneDistance - farPlaneDistance), 0
+	};
+}
+
+Matrix4x4 Matrix4x4_CreateLookAt(
+	Vector3 cameraPosition,
+	Vector3 cameraTarget,
+	Vector3 cameraUpVector
+) {
+	Vector3 targetToPosition = {
+		cameraPosition.x - cameraTarget.x,
+		cameraPosition.y - cameraTarget.y,
+		cameraPosition.z - cameraTarget.z
+	};
+	Vector3 vectorA = Vector3_Normalize(targetToPosition);
+	Vector3 vectorB = Vector3_Normalize(Vector3_Cross(cameraUpVector, vectorA));
+	Vector3 vectorC = Vector3_Cross(vectorA, vectorB);
+
+	return (Matrix4x4) {
+		vectorB.x, vectorC.x, vectorA.x, 0,
+		vectorB.y, vectorC.y, vectorA.y, 0,
+		vectorB.z, vectorC.z, vectorA.z, 0,
+		-Vector3_Dot(vectorB, cameraPosition), -Vector3_Dot(vectorC, cameraPosition), -Vector3_Dot(vectorA, cameraPosition), 1
+	};
+}
+
+Vector3 Vector3_Normalize(Vector3 vec)
+{
+	float magnitude = SDL_sqrtf((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+	return (Vector3) {
+		vec.x / magnitude,
+		vec.y / magnitude,
+		vec.z / magnitude
+	};
+}
+
+float Vector3_Dot(Vector3 vecA, Vector3 vecB)
+{
+	return (vecA.x * vecB.x) + (vecA.y * vecB.y) + (vecA.z * vecB.z);
+}
+
+Vector3 Vector3_Cross(Vector3 vecA, Vector3 vecB)
+{
+	return (Vector3) {
+		vecA.y * vecB.z - vecB.y * vecA.z,
+		-(vecA.x * vecB.z - vecB.x * vecA.z),
+		vecA.x * vecB.y - vecB.x * vecA.y
+	};
+}
