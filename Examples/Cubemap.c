@@ -307,7 +307,7 @@ static void Quit(Context* context)
 	SDL_GpuReleaseTexture(context->Device, Texture);
 	SDL_GpuReleaseSampler(context->Device, Sampler);
 
-	CamPos.z = SDL_fabs(CamPos.z);
+	CamPos.z = SDL_fabsf(CamPos.z);
 
 	CommonQuit(context);
 }
