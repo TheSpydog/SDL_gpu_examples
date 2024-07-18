@@ -22,6 +22,7 @@ static Example* Examples[] =
 	&Texture2DArray_Example,
 	&TriangleMSAA_Example,
 	&Cubemap_Example,
+	&WindowResize_Example,
 };
 
 int main(int argc, char **argv)

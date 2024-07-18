@@ -108,5 +108,6 @@ extern Example CopyConsistency_Example;
 extern Example Texture2DArray_Example;
 extern Example TriangleMSAA_Example;
 extern Example Cubemap_Example;
+extern Example WindowResize_Example;
 
 #endif
