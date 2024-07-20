@@ -28,6 +28,7 @@ add_executable(SDL_gpu_examples
     Examples/TriangleMSAA.c
     Examples/Cubemap.c
     Examples/WindowResize.c
+    Examples/Bloom.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE . spirv)
