@@ -1,5 +1,8 @@
 #include <SDL_gpu_examples.h>
 
+#define SDL_GPU_SPIRVCROSS_IMPLEMENTATION
+#include <SDL_gpu_spirvcross.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MALLOC SDL_malloc
 #define STBI_REALLOC SDL_realloc
@@ -82,7 +85,8 @@ SDL_GpuShader* LoadShader(
 		return NULL;
 	}
 
-	SDL_GpuShader* shader = SDL_GpuCreateShader(device, &(SDL_GpuShaderCreateInfo){
+	SDL_GpuShader* shader;
+	SDL_GpuShaderCreateInfo shaderInfo = {
 		.code = code,
 		.codeSize = codeSize,
 		.entryPointName = "main",
@@ -92,7 +96,15 @@ SDL_GpuShader* LoadShader(
 		.uniformBufferCount = uniformBufferCount,
 		.storageBufferCount = storageBufferCount,
 		.storageTextureCount = storageTextureCount
-	});
+	};
+	if (SDL_GpuGetBackend(device) == SDL_GPU_BACKEND_VULKAN)
+	{
+		shader = SDL_GpuCreateShader(device, &shaderInfo);
+	}
+	else
+	{
+		shader = SDL_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
+	}
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -127,7 +139,15 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.entryPointName = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
-	SDL_GpuComputePipeline* pipeline = SDL_GpuCreateComputePipeline(device, &newCreateInfo);
+	SDL_GpuComputePipeline* pipeline;
+	if (SDL_GpuGetBackend(device) == SDL_GPU_BACKEND_VULKAN)
+	{
+		pipeline = SDL_GpuCreateComputePipeline(device, &newCreateInfo);
+	}
+	else
+	{
+		pipeline = SDL_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
+	}
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");

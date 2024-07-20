@@ -1,0 +1,3 @@
+[submodule "spirv"]
+	path = spirv
+	url = https://github.com/flibitijibibo/SDL_gpu_spirvcross
