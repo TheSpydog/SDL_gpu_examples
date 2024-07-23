@@ -23,6 +23,7 @@ static Example* Examples[] =
 	&TriangleMSAA_Example,
 	&Cubemap_Example,
 	&WindowResize_Example,
+	&Bloom_Example
 };
 
 int main(int argc, char **argv)
