@@ -7,6 +7,7 @@
 #define STBI_MALLOC SDL_malloc
 #define STBI_REALLOC SDL_realloc
 #define STBI_FREE SDL_free
+#define STBI_ONLY_HDR
 #include "../stb_image.h"
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
