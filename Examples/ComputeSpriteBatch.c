@@ -1,4 +1,4 @@
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 #include <stdlib.h> // for srand
 
 static SDL_GpuComputePipeline* ComputePipeline;

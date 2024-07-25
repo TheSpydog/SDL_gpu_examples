@@ -1,4 +1,4 @@
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 
 #define SDL_GPU_SPIRVCROSS_IMPLEMENTATION
 #include <SDL_gpu_spirvcross.h>
@@ -7,7 +7,7 @@
 #define STBI_MALLOC SDL_malloc
 #define STBI_REALLOC SDL_realloc
 #define STBI_FREE SDL_free
-#include "stb_image.h"
+#include "../stb_image.h"
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {

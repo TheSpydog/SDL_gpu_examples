@@ -1,4 +1,4 @@
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 
 static SDL_GpuComputePipeline* GradientPipeline;
 static SDL_GpuTexture* GradientRenderTexture;

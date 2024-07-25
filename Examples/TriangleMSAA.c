@@ -1,4 +1,4 @@
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 
 static SDL_GpuGraphicsPipeline* Pipelines[4];
 static SDL_GpuTexture* MSAARenderTextures[4];

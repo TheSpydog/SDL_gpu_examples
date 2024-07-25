@@ -1,6 +1,6 @@
 /* Special thanks to Matt Taylor for this overview of tonemapping: https://64.github.io/tonemapping/ */
 
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 
 static SDL_GpuTexture* HDRTexture;
 static SDL_GpuTexture* ToneMapTexture;

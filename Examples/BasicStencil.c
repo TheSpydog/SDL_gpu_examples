@@ -1,4 +1,4 @@
-#include <SDL_gpu_examples.h>
+#include "Common.h"
 
 static SDL_GpuGraphicsPipeline* MaskerPipeline;
 static SDL_GpuGraphicsPipeline* MaskeePipeline;

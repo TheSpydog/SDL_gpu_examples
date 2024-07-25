@@ -3,8 +3,8 @@ project(SDL_gpu_examples)
 find_package(SDL3 REQUIRED)
 
 add_executable(SDL_gpu_examples
-    main.c
-    SDL_gpu_examples.h
+    Examples/main.c
+    Examples/Common.h
     stb_image.h
     Examples/Common.c
     Examples/ClearScreen.c
@@ -30,7 +30,7 @@ add_executable(SDL_gpu_examples
     Examples/WindowResize.c
 )
 
-target_include_directories(SDL_gpu_examples PRIVATE . spirv)
+target_include_directories(SDL_gpu_examples PRIVATE spirv)
 
 target_link_libraries(SDL_gpu_examples
     SDL3::SDL3
