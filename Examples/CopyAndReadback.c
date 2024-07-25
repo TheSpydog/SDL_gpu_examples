@@ -253,7 +253,7 @@ static int Init(Context* context)
 		(void**) &downloadedData
 	);
 
-	if (SDL_memcmp(downloadedData, imageData, imageData->w * imageData->h * 4) == 0)
+	if (SDL_memcmp(downloadedData, imageData->pixels, imageData->w * imageData->h * 4) == 0)
 	{
 		SDL_Log("SUCCESS! Original texture bytes and the downloaded bytes match!");
 	}
