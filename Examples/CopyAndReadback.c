@@ -18,24 +18,23 @@ static int Init(Context* context)
 	}
 
 	// Load the image
-	int img_x, img_y, n;
-	Uint8 *imageData = LoadImage("ravioli.png", &img_x, &img_y, &n, 4, SDL_FALSE);
+	SDL_Surface *imageData = LoadImage("ravioli.bmp", 4);
 	if (imageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
 		return -1;
 	}
 
-	TextureWidth = img_x;
-	TextureHeight = img_y;
+	TextureWidth = imageData->w;
+	TextureHeight = imageData->h;
 
 	// Create texture resources
 	OriginalTexture = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
-			.width = img_x,
-			.height = img_y,
+			.width = imageData->w,
+			.height = imageData->h,
 			.depth = 1,
 			.layerCount = 1,
 			.levelCount = 1,
@@ -47,8 +46,8 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
-			.width = img_x,
-			.height = img_y,
+			.width = imageData->w,
+			.height = imageData->h,
 			.depth = 1,
 			.layerCount = 1,
 			.levelCount = 1,
@@ -60,8 +59,8 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
-			.width = img_x / 2,
-			.height = img_y / 2,
+			.width = imageData->w / 2,
+			.height = imageData->h / 2,
 			.depth = 1,
 			.layerCount = 1,
 			.levelCount = 1,
@@ -86,22 +85,22 @@ static int Init(Context* context)
 	SDL_GpuTransferBuffer* downloadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
-		img_x * img_y * 4 + sizeof(bufferData)
+		imageData->w * imageData->h * 4 + sizeof(bufferData)
 	);
 
 	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		img_x * img_y * 4 + sizeof(bufferData)
+		imageData->w * imageData->h * 4 + sizeof(bufferData)
 	);
 
 	SDL_GpuSetTransferData(
 		context->Device,
-		imageData,
+		imageData->pixels,
 		&(SDL_GpuTransferBufferRegion) {
 			.transferBuffer = uploadTransferBuffer,
 			.offset = 0,
-			.size = img_x * img_y * 4
+			.size = imageData->w * imageData->h * 4
 		},
 		SDL_FALSE
 	);
@@ -111,7 +110,7 @@ static int Init(Context* context)
 		bufferData,
 		&(SDL_GpuTransferBufferRegion) {
 			.transferBuffer = uploadTransferBuffer,
-			.offset = img_x * img_y * 4,
+			.offset = imageData->w * imageData->h * 4,
 			.size = sizeof(bufferData)
 		},
 		SDL_FALSE
@@ -129,8 +128,8 @@ static int Init(Context* context)
 		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = OriginalTexture,
-			.w = img_x,
-			.h = img_y,
+			.w = imageData->w,
+			.h = imageData->h,
 			.d = 1
 		},
 		SDL_FALSE
@@ -151,8 +150,8 @@ static int Init(Context* context)
 			.y = 0,
 			.z = 0
 		},
-		img_x,
-		img_y,
+		imageData->w,
+		imageData->h,
 		1,
 		SDL_FALSE
 	);
@@ -162,7 +161,7 @@ static int Init(Context* context)
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
 			.transferBuffer = uploadTransferBuffer,
-			.offset = img_x * img_y * 4,
+			.offset = imageData->w * imageData->h * 4,
 		},
 		&(SDL_GpuBufferRegion) {
 			.buffer = OriginalBuffer,
@@ -194,14 +193,14 @@ static int Init(Context* context)
 		cmdbuf,
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = OriginalTexture,
-			.w = img_x,
-			.h = img_y,
+			.w = imageData->w,
+			.h = imageData->h,
 			.d = 1
 		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = TextureSmall,
-			.w = img_x / 2,
-			.h = img_y / 2,
+			.w = imageData->w / 2,
+			.h = imageData->h / 2,
 			.d = 1
 		},
 		SDL_GPU_FILTER_LINEAR,
@@ -215,8 +214,8 @@ static int Init(Context* context)
 		copyPass,
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = TextureCopy,
-			.w = img_x,
-			.h = img_y,
+			.w = imageData->w,
+			.h = imageData->h,
 			.d = 1
 		},
 		&(SDL_GpuTextureTransferInfo) {
@@ -234,7 +233,7 @@ static int Init(Context* context)
 		},
 		&(SDL_GpuTransferBufferLocation) {
 			.transferBuffer = downloadTransferBuffer,
-			.offset = img_x * img_y * 4
+			.offset = imageData->w * imageData->h * 4
 		}
 	);
 
@@ -254,7 +253,7 @@ static int Init(Context* context)
 		(void**) &downloadedData
 	);
 
-	if (SDL_memcmp(downloadedData, imageData, img_x * img_y * 4) == 0)
+	if (SDL_memcmp(downloadedData, imageData, imageData->w * imageData->h * 4) == 0)
 	{
 		SDL_Log("SUCCESS! Original texture bytes and the downloaded bytes match!");
 	}
@@ -263,7 +262,7 @@ static int Init(Context* context)
 		SDL_Log("FAILURE! Original texture bytes do not match downloaded bytes!");
 	}
 
-	if (SDL_memcmp(downloadedData + (img_x * img_y * 4), bufferData, sizeof(bufferData)) == 0)
+	if (SDL_memcmp(downloadedData + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData)) == 0)
 	{
 		SDL_Log("SUCCESS! Original buffer bytes and the downloaded bytes match!");
 	}
@@ -278,7 +277,7 @@ static int Init(Context* context)
 	SDL_GpuReleaseTransferBuffer(context->Device, downloadTransferBuffer);
 	SDL_GpuReleaseTransferBuffer(context->Device, uploadTransferBuffer);
 
-	SDL_free(imageData);
+	SDL_DestroySurface(imageData);
 
 	return 0;
 }

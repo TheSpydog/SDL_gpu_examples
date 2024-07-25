@@ -149,8 +149,7 @@ static int Init(Context* context)
 	);
 
 	// Load the image data
-	int img_x, img_y, n;
-	char *imageData = LoadImage("ravioli.png", &img_x, &img_y, &n, 4, SDL_FALSE);
+	SDL_Surface *imageData = LoadImage("ravioli.bmp", 4);
 	if (imageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
@@ -160,28 +159,27 @@ static int Init(Context* context)
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		img_x * img_y * 4
+		imageData->w * imageData->h * 4
 	);
 
 	SDL_GpuSetTransferData(
 		context->Device,
-		imageData,
+		imageData->pixels,
 		&(SDL_GpuTransferBufferRegion) {
 			.transferBuffer = textureTransferBuffer,
 			.offset = 0,
-			.size = img_x * img_y * 4
+			.size = imageData->w * imageData->h * 4
 		},
 		SDL_FALSE
 	);
-	SDL_free(imageData);
 
 	// Create the GPU resources
 	Texture = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
-			.width = img_x,
-			.height = img_y,
+			.width = imageData->w,
+			.height = imageData->h,
 			.depth = 1,
 			.layerCount = 1,
 			.levelCount = 1,
@@ -266,8 +264,8 @@ static int Init(Context* context)
 		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = Texture,
-			.w = img_x,
-			.h = img_y,
+			.w = imageData->w,
+			.h = imageData->h,
 			.d = 1
 		},
 		SDL_FALSE
@@ -287,6 +285,7 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
+	SDL_DestroySurface(imageData);
 	SDL_GpuEndCopyPass(copyPass);
 	SDL_GpuSubmit(uploadCmdBuf);
 	SDL_GpuReleaseTransferBuffer(context->Device, textureTransferBuffer);

@@ -159,13 +159,45 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	return pipeline;
 }
 
-void* LoadImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels, SDL_bool hdr)
+SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
+{
+	char fullPath[256];
+	SDL_Surface *result;
+	SDL_PixelFormat format;
+
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
+
+	result = SDL_LoadBMP(fullPath);
+	if (result == NULL)
+	{
+		return NULL;
+	}
+
+	if (desiredChannels == 4)
+	{
+		format = SDL_PIXELFORMAT_ABGR8888;
+	}
+	else
+	{
+		SDL_assert(!"Unexpected desiredChannels");
+		SDL_DestroySurface(result);
+		return NULL;
+	}
+	if (result->format != format)
+	{
+		SDL_Surface *next = SDL_ConvertSurface(result, format);
+		SDL_DestroySurface(result);
+		result = next;
+	}
+
+	return result;
+}
+
+float* LoadHDRImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels)
 {
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
-	return hdr ?
-		(void*) stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels) :
-		(void*) stbi_load(fullPath, pWidth, pHeight, pChannels, desiredChannels);
+	return stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels);
 }
 
 // Matrix Math

@@ -103,20 +103,22 @@ static int Init(Context* context)
 	Texture = SDL_GpuCreateTexture(context->Device, &textureCreateInfo);
 
 	// Load the texture data
-	int img_x, img_y, n;
-	char *leftImageData = LoadImage("ravioli.png", &img_x, &img_y, &n, 4, SDL_FALSE);
+	SDL_Surface *leftImageData = LoadImage("ravioli.bmp", 4);
 	if (leftImageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
 		return -1;
 	}
 
-	char *rightImageData = LoadImage("ravioli_inverted.png", &img_x, &img_y, &n, 4, SDL_FALSE);
+	SDL_Surface *rightImageData = LoadImage("ravioli_inverted.bmp", 4);
 	if (rightImageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
 		return -1;
 	}
+
+	SDL_assert(leftImageData->w == rightImageData->w);
+	SDL_assert(leftImageData->h == rightImageData->h);
 
 	// Create the sampler
 	Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
@@ -189,30 +191,28 @@ static int Init(Context* context)
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
 		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		img_x * img_y * 8
+		leftImageData->w * leftImageData->h * 8
 	);
 	SDL_GpuSetTransferData(
 		context->Device,
-		leftImageData,
+		leftImageData->pixels,
 		&(SDL_GpuTransferBufferRegion) {
 			.transferBuffer = textureTransferBuffer,
 			.offset = 0,
-			.size = img_x * img_y * 4
+			.size = leftImageData->w * leftImageData->h * 4
 		},
 		SDL_FALSE
 	);
 	SDL_GpuSetTransferData(
 		context->Device,
-		rightImageData,
+		rightImageData->pixels,
 		&(SDL_GpuTransferBufferRegion) {
 			.transferBuffer = textureTransferBuffer,
-			.offset = img_x * img_y * 4,
-			.size = img_x * img_y * 4
+			.offset = leftImageData->w * leftImageData->h * 4,
+			.size = rightImageData->w * rightImageData->h * 4
 		},
 		SDL_FALSE
 	);
-	SDL_free(leftImageData);
-	SDL_free(rightImageData);
 
 	// Upload the transfer data to the GPU resources
 	SDL_GpuCommandBuffer* uploadCmdBuf = SDL_GpuAcquireCommandBuffer(context->Device);
@@ -268,8 +268,8 @@ static int Init(Context* context)
 		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = LeftTexture,
-			.w = img_x,
-			.h = img_y,
+			.w = leftImageData->w,
+			.h = leftImageData->h,
 			.d = 1
 		},
 		SDL_FALSE
@@ -279,17 +279,19 @@ static int Init(Context* context)
 		copyPass,
 		&(SDL_GpuTextureTransferInfo) {
 			.transferBuffer = textureTransferBuffer,
-			.offset = img_x * img_y * 4,
+			.offset = leftImageData->w * leftImageData->w * 4,
 		},
 		&(SDL_GpuTextureRegion){
 			.textureSlice.texture = RightTexture,
-			.w = img_x,
-			.h = img_y,
+			.w = rightImageData->w,
+			.h = rightImageData->h,
 			.d = 1
 		},
 		SDL_FALSE
 	);
 
+	SDL_DestroySurface(leftImageData);
+	SDL_DestroySurface(rightImageData);
 	SDL_GpuEndCopyPass(copyPass);
 	SDL_GpuSubmit(uploadCmdBuf);
 	SDL_GpuReleaseTransferBuffer(context->Device, bufferTransferBuffer);
