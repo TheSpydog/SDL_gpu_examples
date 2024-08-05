@@ -37,7 +37,7 @@ static int Init(Context* context)
 	}
 
 	// Load the image
-	SDL_Surface *imageData = LoadImage("ravioli.bmp", 4);
+	SDL_Surface* imageData = LoadImage("ravioli.bmp", 4);
 	if (imageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
@@ -114,21 +114,21 @@ static int Init(Context* context)
 
 	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
-		.width = imageData->w,
-		.height = imageData->h,
-		.depth = 1,
-		.layerCount = 1,
-		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+			.width = imageData->w,
+			.height = imageData->h,
+			.depth = 1,
+			.layerCount = 1,
+			.levelCount = 1,
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
 
 	Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
-		.magFilter = SDL_GPU_FILTER_NEAREST,
-		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
-		.addressModeU = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
-		.addressModeV = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
-		.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+			.magFilter = SDL_GPU_FILTER_NEAREST,
+			.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+			.addressModeU = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+			.addressModeV = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+			.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 	});
 
 	// Set up buffer data
@@ -143,15 +143,15 @@ static int Init(Context* context)
 		context->Device,
 		bufferTransferBuffer,
 		SDL_FALSE,
-		(void**) &transferData
+		(void**)&transferData
 	);
 
 	transferData[0] = (PositionTextureVertex){ -0.5f, -0.5f, 0, 0, 0 };
-	transferData[1] = (PositionTextureVertex){  0.5f, -0.5f, 0, 1, 0 };
-	transferData[2] = (PositionTextureVertex){  0.5f,  0.5f, 0, 1, 1 };
+	transferData[1] = (PositionTextureVertex){ 0.5f, -0.5f, 0, 1, 0 };
+	transferData[2] = (PositionTextureVertex){ 0.5f,  0.5f, 0, 1, 1 };
 	transferData[3] = (PositionTextureVertex){ -0.5f,  0.5f, 0, 0, 1 };
 
-	Uint16* indexData = (Uint16*) &transferData[4];
+	Uint16* indexData = (Uint16*)&transferData[4];
 	indexData[0] = 0;
 	indexData[1] = 1;
 	indexData[2] = 2;
@@ -171,10 +171,10 @@ static int Init(Context* context)
 		context->Device,
 		imageData->pixels,
 		&(SDL_GpuTransferBufferRegion) {
-			.transferBuffer = textureTransferBuffer,
+		.transferBuffer = textureTransferBuffer,
 			.offset = 0,
 			.size = imageData->w * imageData->h * 4
-		},
+	},
 		SDL_FALSE
 	);
 
@@ -185,43 +185,43 @@ static int Init(Context* context)
 	SDL_GpuUploadToBuffer(
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
-			.transferBuffer = bufferTransferBuffer,
+		.transferBuffer = bufferTransferBuffer,
 			.offset = 0
-		},
-		&(SDL_GpuBufferRegion) {
-			.buffer = VertexBuffer,
+	},
+		& (SDL_GpuBufferRegion) {
+		.buffer = VertexBuffer,
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 4
-		},
+	},
 		SDL_FALSE
 	);
 
 	SDL_GpuUploadToBuffer(
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
-			.transferBuffer = bufferTransferBuffer,
+		.transferBuffer = bufferTransferBuffer,
 			.offset = sizeof(PositionTextureVertex) * 4
-		},
-		&(SDL_GpuBufferRegion) {
-			.buffer = IndexBuffer,
+	},
+		& (SDL_GpuBufferRegion) {
+		.buffer = IndexBuffer,
 			.offset = 0,
 			.size = sizeof(Uint16) * 6
-		},
+	},
 		SDL_FALSE
 	);
 
 	SDL_GpuUploadToTexture(
 		copyPass,
 		&(SDL_GpuTextureTransferInfo) {
-			.transferBuffer = textureTransferBuffer,
+		.transferBuffer = textureTransferBuffer,
 			.offset = 0, /* Zeroes out the rest */
-		},
-		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = Texture,
+	},
+		& (SDL_GpuTextureRegion) {
+		.textureSlice.texture = Texture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
-		},
+	},
 		SDL_FALSE
 	);
 
@@ -262,9 +262,9 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
+		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){.buffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){.buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){.texture = Texture, .sampler = Sampler }, 1);
 
 		// Top-left
 		Matrix4x4 matrixUniform = Matrix4x4_Multiply(
@@ -273,7 +273,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2 * 3, 1);
 
 		// Top-right
 		matrixUniform = Matrix4x4_Multiply(
@@ -282,7 +282,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2 * 3, 1);
 
 		// Bottom-left
 		matrixUniform = Matrix4x4_Multiply(
@@ -291,7 +291,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2 * 3, 1);
 
 		// Bottom-right
 		matrixUniform = Matrix4x4_Multiply(
@@ -300,7 +300,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 1.0f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2 * 3, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}

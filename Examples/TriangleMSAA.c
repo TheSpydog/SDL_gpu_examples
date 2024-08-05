@@ -165,7 +165,7 @@ static int Draw(Context* context)
 
 		renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipelines[CurrentSampleCount]);
-		SDL_GpuDrawPrimitives(renderPass, 0, 1);
+		SDL_GpuDrawPrimitives(renderPass, 0, 1 * 3);
 		SDL_GpuEndRenderPass(renderPass);
 
 		SDL_GpuBlit(
