@@ -133,7 +133,7 @@ static int Draw(Context* context)
 		{
 			SDL_GpuSetScissor(renderPass, &ScissorRect);
 		}
-		SDL_GpuDrawPrimitives(renderPass, 0, 1);
+		SDL_GpuDrawPrimitives(renderPass, 0, 3);
 		SDL_GpuEndRenderPass(renderPass);
 	}
 

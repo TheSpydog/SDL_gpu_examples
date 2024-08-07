@@ -273,7 +273,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 6, 1);
 
 		// Top-right
 		matrixUniform = Matrix4x4_Multiply(
@@ -282,7 +282,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 6, 1);
 
 		// Bottom-left
 		matrixUniform = Matrix4x4_Multiply(
@@ -291,7 +291,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 6, 1);
 
 		// Bottom-right
 		matrixUniform = Matrix4x4_Multiply(
@@ -300,7 +300,7 @@ static int Draw(Context* context)
 		);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &matrixUniform, sizeof(matrixUniform));
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 1.0f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 2, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 6, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}

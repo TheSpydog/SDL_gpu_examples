@@ -228,9 +228,9 @@ static int Draw(Context* context)
 
 		SDL_GpuBindGraphicsPipeline(renderPass, MaskerPipeline);
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuDrawPrimitives(renderPass, 0, 1);
+		SDL_GpuDrawPrimitives(renderPass, 0, 3);
 		SDL_GpuBindGraphicsPipeline(renderPass, MaskeePipeline);
-		SDL_GpuDrawPrimitives(renderPass, 3, 1);
+		SDL_GpuDrawPrimitives(renderPass, 3, 3);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}

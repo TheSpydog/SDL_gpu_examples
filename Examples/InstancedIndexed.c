@@ -217,7 +217,7 @@ static int Draw(Context* context)
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
 		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-        SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 1, 16);
+		SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 3, 16);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}

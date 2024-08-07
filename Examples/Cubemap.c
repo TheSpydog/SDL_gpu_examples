@@ -289,7 +289,7 @@ static int Draw(Context* context)
 		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ IndexBuffer, 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ Texture, Sampler }, 1);
 		SDL_GpuPushVertexUniformData(cmdbuf, 0, &viewproj, sizeof(viewproj));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 12, 1);
+		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 36, 1);
 
 		SDL_GpuEndRenderPass(renderPass);
 	}

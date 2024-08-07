@@ -439,7 +439,7 @@ static int Draw(Context* context)
 			renderPass,
 			0,
 			0,
-			SPRITE_COUNT * 2,
+			SPRITE_COUNT * 6,
 			1
 		);
 
