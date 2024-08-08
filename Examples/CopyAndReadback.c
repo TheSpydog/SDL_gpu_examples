@@ -95,7 +95,7 @@ static int Init(Context* context)
 	);
 
 	Uint8* uploadTransferPtr;
-	SDL_GpuMapTransferBuffer(context->Device, uploadTransferBuffer, SDL_FALSE, &uploadTransferPtr);
+	SDL_GpuMapTransferBuffer(context->Device, uploadTransferBuffer, SDL_FALSE, (void**) &uploadTransferPtr);
 	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_memcpy(uploadTransferPtr + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData));
 	SDL_GpuUnmapTransferBuffer(context->Device, uploadTransferBuffer);

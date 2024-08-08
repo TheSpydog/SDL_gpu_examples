@@ -163,7 +163,7 @@ static int Init(Context* context)
 	);
 
 	Uint8 *textureTransferPtr;
-	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, &textureTransferPtr);
+	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, (void**) &textureTransferPtr);
 	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);
 
