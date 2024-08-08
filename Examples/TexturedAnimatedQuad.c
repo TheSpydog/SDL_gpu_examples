@@ -167,16 +167,11 @@ static int Init(Context* context)
 		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 		imageData->w * imageData->h * 4
 	);
-	SDL_GpuSetTransferData(
-		context->Device,
-		imageData->pixels,
-		&(SDL_GpuTransferBufferRegion) {
-			.transferBuffer = textureTransferBuffer,
-			.offset = 0,
-			.size = imageData->w * imageData->h * 4
-		},
-		SDL_FALSE
-	);
+
+	Uint8* textureTransferPtr;
+	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, &textureTransferPtr);
+	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
+	SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);
 
 	// Upload the transfer data to the GPU resources
 	SDL_GpuCommandBuffer* uploadCmdBuf = SDL_GpuAcquireCommandBuffer(context->Device);

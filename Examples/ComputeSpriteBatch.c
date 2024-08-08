@@ -162,16 +162,10 @@ static int Init(Context* context)
 		imageData->w * imageData->h * 4
 	);
 
-	SDL_GpuSetTransferData(
-		context->Device,
-		imageData->pixels,
-		&(SDL_GpuTransferBufferRegion) {
-			.transferBuffer = textureTransferBuffer,
-			.offset = 0,
-			.size = imageData->w * imageData->h * 4
-		},
-		SDL_FALSE
-	);
+	Uint8 *textureTransferPtr;
+	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, &textureTransferPtr);
+	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
+	SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);
 
 	// Create the GPU resources
 	Texture = SDL_GpuCreateTexture(

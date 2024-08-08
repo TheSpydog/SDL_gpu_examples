@@ -163,16 +163,10 @@ static int Init(Context* context)
         sizeof(float) * 4 * img_x * img_y
     );
 
-    SDL_GpuSetTransferData(
-        context->Device,
-        hdrImageData,
-        &(SDL_GpuTransferBufferRegion) {
-            .transferBuffer = imageDataTransferBuffer,
-            .offset = 0,
-            .size = sizeof(float) * 4 * img_x * img_y
-        },
-        SDL_FALSE
-    );
+    Uint8* imageTransferPtr;
+    SDL_GpuMapTransferBuffer(context->Device, imageDataTransferBuffer, SDL_FALSE, &imageTransferPtr);
+    SDL_memcpy(imageTransferPtr, hdrImageData, sizeof(float) * 4 * img_x * img_y);
+    SDL_GpuUnmapTransferBuffer(context->Device, imageDataTransferBuffer);
 
     SDL_free(hdrImageData);
 

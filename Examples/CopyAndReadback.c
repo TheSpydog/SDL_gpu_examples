@@ -94,27 +94,11 @@ static int Init(Context* context)
 		imageData->w * imageData->h * 4 + sizeof(bufferData)
 	);
 
-	SDL_GpuSetTransferData(
-		context->Device,
-		imageData->pixels,
-		&(SDL_GpuTransferBufferRegion) {
-			.transferBuffer = uploadTransferBuffer,
-			.offset = 0,
-			.size = imageData->w * imageData->h * 4
-		},
-		SDL_FALSE
-	);
-
-	SDL_GpuSetTransferData(
-		context->Device,
-		bufferData,
-		&(SDL_GpuTransferBufferRegion) {
-			.transferBuffer = uploadTransferBuffer,
-			.offset = imageData->w * imageData->h * 4,
-			.size = sizeof(bufferData)
-		},
-		SDL_FALSE
-	);
+	Uint8* uploadTransferPtr;
+	SDL_GpuMapTransferBuffer(context->Device, uploadTransferBuffer, SDL_FALSE, &uploadTransferPtr);
+	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
+	SDL_memcpy(uploadTransferPtr + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData));
+	SDL_GpuUnmapTransferBuffer(context->Device, uploadTransferBuffer);
 
 	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
 	SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(cmdbuf);
