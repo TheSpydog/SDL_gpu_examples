@@ -9,7 +9,7 @@ cd build
 cmake ..
 
 cd ../..
-git clone https://github.com/TheSpydog/SDL_gpu_examples
+git clone --recursive https://github.com/TheSpydog/SDL_gpu_examples
 cd SDL_gpu_examples
 mkdir build
 cd build

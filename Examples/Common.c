@@ -1,7 +1,7 @@
 #include "Common.h"
 
-#define SDL_GPU_SPIRVCROSS_IMPLEMENTATION
-#include <SDL_gpu_spirvcross.h>
+#define SDL_GPU_SHADERCROSS_IMPLEMENTATION
+#include <SDL_gpu_shadercross.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MALLOC SDL_malloc

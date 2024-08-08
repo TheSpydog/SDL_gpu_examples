@@ -30,7 +30,7 @@ add_executable(SDL_gpu_examples
     Examples/WindowResize.c
 )
 
-target_include_directories(SDL_gpu_examples PRIVATE spirv)
+target_include_directories(SDL_gpu_examples PRIVATE shadercross)
 
 target_link_libraries(SDL_gpu_examples
     SDL3::SDL3
