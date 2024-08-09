@@ -48,6 +48,13 @@ static int Init(Context* context)
 				}
 			}},
 		},
+		.rasterizerState = {
+			.fillMode = SDL_GPU_FILLMODE_FILL,
+			.cullMode = SDL_GPU_CULLMODE_NONE,
+			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+			.depthBiasEnable = SDL_FALSE
+		},
+		.multisampleState.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
@@ -56,7 +63,7 @@ static int Init(Context* context)
 
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
-		SDL_GpuSampleCount sampleCount = (SDL_GpuSampleCount) i;
+		SDL_GpuSampleCount sampleCount = SDL_GPU_SAMPLECOUNT_1 + (SDL_GpuSampleCount)i;
 		pipelineCreateInfo.multisampleState.sampleCount = SDL_GpuGetBestSampleCount(
 			context->Device,
 			RTFormat,
@@ -82,12 +89,13 @@ static int Init(Context* context)
 		.layerCount = 1,
 		.levelCount = 1,
 		.format = RTFormat,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT,
+		.sampleCount = SDL_GPU_SAMPLECOUNT_1
 	};
 
 	for (int i = 0; i < SDL_arraysize(MSAARenderTextures); i += 1)
 	{
-		textureCreateInfo.sampleCount = (SDL_GpuSampleCount) i;
+		textureCreateInfo.sampleCount = SDL_GPU_SAMPLECOUNT_1 + (SDL_GpuSampleCount)i;
 		MSAARenderTextures[i] = SDL_GpuCreateTexture(context->Device, &textureCreateInfo);
 		if (MSAARenderTextures[i] == NULL) {
 			SDL_Log("Failed to create MSAA render target texture!");
@@ -126,7 +134,7 @@ static int Update(Context* context)
 		SDL_GpuSampleCount best = SDL_GpuGetBestSampleCount(
 			context->Device,
 			RTFormat,
-			(SDL_GpuSampleCount) CurrentSampleCount
+			(SDL_GpuSampleCount)CurrentSampleCount
 		);
 
 		if (best != CurrentSampleCount)
@@ -171,18 +179,18 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = MSAARenderTextures[CurrentSampleCount],
+			.textureSlice.texture = MSAARenderTextures[CurrentSampleCount],
 				.x = 160,
 				.w = 320,
 				.h = 240,
 				.d = 1
-			},
-			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+		},
+			& (SDL_GpuTextureRegion) {
+			.textureSlice.texture = swapchainTexture,
 				.w = w,
 				.h = h,
 				.d = 1
-			},
+		},
 			SDL_GPU_FILTER_LINEAR,
 			SDL_FALSE
 		);
