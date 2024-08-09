@@ -308,7 +308,7 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass;
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
 			.textureSlice.texture = swapchainTexture,
-			.clearColor = (SDL_GpuColor){ 0.0f, 0.0f, 0.0f, 1.0f },
+			.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
 		};

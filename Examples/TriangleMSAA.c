@@ -57,7 +57,7 @@ static int Init(Context* context)
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
 		SDL_GpuSampleCount sampleCount = (SDL_GpuSampleCount) i;
-		pipelineCreateInfo.multisampleState.multisampleCount = SDL_GpuGetBestSampleCount(
+		pipelineCreateInfo.multisampleState.sampleCount = SDL_GpuGetBestSampleCount(
 			context->Device,
 			RTFormat,
 			sampleCount
@@ -158,7 +158,7 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass;
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
 			.textureSlice.texture = MSAARenderTextures[CurrentSampleCount],
-			.clearColor = (SDL_GpuColor){ 1.0f, 1.0f, 1.0f, 1.0f },
+			.clearColor = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
 		};

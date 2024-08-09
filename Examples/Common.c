@@ -13,9 +13,9 @@
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
 #if 0
-	SDL_setenv("SDL_GPU_BACKEND", "D3D11");
+	SDL_setenv("SDL_GPU_DRIVER", "D3D11");
 #endif
-	context->Device = SDL_GpuCreateDevice(SDL_GPU_BACKEND_ALL, SDL_TRUE, SDL_FALSE);
+	context->Device = SDL_GpuCreateDevice(SDL_TRUE, SDL_FALSE, SDL_CreateProperties());
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");
@@ -98,7 +98,7 @@ SDL_GpuShader* LoadShader(
 		.storageBufferCount = storageBufferCount,
 		.storageTextureCount = storageTextureCount
 	};
-	if (SDL_GpuGetBackend(device) == SDL_GPU_BACKEND_VULKAN)
+	if (SDL_GpuGetDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
 		shader = SDL_GpuCreateShader(device, &shaderInfo);
 	}
@@ -141,7 +141,7 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
 	SDL_GpuComputePipeline* pipeline;
-	if (SDL_GpuGetBackend(device) == SDL_GPU_BACKEND_VULKAN)
+	if (SDL_GpuGetDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
 		pipeline = SDL_GpuCreateComputePipeline(device, &newCreateInfo);
 	}

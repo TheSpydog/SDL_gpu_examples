@@ -3,7 +3,7 @@
 static SDL_GpuGraphicsPipeline* FillPipeline;
 static SDL_GpuGraphicsPipeline* LinePipeline;
 static SDL_GpuViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
-static SDL_GpuRect ScissorRect = { 320, 240, 320, 240 };
+static SDL_Rect ScissorRect = { 320, 240, 320, 240 };
 
 static SDL_bool UseWireframeMode = SDL_FALSE;
 static SDL_bool UseSmallViewport = SDL_FALSE;
@@ -119,7 +119,7 @@ static int Draw(Context* context)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
 		colorAttachmentInfo.textureSlice.texture = swapchainTexture;
-		colorAttachmentInfo.clearColor = (SDL_GpuColor){ 0.0f, 0.0f, 0.0f, 1.0f };
+		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 

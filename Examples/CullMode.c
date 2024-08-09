@@ -218,7 +218,7 @@ static int Draw(Context* context)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
 		colorAttachmentInfo.textureSlice.texture = swapchainTexture;
-		colorAttachmentInfo.clearColor = (SDL_GpuColor){ 0.0f, 0.0f, 0.0f, 1.0f };
+		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 

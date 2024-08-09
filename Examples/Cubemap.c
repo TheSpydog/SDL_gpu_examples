@@ -6,7 +6,7 @@ static SDL_GpuBuffer* IndexBuffer;
 static SDL_GpuTexture* Texture;
 static SDL_GpuSampler* Sampler;
 
-static SDL_GpuColor ClearColors[] =
+static SDL_FColor ClearColors[] =
 {
 	{ 1.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 1.0f, 0.0f, 1.0f },
@@ -277,7 +277,7 @@ static int Draw(Context* context)
 
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
 			.textureSlice.texture = swapchainTexture,
-			.clearColor = (SDL_GpuColor){ 0.0f, 0.0f, 0.0f, 1.0f },
+			.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
 		};

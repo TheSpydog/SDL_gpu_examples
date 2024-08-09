@@ -29,7 +29,7 @@ static int Init(Context* context)
 
 	SDL_GpuTextureFormat depthStencilFormat;
 
-	if (SDL_GpuIsTextureFormatSupported(
+	if (SDL_GpuSupportsTextureFormat(
 		context->Device,
 		SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
 		SDL_GPU_TEXTURETYPE_2D,
@@ -38,7 +38,7 @@ static int Init(Context* context)
 	{
 		depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT;
 	}
-	else if (SDL_GpuIsTextureFormatSupported(
+	else if (SDL_GpuSupportsTextureFormat(
 		context->Device,
 		SDL_GPU_TEXTUREFORMAT_D32_SFLOAT_S8_UINT,
 		SDL_GPU_TEXTURETYPE_2D,
@@ -231,7 +231,7 @@ static int Draw(Context* context)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
 		colorAttachmentInfo.textureSlice.texture = swapchainTexture;
-		colorAttachmentInfo.clearColor = (SDL_GpuColor){ 0.0f, 0.0f, 0.0f, 1.0f };
+		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
