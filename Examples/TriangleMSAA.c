@@ -134,7 +134,7 @@ static int Update(Context* context)
 		SDL_GpuSampleCount best = SDL_GpuGetBestSampleCount(
 			context->Device,
 			RTFormat,
-			(SDL_GpuSampleCount)CurrentSampleCount
+			SDL_GPU_SAMPLECOUNT_1 + (SDL_GpuSampleCount)CurrentSampleCount
 		);
 
 		if (best != CurrentSampleCount)
