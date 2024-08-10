@@ -168,6 +168,7 @@ SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
 	result = SDL_LoadBMP(fullPath);
 	if (result == NULL)
 	{
+		SDL_Log("Failed to load BMP: %s", SDL_GetError());
 		return NULL;
 	}
 

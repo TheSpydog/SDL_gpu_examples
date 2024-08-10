@@ -24,6 +24,8 @@ static Example* Examples[] =
 	&TriangleMSAA_Example,
 	&Cubemap_Example,
 	&WindowResize_Example,
+	&Blit2DArray_Example,
+	&BlitCube_Example,
 };
 
 int main(int argc, char **argv)
