@@ -51,7 +51,7 @@ static int Init(Context* context)
 		presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
 	}
 
-	if (SDL_GpuSetSwapchainParameters(
+	if (!SDL_GpuSetSwapchainParameters(
 		context->Device,
 		context->Window,
 		SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
