@@ -137,7 +137,7 @@ static int Update(Context* context)
 			SDL_GPU_SAMPLECOUNT_1 + (SDL_GpuSampleCount)CurrentSampleCount
 		);
 
-		if (best != CurrentSampleCount)
+		if (best != (SDL_GPU_SAMPLECOUNT_1 + (SDL_GpuSampleCount)CurrentSampleCount))
 		{
 			SDL_Log("Sample count %d not supported! Falling back to %d", (1 << CurrentSampleCount), (1 << best));
 		}
