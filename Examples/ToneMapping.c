@@ -45,13 +45,15 @@ static void ChangeSwapchainComposition(Context* context, Uint32 selectionIndex)
 {
 	if (SDL_GpuSupportsSwapchainComposition(context->Device, context->Window, swapchainCompositions[selectionIndex]))
 	{
-		currentSwapchainComposition = swapchainCompositions[selectionIndex];
 		SDL_Log("Changing swapchain composition to %s", swapchainCompositionNames[selectionIndex]);
-		SDL_GpuSetSwapchainParameters(context->Device, context->Window, currentSwapchainComposition, SDL_GPU_PRESENTMODE_VSYNC);
+		if (SDL_GpuSetSwapchainParameters(context->Device, context->Window, swapchainCompositions[selectionIndex], SDL_GPU_PRESENTMODE_VSYNC)) {
+			currentSwapchainComposition = swapchainCompositions[selectionIndex];
+			return;
+		}
 	}
-	else
-	{
-		SDL_Log("Swapchain composition %s unsupported", swapchainCompositionNames[selectionIndex]);
+	SDL_Log("Swapchain composition %s unsupported", swapchainCompositionNames[selectionIndex]);
+	if (!SDL_GpuSetSwapchainParameters(context->Device, context->Window, currentSwapchainComposition, SDL_GPU_PRESENTMODE_VSYNC)) {
+		SDL_Log("Failed to restore previous Swapchain composition");
 	}
 }
 

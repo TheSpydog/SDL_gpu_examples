@@ -51,12 +51,16 @@ static int Init(Context* context)
 		presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
 	}
 
-	SDL_GpuSetSwapchainParameters(
+	if (SDL_GpuSetSwapchainParameters(
 		context->Device,
 		context->Window,
 		SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
 		presentMode
-	);
+	)) {
+		SDL_Log("Could not set swapchain format!");
+		return -1;
+	}
+
 
 	srand(0);
 
