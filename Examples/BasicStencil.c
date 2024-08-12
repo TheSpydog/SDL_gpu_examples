@@ -76,7 +76,15 @@ static int Init(Context* context)
 			.stencilTestEnable = SDL_TRUE,
 			.frontStencilState = (SDL_GpuStencilOpState){
 				.compareOp = SDL_GPU_COMPAREOP_NEVER,
-				.failOp = SDL_GPU_STENCILOP_REPLACE
+				.failOp = SDL_GPU_STENCILOP_REPLACE,
+				.depthFailOp = SDL_GPU_STENCILOP_KEEP,
+				.passOp = SDL_GPU_STENCILOP_KEEP,
+			},
+			.backStencilState = (SDL_GpuStencilOpState){
+				.compareOp = SDL_GPU_COMPAREOP_NEVER,
+				.failOp = SDL_GPU_STENCILOP_REPLACE,
+				.depthFailOp = SDL_GPU_STENCILOP_KEEP,
+				.passOp = SDL_GPU_STENCILOP_KEEP,
 			},
 			.reference = 1,
 			.writeMask = 0xFF
@@ -107,6 +115,13 @@ static int Init(Context* context)
 				.offset = sizeof(float) * 3
 			}}
 		},
+		.rasterizerState = {
+			.fillMode = SDL_GPU_FILLMODE_FILL,
+			.cullMode = SDL_GPU_CULLMODE_NONE,
+			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+			.depthBiasEnable = SDL_FALSE
+		},
+		.multisampleState.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
@@ -120,15 +135,11 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	pipelineCreateInfo.depthStencilState = (SDL_GpuDepthStencilState){
-		.stencilTestEnable = SDL_TRUE,
-		.frontStencilState = (SDL_GpuStencilOpState){
-			.compareOp = SDL_GPU_COMPAREOP_EQUAL
-		},
-		.reference = 0,
-		.compareMask = 0xFF,
-		.writeMask = 0
-	};
+	pipelineCreateInfo.depthStencilState.stencilTestEnable = SDL_TRUE;
+	pipelineCreateInfo.depthStencilState.frontStencilState.compareOp = SDL_GPU_COMPAREOP_EQUAL;
+	pipelineCreateInfo.depthStencilState.reference = 0;
+	pipelineCreateInfo.depthStencilState.compareMask = 0xFF;
+	pipelineCreateInfo.depthStencilState.writeMask = 0;
 
 	MaskeePipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (MaskeePipeline == NULL)

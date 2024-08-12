@@ -78,6 +78,13 @@ static int Init(Context* context)
 				.offset = sizeof(float) * 3
 			}}
 		},
+		.rasterizerState = {
+			.fillMode = SDL_GPU_FILLMODE_FILL,
+			.cullMode = SDL_GPU_CULLMODE_NONE,
+			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+			.depthBiasEnable = SDL_FALSE
+		},
+		.multisampleState.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
@@ -86,7 +93,7 @@ static int Init(Context* context)
 
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
-		pipelineCreateInfo.rasterizerState.cullMode = (SDL_GpuCullMode) (i % 3);
+		pipelineCreateInfo.rasterizerState.cullMode = SDL_GPU_CULLMODE_NONE + (SDL_GpuCullMode) (i % 3);
 		pipelineCreateInfo.rasterizerState.frontFace = (i > 2) ?
 			SDL_GPU_FRONTFACE_CLOCKWISE :
 			SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;

@@ -50,6 +50,13 @@ static int Init(Context* context)
 				}
 			}},
 		},
+		.rasterizerState = {
+			.fillMode = SDL_GPU_FILLMODE_FILL,
+			.cullMode = SDL_GPU_CULLMODE_NONE,
+			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+			.depthBiasEnable = SDL_FALSE
+		},
+		.multisampleState.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,

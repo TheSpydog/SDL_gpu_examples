@@ -68,6 +68,13 @@ static int Init(Context* context)
 				.offset = sizeof(float) * 3
 			}}
 		},
+		.rasterizerState = {
+			.fillMode = SDL_GPU_FILLMODE_FILL,
+			.cullMode = SDL_GPU_CULLMODE_NONE,
+			.frontFace = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+			.depthBiasEnable = SDL_FALSE
+		},
+		.multisampleState.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 		.multisampleState.sampleMask = 0xFFFF,
 		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertexShader = vertexShader,
@@ -122,7 +129,8 @@ static int Init(Context* context)
 		.depth = 1,
 		.layerCount = 2,
 		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT,
+		.sampleCount = SDL_GPU_SAMPLECOUNT_1
 	});
 
 	Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
