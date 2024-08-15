@@ -34,6 +34,7 @@ static int Init(Context* context)
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
     GradientRenderTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+        .type = SDL_GPU_TEXTURETYPE_2D,
         .width = w,
         .height = h,
         .depth = 1,
@@ -87,13 +88,13 @@ static int Draw(Context* context)
         SDL_GpuBlit(
             cmdbuf,
             &(SDL_GpuTextureRegion){
-                .textureSlice.texture = GradientRenderTexture,
+                .texture = GradientRenderTexture,
                 .w = w,
                 .h = h,
                 .d = 1
             },
             &(SDL_GpuTextureRegion){
-                .textureSlice.texture = swapchainTexture,
+                .texture = swapchainTexture,
                 .w = w,
                 .h = h,
                 .d = 1

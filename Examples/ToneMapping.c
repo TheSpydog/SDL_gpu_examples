@@ -125,6 +125,7 @@ static int Init(Context* context)
 	}
 
     HDRTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
         .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_SFLOAT,
         .width = img_x,
         .height = img_y,
@@ -135,6 +136,7 @@ static int Init(Context* context)
     });
 
 	ToneMapTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_SFLOAT,
 		.width = img_x,
 		.height = img_y,
@@ -145,6 +147,7 @@ static int Init(Context* context)
 	});
 
 	TransferTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
 		.width = img_x,
 		.height = img_y,
@@ -182,7 +185,7 @@ static int Init(Context* context)
         	.offset = 0, /* Zeroes out the rest */
         },
         &(SDL_GpuTextureRegion){
-            .textureSlice.texture = HDRTexture,
+            .texture = HDRTexture,
             .w = img_x,
             .h = img_y,
             .d = 1
@@ -281,9 +284,7 @@ static int Draw(Context* context)
 		SDL_GpuBindComputeStorageTextures(
 			computePass,
 			0,
-			&(SDL_GpuTextureSlice){
-				.texture = HDRTexture
-			},
+			&HDRTexture,
 			1
 		);
 		SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
@@ -319,9 +320,7 @@ static int Draw(Context* context)
 			SDL_GpuBindComputeStorageTextures(
 				computePass,
 				0,
-				&(SDL_GpuTextureSlice){
-					.texture = ToneMapTexture
-				},
+				&ToneMapTexture,
 				1
 			);
 			SDL_GpuDispatchCompute(computePass, w / 8, h / 8, 1);
@@ -334,13 +333,13 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = BlitSourceTexture,
+				.texture = BlitSourceTexture,
 				.w = w,
 				.h = h,
 				.d = 1,
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.w = swapchainWidth,
 				.h = swapchainHeight,
 				.d = 1

@@ -32,6 +32,7 @@ static int Init(Context* context)
 	OriginalTexture = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
+			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w,
 			.height = imageData->h,
@@ -45,6 +46,7 @@ static int Init(Context* context)
 	TextureCopy = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
+			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w,
 			.height = imageData->h,
@@ -58,6 +60,7 @@ static int Init(Context* context)
 	TextureSmall = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
+			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w / 2,
 			.height = imageData->h / 2,
@@ -119,7 +122,7 @@ static int Init(Context* context)
 			.offset = 0, /* Zeroes out the rest */
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = OriginalTexture,
+			.texture = OriginalTexture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
@@ -131,13 +134,13 @@ static int Init(Context* context)
 	SDL_GpuCopyTextureToTexture(
 		copyPass,
 		&(SDL_GpuTextureLocation){
-			.textureSlice.texture = OriginalTexture,
+			.texture = OriginalTexture,
 			.x = 0,
 			.y = 0,
 			.z = 0
 		},
 		&(SDL_GpuTextureLocation){
-			.textureSlice.texture = TextureCopy,
+			.texture = TextureCopy,
 			.x = 0,
 			.y = 0,
 			.z = 0
@@ -184,13 +187,13 @@ static int Init(Context* context)
 	SDL_GpuBlit(
 		cmdbuf,
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = OriginalTexture,
+			.texture = OriginalTexture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = TextureSmall,
+			.texture = TextureSmall,
 			.w = imageData->w / 2,
 			.h = imageData->h / 2,
 			.d = 1
@@ -205,7 +208,7 @@ static int Init(Context* context)
 	SDL_GpuDownloadFromTexture(
 		copyPass,
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = TextureCopy,
+			.texture = TextureCopy,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
@@ -303,13 +306,13 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = OriginalTexture,
+				.texture = OriginalTexture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 				.d = 1
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
 				.d = 1
@@ -321,13 +324,13 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = TextureCopy,
+				.texture = TextureCopy,
 				.w = TextureWidth,
 				.h = TextureHeight,
 				.d = 1
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.x = w / 2,
 				.y = 0,
 				.w = w / 2,
@@ -341,13 +344,13 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = TextureSmall,
+				.texture = TextureSmall,
 				.w = TextureWidth / 2,
 				.h = TextureHeight / 2,
 				.d = 1
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.x = w / 4,
 				.y = h / 2,
 				.w = w / 2,

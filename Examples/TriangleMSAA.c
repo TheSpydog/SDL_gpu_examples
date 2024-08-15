@@ -76,6 +76,7 @@ static int Init(Context* context)
 
 	// Create the render target textures
 	SDL_GpuTextureCreateInfo textureCreateInfo = {
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.width = 640,
 		.height = 480,
 		.depth = 1,
@@ -171,14 +172,14 @@ static int Draw(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = MSAARenderTextures[CurrentSampleCount],
+				.texture = MSAARenderTextures[CurrentSampleCount],
 				.x = 160,
 				.w = 320,
 				.h = 240,
 				.d = 1
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.w = w,
 				.h = h,
 				.d = 1

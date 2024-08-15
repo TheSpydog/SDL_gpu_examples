@@ -111,6 +111,7 @@ static int Init(Context* context)
 	);
 
 	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 		.width = imageData->w,
 		.height = imageData->h,
@@ -205,7 +206,7 @@ static int Init(Context* context)
 			.offset = 0, /* Zeroes out the rest */
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = Texture,
+			.texture = Texture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
@@ -260,7 +261,7 @@ static int Draw(Context* context)
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
 		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-		SDL_GpuBindFragmentStorageTextures(renderPass, 0, &(SDL_GpuTextureSlice){ Texture }, 1);
+		SDL_GpuBindFragmentStorageTextures(renderPass, 0, &Texture, 1);
 		SDL_GpuPushFragmentUniformData(cmdbuf, 0, &SamplerMode, sizeof(SamplerMode));
 		SDL_GpuDrawIndexedPrimitives(renderPass, 0, 0, 6, 1);
 

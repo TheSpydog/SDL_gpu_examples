@@ -173,6 +173,7 @@ static int Init(Context* context)
 	Texture = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
+			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w,
 			.height = imageData->h,
@@ -269,7 +270,7 @@ static int Init(Context* context)
 			.offset = 0, /* Zeroes out the rest */
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = Texture,
+			.texture = Texture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1

@@ -154,6 +154,7 @@ static int Init(Context* context)
 	DepthStencilTexture = SDL_GpuCreateTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo) {
+			.type = SDL_GPU_TEXTURETYPE_2D,
 			.width = w,
 			.height = h,
 			.depth = 1,

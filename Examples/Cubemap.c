@@ -104,11 +104,11 @@ static int Init(Context* context)
 	);
 
 	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 		.width = 64,
 		.height = 64,
 		.depth = 1,
-		.isCube = SDL_TRUE,
 		.layerCount = 6,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
