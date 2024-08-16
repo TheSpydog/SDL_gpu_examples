@@ -11,6 +11,7 @@ static Example* Examples[] =
 	&InstancedIndexed_Example,
 	&TexturedQuad_Example,
 	&TexturedAnimatedQuad_Example,
+	&Clear3DSlice_Example,
 	&BasicCompute_Example,
 	&ComputeUniforms_Example,
 	&ToneMapping_Example,

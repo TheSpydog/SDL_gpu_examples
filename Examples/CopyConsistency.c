@@ -90,6 +90,7 @@ static int Init(Context* context)
 
 	// Create the textures
 	SDL_GpuTextureCreateInfo textureCreateInfo = {
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 		.width = 16,
 		.height = 16,
@@ -265,7 +266,7 @@ static int Init(Context* context)
 			.offset = 0,
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = LeftTexture,
+			.texture = LeftTexture,
 			.w = leftImageData->w,
 			.h = leftImageData->h,
 			.d = 1
@@ -280,7 +281,7 @@ static int Init(Context* context)
 			.offset = leftImageData->w * leftImageData->w * 4,
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = RightTexture,
+			.texture = RightTexture,
 			.w = rightImageData->w,
 			.h = rightImageData->h,
 			.d = 1
@@ -319,7 +320,7 @@ static int Draw(Context* context)
 		SDL_GpuCopyPass* copyPass;
 		SDL_GpuRenderPass* renderPass;
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
-			.textureSlice.texture = swapchainTexture,
+			.texture = swapchainTexture,
 			.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
@@ -341,10 +342,10 @@ static int Draw(Context* context)
 		SDL_GpuCopyTextureToTexture(
 			copyPass,
 			&(SDL_GpuTextureLocation){
-				.textureSlice.texture = LeftTexture
+				.texture = LeftTexture
 			},
 			&(SDL_GpuTextureLocation){
-				.textureSlice.texture = Texture
+				.texture = Texture
 			},
 			16,
 			16,
@@ -378,10 +379,10 @@ static int Draw(Context* context)
 		SDL_GpuCopyTextureToTexture(
 			copyPass,
 			&(SDL_GpuTextureLocation){
-				.textureSlice.texture = RightTexture
+				.texture = RightTexture
 			},
 			&(SDL_GpuTextureLocation){
-				.textureSlice.texture = Texture
+				.texture = Texture
 			},
 			16,
 			16,

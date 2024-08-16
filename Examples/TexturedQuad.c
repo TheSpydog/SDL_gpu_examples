@@ -186,6 +186,7 @@ static int Init(Context* context)
 	);
 
 	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 		.width = imageData->w,
 		.height = imageData->h,
@@ -285,7 +286,7 @@ static int Init(Context* context)
 			.offset = 0, /* Zeros out the rest */
 		},
 		&(SDL_GpuTextureRegion){
-			.textureSlice.texture = Texture,
+			.texture = Texture,
 			.w = imageData->w,
 			.h = imageData->h,
 			.d = 1
@@ -341,7 +342,7 @@ static int Draw(Context* context)
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
-		colorAttachmentInfo.textureSlice.texture = swapchainTexture;
+		colorAttachmentInfo.texture = swapchainTexture;
 		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;

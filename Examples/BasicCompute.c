@@ -89,6 +89,7 @@ static int Init(Context* context)
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
     Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+        .type = SDL_GPU_TEXTURETYPE_2D,
         .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
         .width = w,
         .height = h,
@@ -159,7 +160,7 @@ static int Init(Context* context)
     SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
         cmdBuf,
         (SDL_GpuStorageTextureReadWriteBinding[]){{
-            .textureSlice.texture = Texture
+            .texture = Texture
         }},
         1,
         NULL,
@@ -199,7 +200,7 @@ static int Draw(Context* context)
         SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(
             cmdbuf,
             (SDL_GpuColorAttachmentInfo[]){{
-                .textureSlice.texture = swapchainTexture,
+                .texture = swapchainTexture,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
                 .storeOp = SDL_GPU_STOREOP_STORE,
                 .clearColor.a = 1,
