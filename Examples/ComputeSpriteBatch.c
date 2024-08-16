@@ -387,9 +387,8 @@ static int Draw(Context* context)
 		SDL_GpuBindComputeStorageBuffers(
 			computePass,
 			0,
-			&(SDL_GpuBufferLocation){
-				.buffer = SpriteComputeBuffer,
-				.offset = 0
+			&(SDL_GpuBuffer*){
+				SpriteComputeBuffer,
 			},
 			1
 		);
