@@ -109,41 +109,60 @@ static int Draw(Context* context)
     {
         SDL_GpuRenderPass *renderPass = SDL_GpuBeginRenderPass(
             cmdbuf,
-            (SDL_GpuColorAttachmentInfo[]){
-                {
-                    .texture = Texture3D,
-                    .cycle = SDL_TRUE,
-                    .loadOp = SDL_GPU_LOADOP_CLEAR,
-                    .storeOp = SDL_GPU_STOREOP_STORE,
-                    .clearColor = { 1.0f, 0.0f, 0.0f, 1.0f },
-                    .layerOrDepthPlane = 0
-                },
-                {
-                    .texture = Texture3D,
-                    .cycle = SDL_FALSE,
-                    .loadOp = SDL_GPU_LOADOP_CLEAR,
-                    .storeOp = SDL_GPU_STOREOP_STORE,
-                    .clearColor = { 0.0f, 1.0f, 0.0f, 1.0f },
-                    .layerOrDepthPlane = 1
-                },
-                {
-                    .texture = Texture3D,
-                    .cycle = SDL_FALSE,
-                    .loadOp = SDL_GPU_LOADOP_CLEAR,
-                    .storeOp = SDL_GPU_STOREOP_STORE,
-                    .clearColor = { 0.0f, 0.0f, 1.0f, 1.0f },
-                    .layerOrDepthPlane = 2
-                },
-                {
-                    .texture = Texture3D,
-                    .cycle = SDL_FALSE,
-                    .loadOp = SDL_GPU_LOADOP_CLEAR,
-                    .storeOp = SDL_GPU_STOREOP_STORE,
-                    .clearColor = { 1.0f, 0.0f, 1.0f, 1.0f },
-                    .layerOrDepthPlane = 3
-                }
+            &(SDL_GpuColorAttachmentInfo){
+                .texture = Texture3D,
+                .cycle = SDL_TRUE,
+                .loadOp = SDL_GPU_LOADOP_CLEAR,
+                .storeOp = SDL_GPU_STOREOP_STORE,
+                .clearColor = { 1.0f, 0.0f, 0.0f, 1.0f },
+                .layerOrDepthPlane = 0
             },
-            4,
+            1,
+            NULL
+        );
+        SDL_GpuEndRenderPass(renderPass);
+
+        renderPass = SDL_GpuBeginRenderPass(
+            cmdbuf,
+            &(SDL_GpuColorAttachmentInfo){
+                .texture = Texture3D,
+                .cycle = SDL_FALSE,
+                .loadOp = SDL_GPU_LOADOP_CLEAR,
+                .storeOp = SDL_GPU_STOREOP_STORE,
+                .clearColor = { 0.0f, 1.0f, 0.0f, 1.0f },
+                .layerOrDepthPlane = 1
+            },
+            1,
+            NULL
+        );
+        SDL_GpuEndRenderPass(renderPass);
+
+        renderPass = SDL_GpuBeginRenderPass(
+            cmdbuf,
+            &(SDL_GpuColorAttachmentInfo){
+                .texture = Texture3D,
+                .cycle = SDL_FALSE,
+                .loadOp = SDL_GPU_LOADOP_CLEAR,
+                .storeOp = SDL_GPU_STOREOP_STORE,
+                .clearColor = { 0.0f, 0.0f, 1.0f, 1.0f },
+                .layerOrDepthPlane = 2
+            },
+            1,
+            NULL
+        );
+        SDL_GpuEndRenderPass(renderPass);
+
+        renderPass = SDL_GpuBeginRenderPass(
+            cmdbuf,
+            &(SDL_GpuColorAttachmentInfo){
+                .texture = Texture3D,
+                .cycle = SDL_FALSE,
+                .loadOp = SDL_GPU_LOADOP_CLEAR,
+                .storeOp = SDL_GPU_STOREOP_STORE,
+                .clearColor = { 1.0f, 0.0f, 1.0f, 1.0f },
+                .layerOrDepthPlane = 3
+            },
+            1,
             NULL
         );
         SDL_GpuEndRenderPass(renderPass);
