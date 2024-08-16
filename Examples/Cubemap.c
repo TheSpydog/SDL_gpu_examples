@@ -224,8 +224,8 @@ static int Init(Context* context)
 		SDL_GpuRenderPass *renderPass = SDL_GpuBeginRenderPass(
 			cmdbuf,
 			&(SDL_GpuColorAttachmentInfo){
-				.textureSlice.texture = Texture,
-				.textureSlice.layer = i,
+				.texture = Texture,
+				.layerOrDepthPlane = i,
 				.clearColor = ClearColors[i],
 				.loadOp = SDL_GPU_LOADOP_CLEAR,
 				.storeOp = SDL_GPU_STOREOP_STORE
@@ -282,7 +282,7 @@ static int Draw(Context* context)
 		Matrix4x4 viewproj = Matrix4x4_Multiply(view, proj);
 
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
-			.textureSlice.texture = swapchainTexture,
+			.texture = swapchainTexture,
 			.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE

@@ -158,7 +158,7 @@ static int Draw(Context* context)
 	{
 		SDL_GpuRenderPass* renderPass;
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
-			.textureSlice.texture = MSAARenderTextures[CurrentSampleCount],
+			.texture = MSAARenderTextures[CurrentSampleCount],
 			.clearColor = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE

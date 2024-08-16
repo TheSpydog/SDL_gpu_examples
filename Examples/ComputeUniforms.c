@@ -71,7 +71,7 @@ static int Draw(Context* context)
         SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
             cmdbuf,
             (SDL_GpuStorageTextureReadWriteBinding[]){{
-                .textureSlice.texture = GradientRenderTexture,
+                .texture = GradientRenderTexture,
                 .cycle = SDL_TRUE
             }},
             1,

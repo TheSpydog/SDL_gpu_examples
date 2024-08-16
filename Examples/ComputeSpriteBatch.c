@@ -401,7 +401,7 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(
 			cmdBuf,
 			&(SDL_GpuColorAttachmentInfo){
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.cycle = SDL_FALSE,
 				.loadOp = SDL_GPU_LOADOP_CLEAR,
 				.storeOp = SDL_GPU_STOREOP_STORE,

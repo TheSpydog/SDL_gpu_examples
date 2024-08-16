@@ -160,7 +160,7 @@ static int Init(Context* context)
     SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
         cmdBuf,
         (SDL_GpuStorageTextureReadWriteBinding[]){{
-            .textureSlice.texture = Texture
+            .texture = Texture
         }},
         1,
         NULL,
@@ -200,7 +200,7 @@ static int Draw(Context* context)
         SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(
             cmdbuf,
             (SDL_GpuColorAttachmentInfo[]){{
-                .textureSlice.texture = swapchainTexture,
+                .texture = swapchainTexture,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
                 .storeOp = SDL_GPU_STOREOP_STORE,
                 .clearColor.a = 1,

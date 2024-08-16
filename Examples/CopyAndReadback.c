@@ -292,7 +292,7 @@ static int Draw(Context* context)
 		SDL_GpuRenderPass* clearPass = SDL_GpuBeginRenderPass(
 			cmdbuf,
 			(SDL_GpuColorAttachmentInfo[]){{
-				.textureSlice.texture = swapchainTexture,
+				.texture = swapchainTexture,
 				.loadOp = SDL_GPU_LOADOP_CLEAR,
 				.storeOp = SDL_GPU_STOREOP_STORE,
 				.clearColor = { 0, 0, 0, 1 },

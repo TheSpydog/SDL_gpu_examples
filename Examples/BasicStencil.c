@@ -235,13 +235,13 @@ static int Draw(Context* context)
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
-		colorAttachmentInfo.textureSlice.texture = swapchainTexture;
+		colorAttachmentInfo.texture = swapchainTexture;
 		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
 		SDL_GpuDepthStencilAttachmentInfo depthStencilAttachmentInfo = { 0 };
-		depthStencilAttachmentInfo.textureSlice.texture = DepthStencilTexture;
+		depthStencilAttachmentInfo.texture = DepthStencilTexture;
 		depthStencilAttachmentInfo.cycle = SDL_TRUE;
 		depthStencilAttachmentInfo.depthStencilClearValue.depth = 0;
 		depthStencilAttachmentInfo.depthStencilClearValue.stencil = 0;

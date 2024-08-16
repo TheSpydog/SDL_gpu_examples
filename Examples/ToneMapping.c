@@ -272,7 +272,7 @@ static int Draw(Context* context)
 		SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
 			cmdbuf,
 			(SDL_GpuStorageTextureReadWriteBinding[]){{
-				.textureSlice.texture = ToneMapTexture,
+				.texture = ToneMapTexture,
 				.cycle = SDL_TRUE
 			}},
 			1,
@@ -300,7 +300,7 @@ static int Draw(Context* context)
 			computePass = SDL_GpuBeginComputePass(
 				cmdbuf,
 				(SDL_GpuStorageTextureReadWriteBinding[]){{
-					.textureSlice.texture = TransferTexture,
+					.texture = TransferTexture,
 					.cycle = SDL_TRUE
 				}},
 				1,
