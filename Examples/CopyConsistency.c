@@ -133,30 +133,40 @@ static int Init(Context* context)
 	// Create the buffers
 	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionTextureVertex) * 4
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionTextureVertex) * 4
+		}
 	);
 	LeftVertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionTextureVertex) * 4
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionTextureVertex) * 4
+		}
 	);
 	RightVertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionTextureVertex) * 4
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionTextureVertex) * 4
+		}
 	);
 	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
-		sizeof(Uint16) * 6
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.sizeInBytes = sizeof(Uint16) * 6
+		}
 	);
 
 	// Set up buffer data
 	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		sizeof(PositionTextureVertex) * 8 + sizeof(Uint16) * 6
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = sizeof(PositionTextureVertex) * 8 + sizeof(Uint16) * 6
+		}
 	);
 
 	PositionTextureVertex* transferData;
@@ -190,8 +200,10 @@ static int Init(Context* context)
 	// Set up texture data
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		leftImageData->w * leftImageData->h * 8
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = leftImageData->w * leftImageData->h * 8
+		}
 	);
 
 	Uint8* textureTransferPtr;

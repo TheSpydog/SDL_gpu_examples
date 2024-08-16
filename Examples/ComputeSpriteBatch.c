@@ -158,8 +158,10 @@ static int Init(Context* context)
 
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		imageData->w * imageData->h * 4
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = imageData->w * imageData->h * 4
+		}
 	);
 
 	Uint8 *textureTransferPtr;
@@ -195,33 +197,43 @@ static int Init(Context* context)
 
 	SpriteComputeTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		SPRITE_COUNT * sizeof(ComputeSpriteInstance)
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = SPRITE_COUNT * sizeof(ComputeSpriteInstance)
+		}
 	);
 
 	SpriteComputeBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ_BIT,
-		SPRITE_COUNT * sizeof(ComputeSpriteInstance)
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ_BIT,
+			.sizeInBytes = SPRITE_COUNT * sizeof(ComputeSpriteInstance)
+		}
 	);
 
 	SpriteVertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		SPRITE_COUNT * 4 * sizeof(PositionTextureColorVertex)
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = SPRITE_COUNT * 4 * sizeof(PositionTextureColorVertex)
+		}
 	);
 
 	SpriteIndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
-		SPRITE_COUNT * 6 * sizeof(Uint32)
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.sizeInBytes = SPRITE_COUNT * 6 * sizeof(Uint32)
+		}
 	);
 
 	// Transfer the up-front data
 	SDL_GpuTransferBuffer* indexBufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		SPRITE_COUNT * 6 * sizeof(Uint32)
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = SPRITE_COUNT * 6 * sizeof(Uint32)
+		}
 	);
 
 	Uint32* indexTransferPtr;

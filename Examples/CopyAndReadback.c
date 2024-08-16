@@ -72,26 +72,34 @@ static int Init(Context* context)
 
 	OriginalBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
-		sizeof(bufferData)
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+			.sizeInBytes = sizeof(bufferData)
+		}
 	);
 
 	BufferCopy = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
-		sizeof(bufferData)
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+			.sizeInBytes = sizeof(bufferData)
+		}
 	);
 
 	SDL_GpuTransferBuffer* downloadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
-		imageData->w * imageData->h * 4 + sizeof(bufferData)
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
+			.sizeInBytes = imageData->w * imageData->h * 4 + sizeof(bufferData)
+		}
 	);
 
 	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		imageData->w * imageData->h * 4 + sizeof(bufferData)
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = imageData->w * imageData->h * 4 + sizeof(bufferData)
+		}
 	);
 
 	Uint8* uploadTransferPtr;

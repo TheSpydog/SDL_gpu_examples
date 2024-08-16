@@ -107,20 +107,26 @@ static int Init(Context* context)
 	// FIXME: Needs error handling!
 	VertexBufferCW = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionColorVertex) * 3
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionColorVertex) * 3
+		}
 	);
 	VertexBufferCCW = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionColorVertex) * 3
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionColorVertex) * 3
+		}
 	);
 
 	// Set up the transfer buffer
 	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		sizeof(PositionColorVertex) * 6
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = sizeof(PositionColorVertex) * 6
+		}
 	);
 
 	PositionColorVertex* transferData;

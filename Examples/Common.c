@@ -12,10 +12,7 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-#if 0
-	SDL_setenv("SDL_GPU_DRIVER", "D3D11");
-#endif
-	context->Device = SDL_GpuCreateDevice(SDL_TRUE, SDL_FALSE, SDL_CreateProperties());
+	context->Device = SDL_GpuCreateDevice(SDL_TRUE, SDL_FALSE, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");

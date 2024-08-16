@@ -88,29 +88,37 @@ static int Init(Context* context)
 	const Uint32 vertexBufferSize = sizeof(PositionColorVertex) * 10;
 	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		vertexBufferSize
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = vertexBufferSize
+		}
 	);
 
 	const Uint32 indexBufferSize = sizeof(Uint16) * 6;
 	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
-		indexBufferSize
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.sizeInBytes = indexBufferSize
+		}
 	);
 
 	const Uint32 drawBufferSize = (sizeof(SDL_GpuIndexedIndirectDrawCommand) * 1) + (sizeof(SDL_GpuIndirectDrawCommand) * 2);
 	DrawBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_INDIRECT_BIT,
-		drawBufferSize
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDIRECT_BIT,
+			.sizeInBytes = drawBufferSize
+		}
 	);
 
 	// Set the buffer data
 	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		vertexBufferSize + indexBufferSize + drawBufferSize
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = vertexBufferSize + indexBufferSize + drawBufferSize
+		}
 	);
 
 	PositionColorVertex* transferData;

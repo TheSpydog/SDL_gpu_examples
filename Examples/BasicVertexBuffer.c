@@ -85,15 +85,19 @@ static int Init(Context* context)
 	// Create the vertex buffer
 	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionColorVertex) * 3
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionColorVertex) * 3
+		}
 	);
 
 	// To get data into the vertex buffer, we have to use a transfer buffer
 	SDL_GpuTransferBuffer* transferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		sizeof(PositionColorVertex) * 3
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = sizeof(PositionColorVertex) * 3
+		}
 	);
 
 	PositionColorVertex* transferData;
