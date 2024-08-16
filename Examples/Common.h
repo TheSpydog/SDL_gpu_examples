@@ -98,6 +98,7 @@ extern Example BasicStencil_Example;
 extern Example InstancedIndexed_Example;
 extern Example TexturedQuad_Example;
 extern Example TexturedAnimatedQuad_Example;
+extern Example Clear3DSlice_Example;
 extern Example BasicCompute_Example;
 extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
