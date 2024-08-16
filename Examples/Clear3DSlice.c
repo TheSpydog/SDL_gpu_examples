@@ -120,7 +120,7 @@ static int Draw(Context* context)
                 },
                 {
                     .texture = Texture3D,
-                    .cycle = SDL_TRUE,
+                    .cycle = SDL_FALSE,
                     .loadOp = SDL_GPU_LOADOP_CLEAR,
                     .storeOp = SDL_GPU_STOREOP_STORE,
                     .clearColor = { 0.0f, 1.0f, 0.0f, 1.0f },
@@ -128,7 +128,7 @@ static int Draw(Context* context)
                 },
                 {
                     .texture = Texture3D,
-                    .cycle = SDL_TRUE,
+                    .cycle = SDL_FALSE,
                     .loadOp = SDL_GPU_LOADOP_CLEAR,
                     .storeOp = SDL_GPU_STOREOP_STORE,
                     .clearColor = { 0.0f, 0.0f, 1.0f, 1.0f },
@@ -136,7 +136,7 @@ static int Draw(Context* context)
                 },
                 {
                     .texture = Texture3D,
-                    .cycle = SDL_TRUE,
+                    .cycle = SDL_FALSE,
                     .loadOp = SDL_GPU_LOADOP_CLEAR,
                     .storeOp = SDL_GPU_STOREOP_STORE,
                     .clearColor = { 1.0f, 0.0f, 1.0f, 1.0f },
