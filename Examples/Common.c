@@ -12,7 +12,7 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_GpuCreateDevice(SDL_TRUE, SDL_FALSE, NULL);
+	context->Device = SDL_GpuCreateDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, SDL_FALSE, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");
@@ -101,7 +101,7 @@ SDL_GpuShader* LoadShader(
 	}
 	else
 	{
-		shader = SDL_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
+		shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
 	}
 	if (shader == NULL)
 	{
@@ -144,7 +144,7 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	}
 	else
 	{
-		pipeline = SDL_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
+		pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
 	}
 	if (pipeline == NULL)
 	{
