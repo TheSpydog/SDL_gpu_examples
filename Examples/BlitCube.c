@@ -258,6 +258,7 @@ static int Init(Context* context)
 				.layer = i,
 				.w = 32,
 				.h = 32,
+				.d = 1,
 			},
 			SDL_FALSE
 		);
