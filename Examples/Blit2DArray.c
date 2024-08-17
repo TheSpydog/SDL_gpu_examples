@@ -281,12 +281,14 @@ static int Init(Context* context)
 			.layer = 0,
 			.w = srcWidth,
 			.h = srcHeight,
+			.d = 1,
 		},
 		&(SDL_GpuTextureRegion){
 			.texture = DestinationTexture,
 			.layer = 0,
 			.w = srcWidth / 2,
 			.h = srcHeight / 2,
+			.d = 1,
 		},
 		SDL_GPU_FILTER_LINEAR,
 		SDL_FALSE
@@ -298,12 +300,14 @@ static int Init(Context* context)
 			.layer = 1,
 			.w = srcWidth,
 			.h = srcHeight,
+			.d = 1,
 		},
 		&(SDL_GpuTextureRegion){
 			.texture = DestinationTexture,
 			.layer = 1,
 			.w = srcWidth / 2,
 			.h = srcHeight / 2,
+			.d = 1,
 		},
 		SDL_GPU_FILTER_LINEAR,
 		SDL_FALSE

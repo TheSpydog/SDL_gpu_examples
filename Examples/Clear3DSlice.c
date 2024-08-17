@@ -12,11 +12,13 @@ static int Init(Context* context)
         return result;
     }
 
+    SDL_GpuTextureFormat swapchainFormat = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window);
+
     Texture3D = SDL_GpuCreateTexture(
         context->Device,
         &(SDL_GpuTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_3D,
-            .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+            .format = swapchainFormat,
             .width = 64,
             .height = 64,
             .depth = 4,
@@ -50,7 +52,7 @@ static int Init(Context* context)
             .attachmentInfo = {
                 .colorAttachmentCount = 1,
                 .colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-                    .format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
+                    .format = swapchainFormat,
                     .blendState = {
                         .blendEnable = SDL_TRUE,
                         .alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -167,30 +169,30 @@ static int Draw(Context* context)
         );
         SDL_GpuEndRenderPass(renderPass);
 
-        renderPass = SDL_GpuBeginRenderPass(
-            cmdbuf,
-            (SDL_GpuColorAttachmentInfo[]){{
-                .texture = swapchainTexture,
-                .loadOp = SDL_GPU_LOADOP_DONT_CARE,
-                .storeOp = SDL_GPU_STOREOP_STORE,
-            }},
-            1,
-            NULL
-        );
-
-        SDL_GpuBindGraphicsPipeline(renderPass, Sample3DPipeline);
-        SDL_GpuBindFragmentSamplers(
-            renderPass,
-            0,
-            &(SDL_GpuTextureSamplerBinding){
-                .texture = Texture3D,
-                .sampler = Sampler
-            },
-            1
-        );
-        SDL_GpuDrawPrimitives(renderPass, 0, 3);
-
-        SDL_GpuEndRenderPass(renderPass);
+        for (int i = 0; i < 4; i += 1) {
+            Uint32 destX = (i % 2) * (w / 2);
+            Uint32 destY = (i > 1) ? (h / 2) : 0;
+            SDL_GpuBlit(
+                cmdbuf,
+                &(SDL_GpuTextureRegion){
+                    .texture = Texture3D,
+                    .z = i,
+                    .w = 64,
+                    .h = 64,
+                    .d = 1,
+                },
+                &(SDL_GpuTextureRegion){
+                    .texture = swapchainTexture,
+                    .x = destX,
+                    .y = destY,
+                    .w = (w / 2),
+                    .h = (h / 2),
+                    .d = 1,
+                },
+                SDL_GPU_FILTER_NEAREST,
+                SDL_FALSE
+            );
+        }
     }
 
     SDL_GpuSubmit(cmdbuf);
