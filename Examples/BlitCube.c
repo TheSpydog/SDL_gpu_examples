@@ -276,12 +276,14 @@ static int Init(Context* context)
 				.layer = i,
 				.w = 32,
 				.h = 32,
+				.d = 1,
 			},
 			&(SDL_GpuTextureRegion){
 				.texture = DestinationTexture,
 				.layer = i,
 				.w = 32,
 				.h = 32,
+				.d = 1,
 			},
 			SDL_GPU_FILTER_LINEAR,
 			SDL_FALSE
