@@ -80,22 +80,26 @@ static int Init(Context* context)
 	// Create the GPU resources
 	VertexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
-		sizeof(PositionVertex) * 24
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.sizeInBytes = sizeof(PositionVertex) * 24
+		}
 	);
 
 	IndexBuffer = SDL_GpuCreateBuffer(
 		context->Device,
-		SDL_GPU_BUFFERUSAGE_INDEX_BIT,
-		sizeof(Uint16) * 36
+		&(SDL_GpuBufferCreateInfo) {
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.sizeInBytes = sizeof(Uint16) * 36
+		}
 	);
 
 	SourceTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.width = 32,
 		.height = 32,
 		.depth = 1,
-		.isCube = SDL_TRUE,
 		.layerCount = 6,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
@@ -103,10 +107,10 @@ static int Init(Context* context)
 
 	DestinationTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.width = 32,
 		.height = 32,
 		.depth = 1,
-		.isCube = SDL_TRUE,
 		.layerCount = 6,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT
@@ -124,8 +128,10 @@ static int Init(Context* context)
 	// Set up buffer data
 	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		(sizeof(PositionVertex) * 24) + (sizeof(Uint16) * 36)
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = (sizeof(PositionVertex) * 24) + (sizeof(Uint16) * 36)
+		}
 	);
 
 	PositionVertex* bufferTransferData;
@@ -183,11 +189,13 @@ static int Init(Context* context)
 	const Uint32 bytesPerImage = 32 * 32 * 4;
 	SDL_GpuTransferBuffer* textureTransferBuffer = SDL_GpuCreateTransferBuffer(
 		context->Device,
-		SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-		bytesPerImage * 6
+		&(SDL_GpuTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.sizeInBytes = bytesPerImage * 6
+		}
 	);
 	Uint8* textureTransferData;
-	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, &textureTransferData);
+	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, (void**) &textureTransferData);
 
 	const char* imageNames[] = {
 		"cube0.bmp", "cube1.bmp", "cube2.bmp",
@@ -246,8 +254,8 @@ static int Init(Context* context)
 				.offset = bytesPerImage * i
 			},
 			&(SDL_GpuTextureRegion) {
-				.textureSlice.texture = SourceTexture,
-				.textureSlice.layer = i,
+				.texture = SourceTexture,
+				.layer = i,
 				.w = 32,
 				.h = 32,
 			},
@@ -263,14 +271,14 @@ static int Init(Context* context)
 		SDL_GpuBlit(
 			cmdbuf,
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = SourceTexture,
-				.textureSlice.layer = i,
+				.texture = SourceTexture,
+				.layer = i,
 				.w = 32,
 				.h = 32,
 			},
 			&(SDL_GpuTextureRegion){
-				.textureSlice.texture = DestinationTexture,
-				.textureSlice.layer = i,
+				.texture = DestinationTexture,
+				.layer = i,
 				.w = 32,
 				.h = 32,
 			},
@@ -328,7 +336,7 @@ static int Draw(Context* context)
 		Matrix4x4 viewproj = Matrix4x4_Multiply(view, proj);
 
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
-			.textureSlice.texture = swapchainTexture,
+			.texture = swapchainTexture,
 			.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
