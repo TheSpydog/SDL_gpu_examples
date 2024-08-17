@@ -3,7 +3,7 @@
 static SDL_GpuGraphicsPipeline* Pipelines[4];
 static SDL_GpuTexture* MSAARenderTextures[4];
 
-const SDL_GpuTextureFormat RTFormat = SDL_GPU_TEXTUREFORMAT_R8G8B8A8;
+static SDL_GpuTextureFormat RTFormat;
 
 static int CurrentSampleCount = 0;
 
@@ -31,6 +31,7 @@ static int Init(Context* context)
 	}
 
 	// Create the pipelines
+	RTFormat = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window);
 	SDL_GpuGraphicsPipelineCreateInfo pipelineCreateInfo = {
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,

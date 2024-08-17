@@ -34,6 +34,7 @@ static int Init(Context* context)
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
     GradientRenderTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+        .format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
         .type = SDL_GPU_TEXTURETYPE_2D,
         .width = w,
         .height = h,
