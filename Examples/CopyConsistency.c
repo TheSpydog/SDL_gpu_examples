@@ -170,12 +170,10 @@ static int Init(Context* context)
 		}
 	);
 
-	PositionTextureVertex* transferData;
-	SDL_GpuMapTransferBuffer(
+	PositionTextureVertex* transferData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE,
-		(void**) &transferData
+		SDL_FALSE
 	);
 
 	transferData[0] = (PositionTextureVertex){ -1.0f,  1.0f, 0, 0, 0 };
@@ -207,8 +205,11 @@ static int Init(Context* context)
 		}
 	);
 
-	Uint8* textureTransferPtr;
-	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, (void**) &textureTransferPtr);
+	Uint8* textureTransferPtr = SDL_GpuMapTransferBuffer(
+		context->Device,
+		textureTransferBuffer,
+		SDL_FALSE
+	);
 	SDL_memcpy(textureTransferPtr, leftImageData->pixels, leftImageData->w * leftImageData->h * 4);
 	SDL_memcpy(textureTransferPtr + (leftImageData->w * leftImageData->h * 4), rightImageData->pixels, rightImageData->w * rightImageData->h * 4);
 	SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);

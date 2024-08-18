@@ -105,8 +105,11 @@ static int Init(Context* context)
 		}
 	);
 
-	Uint8* uploadTransferPtr;
-	SDL_GpuMapTransferBuffer(context->Device, uploadTransferBuffer, SDL_FALSE, (void**) &uploadTransferPtr);
+	Uint8* uploadTransferPtr = SDL_GpuMapTransferBuffer(
+		context->Device,
+		uploadTransferBuffer,
+		SDL_FALSE
+	);
 	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_memcpy(uploadTransferPtr + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData));
 	SDL_GpuUnmapTransferBuffer(context->Device, uploadTransferBuffer);
@@ -239,13 +242,10 @@ static int Init(Context* context)
 	SDL_GpuReleaseFence(context->Device, fence);
 
 	// Compare the original bytes to the copied bytes
-	Uint8 *downloadedData;
-
-	SDL_GpuMapTransferBuffer(
+	Uint8 *downloadedData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		downloadTransferBuffer,
-		SDL_FALSE,
-		(void**) &downloadedData
+		SDL_FALSE
 	);
 
 	if (SDL_memcmp(downloadedData, imageData->pixels, imageData->w * imageData->h * 4) == 0)

@@ -169,8 +169,11 @@ static int Init(Context* context)
 		}
     );
 
-    Uint8* imageTransferPtr;
-    SDL_GpuMapTransferBuffer(context->Device, imageDataTransferBuffer, SDL_FALSE, (void**) &imageTransferPtr);
+    Uint8* imageTransferPtr = SDL_GpuMapTransferBuffer(
+	    context->Device,
+	    imageDataTransferBuffer,
+	    SDL_FALSE
+    );
     SDL_memcpy(imageTransferPtr, hdrImageData, sizeof(float) * 4 * img_x * img_y);
     SDL_GpuUnmapTransferBuffer(context->Device, imageDataTransferBuffer);
 

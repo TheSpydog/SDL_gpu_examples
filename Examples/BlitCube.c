@@ -134,12 +134,10 @@ static int Init(Context* context)
 		}
 	);
 
-	PositionVertex* bufferTransferData;
-	SDL_GpuMapTransferBuffer(
+	PositionVertex* bufferTransferData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE,
-		(void**) &bufferTransferData
+		SDL_FALSE
 	);
 
 	bufferTransferData[0] = (PositionVertex) { -10, -10, -10 };
@@ -194,8 +192,11 @@ static int Init(Context* context)
 			.sizeInBytes = bytesPerImage * 6
 		}
 	);
-	Uint8* textureTransferData;
-	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, (void**) &textureTransferData);
+	Uint8* textureTransferData = SDL_GpuMapTransferBuffer(
+		context->Device,
+		textureTransferBuffer,
+		SDL_FALSE
+	);
 
 	const char* imageNames[] = {
 		"cube0.bmp", "cube1.bmp", "cube2.bmp",
