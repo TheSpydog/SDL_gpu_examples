@@ -174,13 +174,10 @@ static int Init(Context* context)
 		}
 	);
 
-	PositionColorVertex* transferData;
-
-	SDL_GpuMapTransferBuffer(
+	PositionColorVertex* transferData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE,
-		(void**) &transferData
+		SDL_FALSE
 	);
 
 	transferData[0] = (PositionColorVertex) { -0.5f, -0.5f, 0, 255, 255,   0, 255 };

@@ -164,8 +164,11 @@ static int Init(Context* context)
 		}
 	);
 
-	Uint8 *textureTransferPtr;
-	SDL_GpuMapTransferBuffer(context->Device, textureTransferBuffer, SDL_FALSE, (void**) &textureTransferPtr);
+	Uint8 *textureTransferPtr = SDL_GpuMapTransferBuffer(
+		context->Device,
+		textureTransferBuffer,
+		SDL_FALSE
+	);
 	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);
 
@@ -237,12 +240,10 @@ static int Init(Context* context)
 		}
 	);
 
-	Uint32* indexTransferPtr;
-	SDL_GpuMapTransferBuffer(
+	Uint32* indexTransferPtr = SDL_GpuMapTransferBuffer(
 		context->Device,
 		indexBufferTransferBuffer,
-		SDL_FALSE,
-		(void**) &indexTransferPtr
+		SDL_FALSE
 	);
 
 	for (Uint32 i = 0, j = 0; i < SPRITE_COUNT * 6; i += 6, j += 4)
@@ -330,12 +331,10 @@ static int Draw(Context* context)
 	if (swapchainTexture != NULL)
 	{
 		// Build sprite instance transfer
-		ComputeSpriteInstance* dataPtr;
-		SDL_GpuMapTransferBuffer(
+		ComputeSpriteInstance* dataPtr = SDL_GpuMapTransferBuffer(
 			context->Device,
 			SpriteComputeTransferBuffer,
-			SDL_TRUE,
-			(void**) &dataPtr
+			SDL_TRUE
 		);
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)

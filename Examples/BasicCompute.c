@@ -120,13 +120,10 @@ static int Init(Context* context)
         }
 	);
 
-	PositionTextureVertex* transferData;
-
-	SDL_GpuMapTransferBuffer(
+	PositionTextureVertex* transferData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE,
-		(void**) &transferData
+		SDL_FALSE
 	);
 
     transferData[0] = (PositionTextureVertex) { -1, -1, 0, 0, 0 };

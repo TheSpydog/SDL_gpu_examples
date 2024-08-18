@@ -132,12 +132,10 @@ static int Init(Context* context)
 		}
 	);
 
-	PositionVertex* transferData;
-	SDL_GpuMapTransferBuffer(
+	PositionVertex* transferData = SDL_GpuMapTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE,
-		(void**) &transferData
+		SDL_FALSE
 	);
 
 	transferData[0] = (PositionVertex) { -10, -10, -10 };
