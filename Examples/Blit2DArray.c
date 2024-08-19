@@ -128,8 +128,7 @@ static int Init(Context* context)
 		.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
 		.width = srcWidth,
 		.height = srcHeight,
-		.depth = 1,
-		.layerCount = 2,
+		.layerCountOrDepth = 2,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
@@ -139,8 +138,7 @@ static int Init(Context* context)
 		.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
 		.width = srcWidth / 2,
 		.height = srcHeight / 2,
-		.depth = 1,
-		.layerCount = 2,
+		.layerCountOrDepth = 2,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT
 	});

@@ -21,9 +21,8 @@ static int Init(Context* context)
             .format = swapchainFormat,
             .width = 64,
             .height = 64,
-            .depth = 4,
+            .layerCountOrDepth = 4,
             .levelCount = 1,
-            .layerCount = 1,
             .usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
         }
     );

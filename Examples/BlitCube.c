@@ -99,8 +99,7 @@ static int Init(Context* context)
 		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.width = 32,
 		.height = 32,
-		.depth = 1,
-		.layerCount = 6,
+		.layerCountOrDepth = 6,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
@@ -110,8 +109,7 @@ static int Init(Context* context)
 		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.width = 32,
 		.height = 32,
-		.depth = 1,
-		.layerCount = 6,
+		.layerCountOrDepth = 6,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT
 	});
