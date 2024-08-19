@@ -80,8 +80,7 @@ static int Init(Context* context)
 		.type = SDL_GPU_TEXTURETYPE_2D,
 		.width = 640,
 		.height = 480,
-		.depth = 1,
-		.layerCount = 1,
+		.layerCountOrDepth = 1,
 		.levelCount = 1,
 		.format = RTFormat,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT

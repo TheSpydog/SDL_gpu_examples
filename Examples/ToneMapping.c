@@ -130,8 +130,7 @@ static int Init(Context* context)
         .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_SFLOAT,
         .width = img_x,
         .height = img_y,
-        .depth = 1,
-        .layerCount = 1,
+        .layerCountOrDepth = 1,
         .levelCount = 1,
         .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT
     });
@@ -141,8 +140,7 @@ static int Init(Context* context)
 		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_SFLOAT,
 		.width = img_x,
 		.height = img_y,
-		.depth = 1,
-		.layerCount = 1,
+		.layerCountOrDepth = 1,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});
@@ -152,8 +150,7 @@ static int Init(Context* context)
 		.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
 		.width = img_x,
 		.height = img_y,
-		.depth = 1,
-		.layerCount = 1,
+		.layerCountOrDepth = 1,
 		.levelCount = 1,
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
 	});

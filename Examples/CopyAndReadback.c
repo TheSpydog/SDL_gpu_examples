@@ -36,8 +36,7 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w,
 			.height = imageData->h,
-			.depth = 1,
-			.layerCount = 1,
+			.layerCountOrDepth = 1,
 			.levelCount = 1,
 			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 		}
@@ -50,8 +49,7 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w,
 			.height = imageData->h,
-			.depth = 1,
-			.layerCount = 1,
+			.layerCountOrDepth = 1,
 			.levelCount = 1,
 			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 		}
@@ -64,8 +62,7 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
 			.width = imageData->w / 2,
 			.height = imageData->h / 2,
-			.depth = 1,
-			.layerCount = 1,
+			.layerCountOrDepth = 1,
 			.levelCount = 1,
 			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT
 		}

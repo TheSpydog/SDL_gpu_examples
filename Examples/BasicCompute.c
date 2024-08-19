@@ -93,8 +93,7 @@ static int Init(Context* context)
         .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
         .width = w,
         .height = h,
-        .depth = 1,
-        .layerCount = 1,
+        .layerCountOrDepth = 1,
         .levelCount = 1,
         .usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
     });
