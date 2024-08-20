@@ -27,6 +27,7 @@ static Example* Examples[] =
 	&Blit2DArray_Example,
 	&BlitCube_Example,
 	&BlitMirror_Example,
+	&GenerateMipmaps_Example,
 };
 
 int main(int argc, char **argv)

@@ -2,7 +2,7 @@
 
 static SDL_GpuTexture* Texture;
 
-Uint32 TextureWidth, TextureHeight;
+static Uint32 TextureWidth, TextureHeight;
 
 static int Init(Context* context)
 {
