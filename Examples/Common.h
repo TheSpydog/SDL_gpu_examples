@@ -114,5 +114,6 @@ extern Example WindowResize_Example;
 extern Example Blit2DArray_Example;
 extern Example BlitCube_Example;
 extern Example BlitMirror_Example;
+extern Example GenerateMipmaps_Example;
 
 #endif
