@@ -333,18 +333,17 @@ static int Draw(Context* context)
 		/* Blit to swapchain */
 		SDL_GpuBlit(
 			cmdbuf,
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = BlitSourceTexture,
 				.w = w,
 				.h = h,
-				.d = 1,
 			},
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.w = swapchainWidth,
 				.h = swapchainHeight,
-				.d = 1
 			},
+			SDL_FLIP_NONE,
 			SDL_GPU_FILTER_NEAREST,
 			SDL_FALSE
 		);
