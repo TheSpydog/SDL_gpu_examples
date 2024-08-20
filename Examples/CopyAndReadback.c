@@ -7,7 +7,7 @@ static SDL_GpuTexture* TextureSmall;
 static SDL_GpuBuffer* OriginalBuffer;
 static SDL_GpuBuffer* BufferCopy;
 
-Uint32 TextureWidth, TextureHeight;
+static Uint32 TextureWidth, TextureHeight;
 
 static int Init(Context* context)
 {

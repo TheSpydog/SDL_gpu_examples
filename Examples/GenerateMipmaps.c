@@ -89,26 +89,18 @@ static int Draw(Context* context)
         /* Blit the smallest mip level */
         SDL_GpuBlit(
             cmdbuf,
-            &(SDL_GpuTextureRegion){
+            &(SDL_GpuBlitRegion){
                 .texture = MipmapTexture,
-                .x = 0,
-                .y = 0,
-                .z = 0,
                 .w = 8,
                 .h = 8,
-                .d = 1,
-                .layer = 0,
                 .mipLevel = 2
             },
-            &(SDL_GpuTextureRegion){
+            &(SDL_GpuBlitRegion){
                 .texture = swapchainTexture,
-                .x = 0,
-                .y = 0,
-                .z = 0,
                 .w = w,
                 .h = h,
-                .d = 1
             },
+            SDL_FLIP_NONE,
             SDL_GPU_FILTER_NEAREST,
             SDL_FALSE
         );
