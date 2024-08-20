@@ -73,12 +73,12 @@ static int Init(Context* context)
 			.vertexAttributeCount = 2,
 			.vertexAttributes = (SDL_GpuVertexAttribute[]){{
 				.binding = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_VECTOR3,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
 				.location = 0,
 				.offset = 0
 			}, {
 				.binding = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_VECTOR2,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
 				.location = 1,
 				.offset = sizeof(float) * 3
 			}}
