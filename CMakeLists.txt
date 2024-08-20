@@ -31,6 +31,7 @@ add_executable(SDL_gpu_examples
     Examples/WindowResize.c
     Examples/Blit2DArray.c
     Examples/BlitCube.c
+    Examples/BlitMirror.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE shadercross)

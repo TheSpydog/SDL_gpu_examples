@@ -275,39 +275,37 @@ static int Init(Context* context)
 
 	SDL_GpuBlit(
 		uploadCmdBuf,
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = SourceTexture,
-			.layer = 0,
+			.layerOrDepthPlane = 0,
 			.w = srcWidth,
 			.h = srcHeight,
-			.d = 1,
 		},
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = DestinationTexture,
-			.layer = 0,
+			.layerOrDepthPlane = 0,
 			.w = srcWidth / 2,
 			.h = srcHeight / 2,
-			.d = 1,
 		},
+		SDL_FLIP_NONE,
 		SDL_GPU_FILTER_LINEAR,
 		SDL_FALSE
 	);
 	SDL_GpuBlit(
 		uploadCmdBuf,
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = SourceTexture,
-			.layer = 1,
+			.layerOrDepthPlane = 1,
 			.w = srcWidth,
 			.h = srcHeight,
-			.d = 1,
 		},
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = DestinationTexture,
-			.layer = 1,
+			.layerOrDepthPlane = 1,
 			.w = srcWidth / 2,
 			.h = srcHeight / 2,
-			.d = 1,
 		},
+		SDL_FLIP_NONE,
 		SDL_GPU_FILTER_LINEAR,
 		SDL_FALSE
 	);

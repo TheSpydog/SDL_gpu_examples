@@ -26,6 +26,7 @@ static Example* Examples[] =
 	&WindowResize_Example,
 	&Blit2DArray_Example,
 	&BlitCube_Example,
+	&BlitMirror_Example,
 };
 
 int main(int argc, char **argv)

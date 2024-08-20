@@ -186,18 +186,17 @@ static int Init(Context* context)
 	// Render the half-size version
 	SDL_GpuBlit(
 		cmdbuf,
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = OriginalTexture,
 			.w = imageData->w,
 			.h = imageData->h,
-			.d = 1
 		},
-		&(SDL_GpuTextureRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = TextureSmall,
 			.w = imageData->w / 2,
 			.h = imageData->h / 2,
-			.d = 1
 		},
+		SDL_FLIP_NONE,
 		SDL_GPU_FILTER_LINEAR,
 		SDL_FALSE
 	);
@@ -302,58 +301,55 @@ static int Draw(Context* context)
 
 		SDL_GpuBlit(
 			cmdbuf,
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = OriginalTexture,
 				.w = TextureWidth,
 				.h = TextureHeight,
-				.d = 1
 			},
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
-				.d = 1
 			},
+			SDL_FLIP_NONE,
 			SDL_GPU_FILTER_NEAREST,
 			SDL_FALSE
 		);
 
 		SDL_GpuBlit(
 			cmdbuf,
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = TextureCopy,
 				.w = TextureWidth,
 				.h = TextureHeight,
-				.d = 1
 			},
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.x = w / 2,
 				.y = 0,
 				.w = w / 2,
 				.h = h / 2,
-				.d = 1
 			},
+			SDL_FLIP_NONE,
 			SDL_GPU_FILTER_NEAREST,
 			SDL_FALSE
 		);
 
 		SDL_GpuBlit(
 			cmdbuf,
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = TextureSmall,
 				.w = TextureWidth / 2,
 				.h = TextureHeight / 2,
-				.d = 1
 			},
-			&(SDL_GpuTextureRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.x = w / 4,
 				.y = h / 2,
 				.w = w / 2,
 				.h = h / 2,
-				.d = 1
 			},
+			SDL_FLIP_NONE,
 			SDL_GPU_FILTER_NEAREST,
 			SDL_FALSE
 		);
