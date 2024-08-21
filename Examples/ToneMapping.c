@@ -103,7 +103,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	if (!SDL_GpuClaimWindow(context->Device, context->Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_VSYNC))
+	if (!SDL_GpuClaimWindow(context->Device, context->Window))
 	{
 		SDL_Log("GpuClaimWindow failed");
 		return -1;
