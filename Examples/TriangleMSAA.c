@@ -184,7 +184,7 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
+	for (int i = 0; i < SampleCounts; i += 1)
 	{
 		SDL_GpuReleaseGraphicsPipeline(context->Device, Pipelines[i]);
 		SDL_GpuReleaseTexture(context->Device, MSAARenderTextures[i]);
