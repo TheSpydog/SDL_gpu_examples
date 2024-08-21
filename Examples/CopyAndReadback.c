@@ -33,7 +33,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
-			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
@@ -46,7 +46,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
-			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
@@ -59,7 +59,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
-			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w / 2,
 			.height = imageData->h / 2,
 			.layerCountOrDepth = 1,

@@ -14,7 +14,7 @@ static int Init(Context* context)
         context->Device,
         &(SDL_GpuTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_2D,
-            .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+            .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
             .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT,
             .width = 32,
             .height = 32,

@@ -121,7 +121,7 @@ static int Init(Context* context)
 
 	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
-		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.width = imageData1->w,
 		.height = imageData1->h,
 		.layerCountOrDepth = 2,
