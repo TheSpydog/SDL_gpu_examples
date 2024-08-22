@@ -127,7 +127,7 @@ static int Init(Context* context)
 
     HDRTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
-        .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_SFLOAT,
+        .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
         .width = img_x,
         .height = img_y,
         .layerCountOrDepth = 1,
@@ -137,7 +137,7 @@ static int Init(Context* context)
 
 	ToneMapTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
-		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_SFLOAT,
+		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT,
 		.width = img_x,
 		.height = img_y,
 		.layerCountOrDepth = 1,

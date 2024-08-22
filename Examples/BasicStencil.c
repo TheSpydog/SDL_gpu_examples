@@ -40,12 +40,12 @@ static int Init(Context* context)
 	}
 	else if (SDL_GpuSupportsTextureFormat(
 		context->Device,
-		SDL_GPU_TEXTUREFORMAT_D32_SFLOAT_S8_UINT,
+		SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
 		SDL_GPU_TEXTURETYPE_2D,
 		SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
 	))
 	{
-		depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_SFLOAT_S8_UINT;
+		depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT;
 	}
 	else
 	{

@@ -124,7 +124,7 @@ static int Init(Context* context)
 	);
 
 	SourceTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
-		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
 		.width = srcWidth,
 		.height = srcHeight,
@@ -134,7 +134,7 @@ static int Init(Context* context)
 	});
 
 	DestinationTexture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
-		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
 		.width = srcWidth / 2,
 		.height = srcHeight / 2,

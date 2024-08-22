@@ -91,7 +91,7 @@ static int Init(Context* context)
 	// Create the textures
 	SDL_GpuTextureCreateInfo textureCreateInfo = {
 		.type = SDL_GPU_TEXTURETYPE_2D,
-		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8,
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.width = 16,
 		.height = 16,
 		.layerCountOrDepth = 1,
