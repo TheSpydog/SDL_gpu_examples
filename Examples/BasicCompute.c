@@ -31,7 +31,7 @@ static int Init(Context* context)
 	context->Device,
 	"FillTexture.comp",
 	&(SDL_GpuComputePipelineCreateInfo) {
-		.readWriteStorageTextureCount = 1,
+		.writeOnlyStorageTextureCount = 1,
 		.threadCountX = 8,
 		.threadCountY = 8,
 		.threadCountZ = 1,
@@ -155,7 +155,7 @@ static int Init(Context* context)
 
     SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
         cmdBuf,
-        (SDL_GpuStorageTextureReadWriteBinding[]){{
+        (SDL_GpuStorageTextureWriteOnlyBinding[]){{
             .texture = Texture
         }},
         1,

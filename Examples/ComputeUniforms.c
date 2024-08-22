@@ -22,7 +22,7 @@ static int Init(Context* context)
         context->Device,
         "GradientTexture.comp",
         &(SDL_GpuComputePipelineCreateInfo) {
-            .readWriteStorageTextureCount = 1,
+            .writeOnlyStorageTextureCount = 1,
             .uniformBufferCount = 1,
             .threadCountX = 8,
             .threadCountY = 8,
@@ -70,7 +70,7 @@ static int Draw(Context* context)
     {
         SDL_GpuComputePass* computePass = SDL_GpuBeginComputePass(
             cmdbuf,
-            (SDL_GpuStorageTextureReadWriteBinding[]){{
+            (SDL_GpuStorageTextureWriteOnlyBinding[]){{
                 .texture = GradientRenderTexture,
                 .cycle = SDL_TRUE
             }},

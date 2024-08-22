@@ -141,7 +141,7 @@ static int Init(Context* context)
 		"SpriteBatch.comp",
 		&(SDL_GpuComputePipelineCreateInfo){
 			.readOnlyStorageBufferCount = 1,
-			.readWriteStorageBufferCount = 1,
+			.writeOnlyStorageBufferCount = 1,
 			.threadCountX = 64,
 			.threadCountY = 1,
 			.threadCountZ = 1
@@ -375,7 +375,7 @@ static int Draw(Context* context)
 			cmdBuf,
 			NULL,
 			0,
-			&(SDL_GpuStorageBufferReadWriteBinding){
+			&(SDL_GpuStorageBufferWriteOnlyBinding){
 				.buffer = SpriteVertexBuffer,
 				.cycle = SDL_TRUE
 			},
