@@ -2,6 +2,7 @@
 
 static SDL_GpuGraphicsPipeline* Pipelines[4];
 static SDL_GpuTexture* MSAARenderTextures[4];
+static int SampleCounts;
 
 static SDL_GpuTextureFormat RTFormat;
 
@@ -55,45 +56,46 @@ static int Init(Context* context)
 		.fragmentShader = fragmentShader,
 	};
 
+	SampleCounts = 0;
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
 		SDL_GpuSampleCount sampleCount = (SDL_GpuSampleCount) i;
-		pipelineCreateInfo.multisampleState.sampleCount = SDL_GpuGetBestSampleCount(
+		if (!SDL_GpuSupportsSampleCount(
 			context->Device,
 			RTFormat,
-			sampleCount
-		);
-		Pipelines[i] = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
-		if (Pipelines[i] == NULL)
+			sampleCount)) {
+			SDL_Log("Sample count %d not supported", (1 << CurrentSampleCount));
+			continue;
+		}
+		pipelineCreateInfo.multisampleState.sampleCount = sampleCount;
+		Pipelines[SampleCounts] = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
+		if (Pipelines[SampleCounts] == NULL)
 		{
 			SDL_Log("Failed to create pipeline!");
 			return -1;
 		}
+		// Create the render target textures
+		SDL_GpuTextureCreateInfo textureCreateInfo = {
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.width = 640,
+			.height = 480,
+			.layerCountOrDepth = 1,
+			.levelCount = 1,
+			.format = RTFormat,
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT,
+			.sampleCount = sampleCount
+		};
+		MSAARenderTextures[SampleCounts] = SDL_GpuCreateTexture(context->Device, &textureCreateInfo);
+		if (MSAARenderTextures[SampleCounts] == NULL) {
+			SDL_Log("Failed to create MSAA render target texture!");
+			SDL_GpuReleaseGraphicsPipeline(context->Device, Pipelines[SampleCounts]);
+		}
+		SampleCounts += 1;
 	}
 
 	// Clean up shader resources
 	SDL_GpuReleaseShader(context->Device, vertexShader);
 	SDL_GpuReleaseShader(context->Device, fragmentShader);
-
-	// Create the render target textures
-	SDL_GpuTextureCreateInfo textureCreateInfo = {
-		.type = SDL_GPU_TEXTURETYPE_2D,
-		.width = 640,
-		.height = 480,
-		.layerCountOrDepth = 1,
-		.levelCount = 1,
-		.format = RTFormat,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
-	};
-
-	for (int i = 0; i < SDL_arraysize(MSAARenderTextures); i += 1)
-	{
-		textureCreateInfo.sampleCount = (SDL_GpuSampleCount) i;
-		MSAARenderTextures[i] = SDL_GpuCreateTexture(context->Device, &textureCreateInfo);
-		if (MSAARenderTextures[i] == NULL) {
-			SDL_Log("Failed to create MSAA render target texture!");
-		}
-	}
 
 	// Print the instructions
 	SDL_Log("Press Left/Right to cycle between sample counts");
@@ -111,33 +113,20 @@ static int Update(Context* context)
 		CurrentSampleCount -= 1;
 		if (CurrentSampleCount < 0)
 		{
-			CurrentSampleCount = SDL_arraysize(Pipelines) - 1;
+			CurrentSampleCount = SampleCounts - 1;
 		}
 		changed = 1;
 	}
 
 	if (context->RightPressed)
 	{
-		CurrentSampleCount = (CurrentSampleCount + 1) % SDL_arraysize(Pipelines);
+		CurrentSampleCount = (CurrentSampleCount + 1) % SampleCounts;
 		changed = 1;
 	}
 
 	if (changed)
 	{
-		SDL_GpuSampleCount best = SDL_GpuGetBestSampleCount(
-			context->Device,
-			RTFormat,
-			(SDL_GpuSampleCount) CurrentSampleCount
-		);
-
-		if (best != CurrentSampleCount)
-		{
-			SDL_Log("Sample count %d not supported! Falling back to %d", (1 << CurrentSampleCount), (1 << best));
-		}
-		else
-		{
-			SDL_Log("Current sample count: %d", (1 << CurrentSampleCount));
-		}
+		SDL_Log("Current sample count: %d", (1 << CurrentSampleCount));
 	}
 
 	return 0;
@@ -195,7 +184,7 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
+	for (int i = 0; i < SampleCounts; i += 1)
 	{
 		SDL_GpuReleaseGraphicsPipeline(context->Device, Pipelines[i]);
 		SDL_GpuReleaseTexture(context->Device, MSAARenderTextures[i]);
