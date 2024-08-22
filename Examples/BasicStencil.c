@@ -91,7 +91,7 @@ static int Init(Context* context)
 			.vertexBindings = (SDL_GpuVertexBinding[]){{
 				.binding = 0,
 				.inputRate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-				.stepRate = 0,
+				.instanceStepRate = 0,
 				.stride = sizeof(PositionColorVertex)
 			}},
 			.vertexAttributeCount = 2,
