@@ -6,6 +6,7 @@ static SDL_GpuBuffer* IndexBuffer;
 
 static SDL_bool UseVertexOffset = SDL_FALSE;
 static SDL_bool UseIndexOffset = SDL_FALSE;
+static SDL_bool UseIndexBuffer = SDL_TRUE;
 
 static int Init(Context* context)
 {
@@ -191,6 +192,12 @@ static int Update(Context* context)
         SDL_Log("Using index offset: %s", UseIndexOffset ? "true" : "false");
     }
 
+	if (context->UpPressed)
+	{
+		UseIndexBuffer = !UseIndexBuffer;
+        SDL_Log("Using index buffer: %s", UseIndexBuffer ? "true" : "false");
+	}
+
 	return 0;
 }
 
@@ -220,8 +227,14 @@ static int Draw(Context* context)
 
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-		SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 3, 16, 0);
+
+		if (UseIndexBuffer)
+		{
+			SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+			SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 3, 16, 0);
+		} else {
+			SDL_GpuDrawPrimitives(renderPass, vertexOffset, 3, 16, 0);
+		}
 
 		SDL_GpuEndRenderPass(renderPass);
 	}
@@ -239,6 +252,7 @@ static void Quit(Context* context)
 
     UseVertexOffset = SDL_FALSE;
     UseIndexOffset = SDL_FALSE;
+	UseIndexBuffer = SDL_TRUE;
 
 	CommonQuit(context);
 }
