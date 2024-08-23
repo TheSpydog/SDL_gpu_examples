@@ -230,10 +230,10 @@ static int Draw(Context* context)
 		SDL_GpuBindGraphicsPipeline(renderPass, Pipelines[CurrentMode]);
 		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 0, 0, 320, 480 });
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBufferCW, .offset = 0 }, 1);
-		SDL_GpuDrawPrimitives(renderPass, 0, 3);
+		SDL_GpuDrawPrimitives(renderPass, 0, 3, 1, 0);
 		SDL_GpuSetViewport(renderPass, &(SDL_GpuViewport){ 320, 0, 320, 480 });
 		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBufferCCW, .offset = 0 }, 1);
-		SDL_GpuDrawPrimitives(renderPass, 0, 3);
+		SDL_GpuDrawPrimitives(renderPass, 0, 3, 1, 0);
 		SDL_GpuEndRenderPass(renderPass);
 	}
 

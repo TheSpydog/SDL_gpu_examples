@@ -445,7 +445,8 @@ static int Draw(Context* context)
 			0,
 			0,
 			SPRITE_COUNT * 6,
-			1
+			1,
+			0
 		);
 
 		SDL_GpuEndRenderPass(renderPass);
