@@ -1,8 +1,6 @@
 #include "Common.h"
 
 static SDL_GpuTexture *Texture3D;
-static SDL_GpuGraphicsPipeline *Sample3DPipeline;
-static SDL_GpuSampler *Sampler;
 
 static int Init(Context* context)
 {
@@ -26,65 +24,6 @@ static int Init(Context* context)
             .usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
         }
     );
-
-    SDL_GpuShader *vertShader = LoadShader(
-        context->Device,
-        "Fullscreen.vert",
-        0,
-        0,
-        0,
-        0
-    );
-
-    SDL_GpuShader *fragShader = LoadShader(
-        context->Device,
-        "Sample3D.frag",
-        1,
-        0,
-        0,
-        0
-    );
-
-    Sample3DPipeline = SDL_GpuCreateGraphicsPipeline(
-        context->Device,
-        &(SDL_GpuGraphicsPipelineCreateInfo){
-            .attachmentInfo = {
-                .colorAttachmentCount = 1,
-                .colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-                    .format = swapchainFormat,
-                    .blendState = {
-                        .blendEnable = SDL_TRUE,
-                        .alphaBlendOp = SDL_GPU_BLENDOP_ADD,
-                        .colorBlendOp = SDL_GPU_BLENDOP_ADD,
-                        .colorWriteMask = 0xF,
-                        .srcColorBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
-                        .srcAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
-                        .dstColorBlendFactor = SDL_GPU_BLENDFACTOR_ZERO,
-                        .dstAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ZERO
-                    }
-                }},
-            },
-            .multisampleState.sampleMask = 0xFFFF,
-            .primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-            .vertexShader = vertShader,
-            .fragmentShader = fragShader
-        }
-    );
-
-	Sampler = SDL_GpuCreateSampler(
-		context->Device,
-		&(SDL_GpuSamplerCreateInfo){
-			.minFilter = SDL_GPU_FILTER_NEAREST,
-			.magFilter = SDL_GPU_FILTER_NEAREST,
-			.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
-			.addressModeU = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
-			.addressModeV = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
-			.addressModeW = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE
-		}
-	);
-
-    SDL_GpuReleaseShader(context->Device, vertShader);
-    SDL_GpuReleaseShader(context->Device, fragShader);
 
     return 0;
 }
@@ -200,9 +139,7 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-    SDL_GpuReleaseSampler(context->Device, Sampler);
     SDL_GpuReleaseTexture(context->Device, Texture3D);
-    SDL_GpuReleaseGraphicsPipeline(context->Device, Sample3DPipeline);
     CommonQuit(context);
 }
 
