@@ -231,9 +231,9 @@ static int Draw(Context* context)
 		if (UseIndexBuffer)
 		{
 			SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-			SDL_GpuDrawIndexedPrimitives(renderPass, vertexOffset, indexOffset, 3, 16, 0);
+			SDL_GpuDrawIndexedPrimitives(renderPass, 3, 16, indexOffset, vertexOffset, 0);
 		} else {
-			SDL_GpuDrawPrimitives(renderPass, vertexOffset, 3, 16, 0);
+			SDL_GpuDrawPrimitives(renderPass, 3, 16, vertexOffset, 0);
 		}
 
 		SDL_GpuEndRenderPass(renderPass);

@@ -442,10 +442,10 @@ static int Draw(Context* context)
 		);
 		SDL_GpuDrawIndexedPrimitives(
 			renderPass,
-			0,
-			0,
 			SPRITE_COUNT * 6,
 			1,
+			0,
+			0,
 			0
 		);
 
