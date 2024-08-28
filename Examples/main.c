@@ -1,9 +1,12 @@
 #include "Common.h"
+#include <SDL3/SDL_main.h>
 
 static Example* Examples[] =
 {
 	&ClearScreen_Example,
+#if !(defined(SDL_PLATFORM_XBOXONE) || defined(SDL_PLATFORM_XBOXSERIES))
 	&ClearScreenMultiWindow_Example,
+#endif
 	&BasicTriangle_Example,
 	&BasicVertexBuffer_Example,
 	&CullMode_Example,
@@ -63,7 +66,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) < 0)
 	{
 		SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
 		return 1;
@@ -72,7 +75,9 @@ int main(int argc, char **argv)
 	InitializeAssetLoader();
 
 	SDL_Log("Welcome to the SDL_Gpu example suite!");
-	SDL_Log("Press A/D to move between examples!");
+	SDL_Log("Press A/D (or LB/RB) to move between examples!");
+
+	SDL_Gamepad* gamepad = NULL;
 
 	while (!quit)
 	{
@@ -91,6 +96,20 @@ int main(int argc, char **argv)
 					Examples[exampleIndex]->Quit(&context);
 				}
 				quit = 1;
+			}
+			else if (evt.type == SDL_EVENT_GAMEPAD_ADDED)
+			{
+				if (gamepad == NULL)
+				{
+					gamepad = SDL_OpenGamepad(evt.gdevice.which);
+				}
+			}
+			else if (evt.type == SDL_EVENT_GAMEPAD_REMOVED)
+			{
+				if (evt.gdevice.which == SDL_GetGamepadID(gamepad))
+				{
+					SDL_CloseGamepad(gamepad);
+				}
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
@@ -121,6 +140,39 @@ int main(int argc, char **argv)
 					context.DownPressed = SDL_TRUE;
 				}
 				else if (evt.key.key == SDLK_UP)
+				{
+					context.UpPressed = SDL_TRUE;
+				}
+			}
+			else if (evt.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN)
+			{
+				if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)
+				{
+					gotoExampleIndex = exampleIndex + 1;
+					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
+						gotoExampleIndex = 0;
+					}
+				}
+				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
+				{
+					gotoExampleIndex = exampleIndex - 1;
+					if (gotoExampleIndex < 0) {
+						gotoExampleIndex = SDL_arraysize(Examples) - 1;
+					}
+				}
+				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_LEFT)
+				{
+					context.LeftPressed = SDL_TRUE;
+				}
+				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_RIGHT)
+				{
+					context.RightPressed = SDL_TRUE;
+				}
+				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN)
+				{
+					context.DownPressed = SDL_TRUE;
+				}
+				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)
 				{
 					context.UpPressed = SDL_TRUE;
 				}
