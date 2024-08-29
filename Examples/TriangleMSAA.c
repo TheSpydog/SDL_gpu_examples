@@ -160,13 +160,13 @@ static int Draw(Context* context)
 
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = MSAARenderTextures[CurrentSampleCount],
 				.x = 160,
 				.w = 320,
 				.h = 240,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.w = w,
 				.h = h,

@@ -186,12 +186,12 @@ static int Init(Context* context)
 	// Render the half-size version
 	SDL_BlitGpu(
 		cmdbuf,
-		&(SDL_BlitGpuRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = OriginalTexture,
 			.w = imageData->w,
 			.h = imageData->h,
 		},
-		&(SDL_BlitGpuRegion){
+		&(SDL_GpuBlitRegion){
 			.texture = TextureSmall,
 			.w = imageData->w / 2,
 			.h = imageData->h / 2,
@@ -301,12 +301,12 @@ static int Draw(Context* context)
 
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = OriginalTexture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
@@ -318,12 +318,12 @@ static int Draw(Context* context)
 
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = TextureCopy,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.x = w / 2,
 				.y = 0,
@@ -337,12 +337,12 @@ static int Draw(Context* context)
 
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = TextureSmall,
 				.w = TextureWidth / 2,
 				.h = TextureHeight / 2,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.x = w / 4,
 				.y = h / 2,

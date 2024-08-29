@@ -87,12 +87,12 @@ static int Draw(Context* context)
 
         SDL_BlitGpu(
             cmdbuf,
-            &(SDL_BlitGpuRegion){
+            &(SDL_GpuBlitRegion){
                 .texture = GradientRenderTexture,
                 .w = w,
                 .h = h,
             },
-            &(SDL_BlitGpuRegion){
+            &(SDL_GpuBlitRegion){
                 .texture = swapchainTexture,
                 .w = w,
                 .h = h,

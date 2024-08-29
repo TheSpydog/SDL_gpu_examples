@@ -270,13 +270,13 @@ static int Init(Context* context)
 	for (int i = 0; i < 6; i += 1) {
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = SourceTexture,
 				.layerOrDepthPlane = i,
 				.w = 32,
 				.h = 32,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = DestinationTexture,
 				.layerOrDepthPlane = i,
 				.w = 32,

@@ -106,12 +106,12 @@ static int Draw(Context* context)
 		// Normal
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
@@ -124,12 +124,12 @@ static int Draw(Context* context)
 		// Flipped Horizontally
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion) {
+			&(SDL_GpuBlitRegion) {
 			.texture = swapchainTexture,
 				.x = w / 2,
 				.w = w / 2,
@@ -143,12 +143,12 @@ static int Draw(Context* context)
 		// Flipped Vertically
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion) {
+			&(SDL_GpuBlitRegion) {
 			.texture = swapchainTexture,
 				.w = w / 2,
 				.y = h / 2,
@@ -162,12 +162,12 @@ static int Draw(Context* context)
 		// Flipped Horizontally and Vertically
 		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_BlitGpuRegion){
+			&(SDL_GpuBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_BlitGpuRegion) {
+			&(SDL_GpuBlitRegion) {
 			.texture = swapchainTexture,
 				.x = w / 2,
 				.w = w / 2,

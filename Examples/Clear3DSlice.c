@@ -112,13 +112,13 @@ static int Draw(Context* context)
             Uint32 destY = (i > 1) ? (h / 2) : 0;
             SDL_BlitGpu(
                 cmdbuf,
-                &(SDL_BlitGpuRegion){
+                &(SDL_GpuBlitRegion){
                     .texture = Texture3D,
                     .layerOrDepthPlane = i,
                     .w = 64,
                     .h = 64,
                 },
-                &(SDL_BlitGpuRegion){
+                &(SDL_GpuBlitRegion){
                     .texture = swapchainTexture,
                     .x = destX,
                     .y = destY,
