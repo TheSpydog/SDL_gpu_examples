@@ -17,7 +17,7 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	if (!SDL_GpuClaimWindow(context->Device, SecondWindow))
+	if (!SDL_ClaimGpuWindow(context->Device, SecondWindow))
 	{
 		SDL_Log("GpuClaimWindow failed");
 		return -1;
@@ -33,7 +33,7 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
 		SDL_Log("GpuAcquireCommandBuffer failed");
@@ -43,7 +43,7 @@ static int Draw(Context* context)
 	Uint32 w, h;
 	SDL_GpuTexture* swapchainTexture;
 
-	swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
@@ -52,11 +52,11 @@ static int Draw(Context* context)
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, SecondWindow, &w, &h);
+	swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, SecondWindow, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
@@ -65,18 +65,18 @@ static int Draw(Context* context)
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-	SDL_GpuUnclaimWindow(context->Device, SecondWindow);
+	SDL_UnclaimGpuWindow(context->Device, SecondWindow);
 	SDL_DestroyWindow(SecondWindow);
 	SecondWindow = NULL;
 

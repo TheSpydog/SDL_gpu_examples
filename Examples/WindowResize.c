@@ -48,7 +48,7 @@ static int Init(Context* context)
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
 			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
+				.format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -68,15 +68,15 @@ static int Init(Context* context)
         .rasterizerState.fillMode = SDL_GPU_FILLMODE_FILL
 	};
 
-    Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
+    Pipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
     if (Pipeline == NULL)
     {
         SDL_Log("Failed to create pipeline!");
         return -1;
     }
 
-    SDL_GpuReleaseShader(context->Device, vertexShader);
-    SDL_GpuReleaseShader(context->Device, fragmentShader);
+    SDL_ReleaseGpuShader(context->Device, vertexShader);
+    SDL_ReleaseGpuShader(context->Device, fragmentShader);
 
     SDL_Log("Press Left and Right to resize the window!");
 
@@ -117,7 +117,7 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
+    SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
 		SDL_Log("GpuAcquireCommandBuffer failed");
@@ -125,7 +125,7 @@ static int Draw(Context* context)
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
@@ -134,20 +134,20 @@ static int Draw(Context* context)
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuDrawPrimitives(renderPass, 3, 1, 0, 0);
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_BindGpuGraphicsPipeline(renderPass, Pipeline);
+		SDL_DrawGpuPrimitives(renderPass, 3, 1, 0, 0);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
+    SDL_ReleaseGpuGraphicsPipeline(context->Device, Pipeline);
     CommonQuit(context);
 }
 

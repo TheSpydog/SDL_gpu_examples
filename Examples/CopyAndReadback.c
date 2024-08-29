@@ -29,7 +29,7 @@ static int Init(Context* context)
 	TextureHeight = imageData->h;
 
 	// Create texture resources
-	OriginalTexture = SDL_GpuCreateTexture(
+	OriginalTexture = SDL_CreateGpuTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
@@ -42,7 +42,7 @@ static int Init(Context* context)
 		}
 	);
 
-	TextureCopy = SDL_GpuCreateTexture(
+	TextureCopy = SDL_CreateGpuTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
@@ -55,7 +55,7 @@ static int Init(Context* context)
 		}
 	);
 
-	TextureSmall = SDL_GpuCreateTexture(
+	TextureSmall = SDL_CreateGpuTexture(
 		context->Device,
 		&(SDL_GpuTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
@@ -70,7 +70,7 @@ static int Init(Context* context)
 
 	Uint32 bufferData[8] = { 2, 4, 8, 16, 32, 64, 128 };
 
-	OriginalBuffer = SDL_GpuCreateBuffer(
+	OriginalBuffer = SDL_CreateGpuBuffer(
 		context->Device,
 		&(SDL_GpuBufferCreateInfo) {
 			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
@@ -78,7 +78,7 @@ static int Init(Context* context)
 		}
 	);
 
-	BufferCopy = SDL_GpuCreateBuffer(
+	BufferCopy = SDL_CreateGpuBuffer(
 		context->Device,
 		&(SDL_GpuBufferCreateInfo) {
 			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
@@ -86,7 +86,7 @@ static int Init(Context* context)
 		}
 	);
 
-	SDL_GpuTransferBuffer* downloadTransferBuffer = SDL_GpuCreateTransferBuffer(
+	SDL_GpuTransferBuffer* downloadTransferBuffer = SDL_CreateGpuTransferBuffer(
 		context->Device,
 		&(SDL_GpuTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
@@ -94,7 +94,7 @@ static int Init(Context* context)
 		}
 	);
 
-	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_GpuCreateTransferBuffer(
+	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_CreateGpuTransferBuffer(
 		context->Device,
 		&(SDL_GpuTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
@@ -102,20 +102,20 @@ static int Init(Context* context)
 		}
 	);
 
-	Uint8* uploadTransferPtr = SDL_GpuMapTransferBuffer(
+	Uint8* uploadTransferPtr = SDL_MapGpuTransferBuffer(
 		context->Device,
 		uploadTransferBuffer,
 		SDL_FALSE
 	);
 	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_memcpy(uploadTransferPtr + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData));
-	SDL_GpuUnmapTransferBuffer(context->Device, uploadTransferBuffer);
+	SDL_UnmapGpuTransferBuffer(context->Device, uploadTransferBuffer);
 
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
-	SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(cmdbuf);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+	SDL_GpuCopyPass* copyPass = SDL_BeginGpuCopyPass(cmdbuf);
 
 	// Upload original texture
-	SDL_GpuUploadToTexture(
+	SDL_UploadToGpuTexture(
 		copyPass,
 		&(SDL_GpuTextureTransferInfo) {
 			.transferBuffer = uploadTransferBuffer,
@@ -131,7 +131,7 @@ static int Init(Context* context)
 	);
 
 	// Copy original to copy
-	SDL_GpuCopyTextureToTexture(
+	SDL_CopyGpuTextureToTexture(
 		copyPass,
 		&(SDL_GpuTextureLocation){
 			.texture = OriginalTexture,
@@ -152,7 +152,7 @@ static int Init(Context* context)
 	);
 
 	// Upload original buffer
-	SDL_GpuUploadToBuffer(
+	SDL_UploadToGpuBuffer(
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
 			.transferBuffer = uploadTransferBuffer,
@@ -167,7 +167,7 @@ static int Init(Context* context)
 	);
 
 	// Copy original to copy
-	SDL_GpuCopyBufferToBuffer(
+	SDL_CopyGpuBufferToBuffer(
 		copyPass,
 		&(SDL_GpuBufferLocation) {
 			.buffer = OriginalBuffer,
@@ -181,17 +181,17 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
-	SDL_GpuEndCopyPass(copyPass);
+	SDL_EndGpuCopyPass(copyPass);
 
 	// Render the half-size version
-	SDL_GpuBlit(
+	SDL_BlitGpu(
 		cmdbuf,
-		&(SDL_GpuBlitRegion){
+		&(SDL_BlitGpuRegion){
 			.texture = OriginalTexture,
 			.w = imageData->w,
 			.h = imageData->h,
 		},
-		&(SDL_GpuBlitRegion){
+		&(SDL_BlitGpuRegion){
 			.texture = TextureSmall,
 			.w = imageData->w / 2,
 			.h = imageData->h / 2,
@@ -202,9 +202,9 @@ static int Init(Context* context)
 	);
 
 	// Download the original bytes from the copy
-	copyPass = SDL_GpuBeginCopyPass(cmdbuf);
+	copyPass = SDL_BeginGpuCopyPass(cmdbuf);
 
-	SDL_GpuDownloadFromTexture(
+	SDL_DownloadFromGpuTexture(
 		copyPass,
 		&(SDL_GpuTextureRegion){
 			.texture = TextureCopy,
@@ -218,7 +218,7 @@ static int Init(Context* context)
 		}
 	);
 
-	SDL_GpuDownloadFromBuffer(
+	SDL_DownloadFromGpuBuffer(
 		copyPass,
 		&(SDL_GpuBufferRegion) {
 			.buffer = BufferCopy,
@@ -231,14 +231,14 @@ static int Init(Context* context)
 		}
 	);
 
-	SDL_GpuEndCopyPass(copyPass);
+	SDL_EndGpuCopyPass(copyPass);
 
-	SDL_GpuFence* fence = SDL_GpuSubmitAndAcquireFence(cmdbuf);
-	SDL_GpuWaitForFences(context->Device, SDL_TRUE, &fence, 1);
-	SDL_GpuReleaseFence(context->Device, fence);
+	SDL_GpuFence* fence = SDL_SubmitGpuAndAcquireFence(cmdbuf);
+	SDL_WaitGpuForFences(context->Device, SDL_TRUE, &fence, 1);
+	SDL_ReleaseGpuFence(context->Device, fence);
 
 	// Compare the original bytes to the copied bytes
-	Uint8 *downloadedData = SDL_GpuMapTransferBuffer(
+	Uint8 *downloadedData = SDL_MapGpuTransferBuffer(
 		context->Device,
 		downloadTransferBuffer,
 		SDL_FALSE
@@ -262,11 +262,11 @@ static int Init(Context* context)
 		SDL_Log("FAILURE! Original buffer bytes do not match downloaded bytes!");
 	}
 
-	SDL_GpuUnmapTransferBuffer(context->Device, downloadTransferBuffer);
+	SDL_UnmapGpuTransferBuffer(context->Device, downloadTransferBuffer);
 
 	// Cleanup
-	SDL_GpuReleaseTransferBuffer(context->Device, downloadTransferBuffer);
-	SDL_GpuReleaseTransferBuffer(context->Device, uploadTransferBuffer);
+	SDL_ReleaseGpuTransferBuffer(context->Device, downloadTransferBuffer);
+	SDL_ReleaseGpuTransferBuffer(context->Device, uploadTransferBuffer);
 
 	SDL_DestroySurface(imageData);
 
@@ -281,11 +281,11 @@ static int Update(Context* context)
 static int Draw(Context* context)
 {
 	Uint32 w, h;
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
-	SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
-		SDL_GpuRenderPass* clearPass = SDL_GpuBeginRenderPass(
+		SDL_GpuRenderPass* clearPass = SDL_BeginGpuRenderPass(
 			cmdbuf,
 			(SDL_GpuColorAttachmentInfo[]){{
 				.texture = swapchainTexture,
@@ -297,16 +297,16 @@ static int Draw(Context* context)
 			1,
 			NULL
 		);
-		SDL_GpuEndRenderPass(clearPass);
+		SDL_EndGpuRenderPass(clearPass);
 
-		SDL_GpuBlit(
+		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = OriginalTexture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
@@ -316,14 +316,14 @@ static int Draw(Context* context)
 			SDL_FALSE
 		);
 
-		SDL_GpuBlit(
+		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = TextureCopy,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = swapchainTexture,
 				.x = w / 2,
 				.y = 0,
@@ -335,14 +335,14 @@ static int Draw(Context* context)
 			SDL_FALSE
 		);
 
-		SDL_GpuBlit(
+		SDL_BlitGpu(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = TextureSmall,
 				.w = TextureWidth / 2,
 				.h = TextureHeight / 2,
 			},
-			&(SDL_GpuBlitRegion){
+			&(SDL_BlitGpuRegion){
 				.texture = swapchainTexture,
 				.x = w / 4,
 				.y = h / 2,
@@ -355,19 +355,19 @@ static int Draw(Context* context)
 		);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-	SDL_GpuReleaseTexture(context->Device, OriginalTexture);
-	SDL_GpuReleaseTexture(context->Device, TextureCopy);
-	SDL_GpuReleaseTexture(context->Device, TextureSmall);
+	SDL_ReleaseGpuTexture(context->Device, OriginalTexture);
+	SDL_ReleaseGpuTexture(context->Device, TextureCopy);
+	SDL_ReleaseGpuTexture(context->Device, TextureSmall);
 
-	SDL_GpuReleaseBuffer(context->Device, OriginalBuffer);
-	SDL_GpuReleaseBuffer(context->Device, BufferCopy);
+	SDL_ReleaseGpuBuffer(context->Device, OriginalBuffer);
+	SDL_ReleaseGpuBuffer(context->Device, BufferCopy);
 
 	CommonQuit(context);
 }

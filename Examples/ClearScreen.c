@@ -12,7 +12,7 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
 		SDL_Log("GpuAcquireCommandBuffer failed");
@@ -20,7 +20,7 @@ static int Draw(Context* context)
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
@@ -29,11 +29,11 @@ static int Draw(Context* context)
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	return 0;
 }

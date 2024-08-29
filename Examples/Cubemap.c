@@ -46,7 +46,7 @@ static int Init(Context* context)
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
 			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GpuGetSwapchainTextureFormat(context->Device, context->Window),
+				.format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -81,13 +81,13 @@ static int Init(Context* context)
 		.fragmentShader = fragmentShader
 	};
 
-	Pipeline = SDL_GpuCreateGraphicsPipeline(context->Device, &pipelineCreateInfo);
+	Pipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
 
-	SDL_GpuReleaseShader(context->Device, vertexShader);
-	SDL_GpuReleaseShader(context->Device, fragmentShader);
+	SDL_ReleaseGpuShader(context->Device, vertexShader);
+	SDL_ReleaseGpuShader(context->Device, fragmentShader);
 
 	// Create the GPU resources
-	VertexBuffer = SDL_GpuCreateBuffer(
+	VertexBuffer = SDL_CreateGpuBuffer(
 		context->Device,
 		&(SDL_GpuBufferCreateInfo) {
 			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
@@ -95,7 +95,7 @@ static int Init(Context* context)
 		}
 	);
 
-	IndexBuffer = SDL_GpuCreateBuffer(
+	IndexBuffer = SDL_CreateGpuBuffer(
 		context->Device,
 		&(SDL_GpuBufferCreateInfo) {
 			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
@@ -103,7 +103,7 @@ static int Init(Context* context)
 		}
 	);
 
-	Texture = SDL_GpuCreateTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+	Texture = SDL_CreateGpuTexture(context->Device, &(SDL_GpuTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_CUBE,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.width = 64,
@@ -113,7 +113,7 @@ static int Init(Context* context)
 		.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
 	});
 
-	Sampler = SDL_GpuCreateSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
+	Sampler = SDL_CreateGpuSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
 		.minFilter = SDL_GPU_FILTER_NEAREST,
 		.magFilter = SDL_GPU_FILTER_NEAREST,
 		.mipmapMode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
@@ -123,7 +123,7 @@ static int Init(Context* context)
 	});
 
 	// Set up buffer data
-	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_GpuCreateTransferBuffer(
+	SDL_GpuTransferBuffer* bufferTransferBuffer = SDL_CreateGpuTransferBuffer(
 		context->Device,
 		&(SDL_GpuTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
@@ -131,7 +131,7 @@ static int Init(Context* context)
 		}
 	);
 
-	PositionVertex* transferData = SDL_GpuMapTransferBuffer(
+	PositionVertex* transferData = SDL_MapGpuTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
 		SDL_FALSE
@@ -178,13 +178,13 @@ static int Init(Context* context)
 	};
 	SDL_memcpy(indexData, indices, sizeof(indices));
 
-	SDL_GpuUnmapTransferBuffer(context->Device, bufferTransferBuffer);
+	SDL_UnmapGpuTransferBuffer(context->Device, bufferTransferBuffer);
 
 	// Upload the transfer data to the GPU buffers
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
-	SDL_GpuCopyPass* copyPass = SDL_GpuBeginCopyPass(cmdbuf);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+	SDL_GpuCopyPass* copyPass = SDL_BeginGpuCopyPass(cmdbuf);
 
-	SDL_GpuUploadToBuffer(
+	SDL_UploadToGpuBuffer(
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
 			.transferBuffer = bufferTransferBuffer,
@@ -198,7 +198,7 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
-	SDL_GpuUploadToBuffer(
+	SDL_UploadToGpuBuffer(
 		copyPass,
 		&(SDL_GpuTransferBufferLocation) {
 			.transferBuffer = bufferTransferBuffer,
@@ -212,13 +212,13 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
-	SDL_GpuEndCopyPass(copyPass);
-	SDL_GpuReleaseTransferBuffer(context->Device, bufferTransferBuffer);
+	SDL_EndGpuCopyPass(copyPass);
+	SDL_ReleaseGpuTransferBuffer(context->Device, bufferTransferBuffer);
 
 	// Clear the faces of the cube texture
 	for (int i = 0; i < 6; i += 1)
 	{
-		SDL_GpuRenderPass *renderPass = SDL_GpuBeginRenderPass(
+		SDL_GpuRenderPass *renderPass = SDL_BeginGpuRenderPass(
 			cmdbuf,
 			&(SDL_GpuColorAttachmentInfo){
 				.texture = Texture,
@@ -230,10 +230,10 @@ static int Init(Context* context)
 			1,
 			NULL
 		);
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	// Print the instructions
 	SDL_Log("Press Left/Right to view the opposite direction!");
@@ -253,7 +253,7 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GpuCommandBuffer* cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
+	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
 		SDL_Log("GpuAcquireCommandBuffer failed");
@@ -261,7 +261,7 @@ static int Draw(Context* context)
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		Matrix4x4 proj = Matrix4x4_CreatePerspectiveFieldOfView(
@@ -285,30 +285,30 @@ static int Draw(Context* context)
 			.storeOp = SDL_GPU_STOREOP_STORE
 		};
 
-		SDL_GpuRenderPass* renderPass = SDL_GpuBeginRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
 
-		SDL_GpuBindGraphicsPipeline(renderPass, Pipeline);
-		SDL_GpuBindVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ VertexBuffer, 0 }, 1);
-		SDL_GpuBindIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ IndexBuffer, 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-		SDL_GpuBindFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ Texture, Sampler }, 1);
-		SDL_GpuPushVertexUniformData(cmdbuf, 0, &viewproj, sizeof(viewproj));
-		SDL_GpuDrawIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
+		SDL_BindGpuGraphicsPipeline(renderPass, Pipeline);
+		SDL_BindGpuVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ VertexBuffer, 0 }, 1);
+		SDL_BindGpuIndexBuffer(renderPass, &(SDL_GpuBufferBinding){ IndexBuffer, 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_BindGpuFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ Texture, Sampler }, 1);
+		SDL_PushGpuVertexUniformData(cmdbuf, 0, &viewproj, sizeof(viewproj));
+		SDL_DrawGpuIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
 
-		SDL_GpuEndRenderPass(renderPass);
+		SDL_EndGpuRenderPass(renderPass);
 	}
 
-	SDL_GpuSubmit(cmdbuf);
+	SDL_SubmitGpu(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-	SDL_GpuReleaseGraphicsPipeline(context->Device, Pipeline);
-	SDL_GpuReleaseBuffer(context->Device, VertexBuffer);
-	SDL_GpuReleaseBuffer(context->Device, IndexBuffer);
-	SDL_GpuReleaseTexture(context->Device, Texture);
-	SDL_GpuReleaseSampler(context->Device, Sampler);
+	SDL_ReleaseGpuGraphicsPipeline(context->Device, Pipeline);
+	SDL_ReleaseGpuBuffer(context->Device, VertexBuffer);
+	SDL_ReleaseGpuBuffer(context->Device, IndexBuffer);
+	SDL_ReleaseGpuTexture(context->Device, Texture);
+	SDL_ReleaseGpuSampler(context->Device, Sampler);
 
 	CamPos.z = SDL_fabsf(CamPos.z);
 

@@ -12,7 +12,7 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_GpuCreateDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, SDL_FALSE, NULL);
+	context->Device = SDL_CreateGpuDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, SDL_FALSE, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GpuCreateDevice failed");
@@ -26,7 +26,7 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 		return -1;
 	}
 
-	if (!SDL_GpuClaimWindow(context->Device, context->Window))
+	if (!SDL_ClaimGpuWindow(context->Device, context->Window))
 	{
 		SDL_Log("GpuClaimWindow failed");
 		return -1;
@@ -37,9 +37,9 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 
 void CommonQuit(Context* context)
 {
-	SDL_GpuUnclaimWindow(context->Device, context->Window);
+	SDL_UnclaimGpuWindow(context->Device, context->Window);
 	SDL_DestroyWindow(context->Window);
-	SDL_GpuDestroyDevice(context->Device);
+	SDL_DestroyGpuDevice(context->Device);
 }
 
 static const char* BasePath = NULL;
@@ -95,9 +95,9 @@ SDL_GpuShader* LoadShader(
 		.storageBufferCount = storageBufferCount,
 		.storageTextureCount = storageTextureCount
 	};
-	if (SDL_GpuGetDriver(device) == SDL_GPU_DRIVER_VULKAN)
+	if (SDL_GetGpuDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
-		shader = SDL_GpuCreateShader(device, &shaderInfo);
+		shader = SDL_CreateGpuShader(device, &shaderInfo);
 	}
 	else
 	{
@@ -138,9 +138,9 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
 	SDL_GpuComputePipeline* pipeline;
-	if (SDL_GpuGetDriver(device) == SDL_GPU_DRIVER_VULKAN)
+	if (SDL_GetGpuDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
-		pipeline = SDL_GpuCreateComputePipeline(device, &newCreateInfo);
+		pipeline = SDL_CreateGpuComputePipeline(device, &newCreateInfo);
 	}
 	else
 	{

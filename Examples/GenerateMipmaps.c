@@ -10,7 +10,7 @@ static int Init(Context* context)
         return result;
     }
 
-    MipmapTexture = SDL_GpuCreateTexture(
+    MipmapTexture = SDL_CreateGpuTexture(
         context->Device,
         &(SDL_GpuTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_2D,
@@ -24,14 +24,14 @@ static int Init(Context* context)
     );
 
     Uint32 byteCount = 32 * 32 * 4;
-    SDL_GpuTransferBuffer *textureTransferBuffer = SDL_GpuCreateTransferBuffer(
+    SDL_GpuTransferBuffer *textureTransferBuffer = SDL_CreateGpuTransferBuffer(
         context->Device,
         &(SDL_GpuTransferBufferCreateInfo) {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
             .sizeInBytes = byteCount
         }
     );
-    Uint8* textureTransferData = SDL_GpuMapTransferBuffer(
+    Uint8* textureTransferData = SDL_MapGpuTransferBuffer(
         context->Device,
         textureTransferBuffer,
         SDL_FALSE
@@ -46,11 +46,11 @@ static int Init(Context* context)
     SDL_memcpy(textureTransferData, imageData->pixels, byteCount);
     SDL_DestroySurface(imageData);
 
-    SDL_GpuUnmapTransferBuffer(context->Device, textureTransferBuffer);
+    SDL_UnmapGpuTransferBuffer(context->Device, textureTransferBuffer);
 
-    SDL_GpuCommandBuffer *cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
-    SDL_GpuCopyPass *copyPass = SDL_GpuBeginCopyPass(cmdbuf);
-    SDL_GpuUploadToTexture(
+    SDL_GpuCommandBuffer *cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+    SDL_GpuCopyPass *copyPass = SDL_BeginGpuCopyPass(cmdbuf);
+    SDL_UploadToGpuTexture(
         copyPass,
         &(SDL_GpuTextureTransferInfo){
             .transferBuffer = textureTransferBuffer
@@ -63,12 +63,12 @@ static int Init(Context* context)
         },
         SDL_FALSE
     );
-    SDL_GpuEndCopyPass(copyPass);
-    SDL_GpuGenerateMipmaps(cmdbuf, MipmapTexture);
+    SDL_EndGpuCopyPass(copyPass);
+    SDL_GenerateGpuMipmaps(cmdbuf, MipmapTexture);
 
-    SDL_GpuSubmit(cmdbuf);
+    SDL_SubmitGpu(cmdbuf);
 
-    SDL_GpuReleaseTransferBuffer(context->Device, textureTransferBuffer);
+    SDL_ReleaseGpuTransferBuffer(context->Device, textureTransferBuffer);
 
     return 0;
 }
@@ -80,22 +80,22 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer *cmdbuf = SDL_GpuAcquireCommandBuffer(context->Device);
+    SDL_GpuCommandBuffer *cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
     Uint32 w, h;
 
-    SDL_GpuTexture *swapchainTexture = SDL_GpuAcquireSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GpuTexture *swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
     if (swapchainTexture != NULL)
     {
         /* Blit the smallest mip level */
-        SDL_GpuBlit(
+        SDL_BlitGpu(
             cmdbuf,
-            &(SDL_GpuBlitRegion){
+            &(SDL_BlitGpuRegion){
                 .texture = MipmapTexture,
                 .w = 8,
                 .h = 8,
                 .mipLevel = 2
             },
-            &(SDL_GpuBlitRegion){
+            &(SDL_BlitGpuRegion){
                 .texture = swapchainTexture,
                 .w = w,
                 .h = h,
@@ -106,14 +106,14 @@ static int Draw(Context* context)
         );
     }
 
-    SDL_GpuSubmit(cmdbuf);
+    SDL_SubmitGpu(cmdbuf);
 
     return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_GpuReleaseTexture(context->Device, MipmapTexture);
+    SDL_ReleaseGpuTexture(context->Device, MipmapTexture);
     CommonQuit(context);
 }
 
