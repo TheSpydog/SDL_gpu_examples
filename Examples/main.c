@@ -33,6 +33,32 @@ static Example* Examples[] =
 	&GenerateMipmaps_Example,
 };
 
+SDL_bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
+{
+	/* This callback may be on a different thread, so let's
+	 * push these events as USER events so they appear
+	 * in the main thread's event loop.
+	 *
+	 * That allows us to cancel drawing before/after we finish
+	 * drawing a frame, rather than mid-draw (which can crash!).
+	 */
+	if (event->type == SDL_EVENT_DID_ENTER_BACKGROUND)
+	{
+		SDL_Event evt;
+		evt.type = SDL_EVENT_USER;
+		evt.user.code = 0;
+		SDL_PushEvent(&evt);
+	}
+	else if (event->type == SDL_EVENT_WILL_ENTER_FOREGROUND)
+	{
+		SDL_Event evt;
+		evt.type = SDL_EVENT_USER;
+		evt.user.code = 1;
+		SDL_PushEvent(&evt);
+	}
+	return SDL_FALSE;
+}
+
 int main(int argc, char **argv)
 {
 	Context context = { 0 };
@@ -73,11 +99,13 @@ int main(int argc, char **argv)
 	}
 
 	InitializeAssetLoader();
+	SDL_AddEventWatch(AppLifecycleWatcher, NULL);
 
 	SDL_Log("Welcome to the SDL_Gpu example suite!");
 	SDL_Log("Press A/D (or LB/RB) to move between examples!");
 
 	SDL_Gamepad* gamepad = NULL;
+	SDL_bool canDraw = SDL_TRUE;
 
 	while (!quit)
 	{
@@ -109,6 +137,24 @@ int main(int argc, char **argv)
 				if (evt.gdevice.which == SDL_GetGamepadID(gamepad))
 				{
 					SDL_CloseGamepad(gamepad);
+				}
+			}
+			else if (evt.type == SDL_EVENT_USER)
+			{
+				if (evt.user.code == 0)
+				{
+#ifdef SDL_PLATFORM_GDK
+					SDL_GDKSuspendGpu(context.Device);
+					canDraw = SDL_FALSE;
+					SDL_GDKSuspendComplete();
+#endif
+				}
+				else if (evt.user.code == 1)
+				{
+#ifdef SDL_PLATFORM_GDK
+					SDL_GDKResumeGpu(context.Device);
+					canDraw = SDL_TRUE;
+#endif
 				}
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
@@ -213,10 +259,13 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-		if (Examples[exampleIndex]->Draw(&context) < 0)
+		if (canDraw)
 		{
-			SDL_Log("Draw failed!");
-			return 1;
+			if (Examples[exampleIndex]->Draw(&context) < 0)
+			{
+				SDL_Log("Draw failed!");
+				return 1;
+			}
 		}
 	}
 
