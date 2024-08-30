@@ -1,6 +1,6 @@
 #include "Common.h"
 
-static SDL_GpuTexture *MipmapTexture;
+static SDL_GPUTexture *MipmapTexture;
 
 static int Init(Context* context)
 {
@@ -10,9 +10,9 @@ static int Init(Context* context)
         return result;
     }
 
-    MipmapTexture = SDL_CreateGpuTexture(
+    MipmapTexture = SDL_CreateGPUTexture(
         context->Device,
-        &(SDL_GpuTextureCreateInfo){
+        &(SDL_GPUTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_2D,
             .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
             .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT,
@@ -24,14 +24,14 @@ static int Init(Context* context)
     );
 
     Uint32 byteCount = 32 * 32 * 4;
-    SDL_GpuTransferBuffer *textureTransferBuffer = SDL_CreateGpuTransferBuffer(
+    SDL_GPUTransferBuffer *textureTransferBuffer = SDL_CreateGPUTransferBuffer(
         context->Device,
-        &(SDL_GpuTransferBufferCreateInfo) {
+        &(SDL_GPUTransferBufferCreateInfo) {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
             .sizeInBytes = byteCount
         }
     );
-    Uint8* textureTransferData = SDL_MapGpuTransferBuffer(
+    Uint8* textureTransferData = SDL_MapGPUTransferBuffer(
         context->Device,
         textureTransferBuffer,
         SDL_FALSE
@@ -46,16 +46,16 @@ static int Init(Context* context)
     SDL_memcpy(textureTransferData, imageData->pixels, byteCount);
     SDL_DestroySurface(imageData);
 
-    SDL_UnmapGpuTransferBuffer(context->Device, textureTransferBuffer);
+    SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
 
-    SDL_GpuCommandBuffer *cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
-    SDL_GpuCopyPass *copyPass = SDL_BeginGpuCopyPass(cmdbuf);
-    SDL_UploadToGpuTexture(
+    SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    SDL_GPUCopyPass *copyPass = SDL_BeginGPUCopyPass(cmdbuf);
+    SDL_UploadToGPUTexture(
         copyPass,
-        &(SDL_GpuTextureTransferInfo){
+        &(SDL_GPUTextureTransferInfo){
             .transferBuffer = textureTransferBuffer
         },
-        &(SDL_GpuTextureRegion) {
+        &(SDL_GPUTextureRegion) {
             .texture = MipmapTexture,
             .w = 32,
             .h = 32,
@@ -63,12 +63,12 @@ static int Init(Context* context)
         },
         SDL_FALSE
     );
-    SDL_EndGpuCopyPass(copyPass);
-    SDL_GenerateGpuMipmaps(cmdbuf, MipmapTexture);
+    SDL_EndGPUCopyPass(copyPass);
+    SDL_GenerateMipmapsForGPUTexture(cmdbuf, MipmapTexture);
 
-    SDL_SubmitGpu(cmdbuf);
+    SDL_SubmitGPUCommandBuffer(cmdbuf);
 
-    SDL_ReleaseGpuTransferBuffer(context->Device, textureTransferBuffer);
+    SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
 
     return 0;
 }
@@ -80,22 +80,22 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer *cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+    SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
     Uint32 w, h;
 
-    SDL_GpuTexture *swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture *swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
     if (swapchainTexture != NULL)
     {
         /* Blit the smallest mip level */
-        SDL_BlitGpu(
+        SDL_BlitGPUTexture(
             cmdbuf,
-            &(SDL_GpuBlitRegion){
+            &(SDL_GPUBlitRegion){
                 .texture = MipmapTexture,
                 .w = 8,
                 .h = 8,
                 .mipLevel = 2
             },
-            &(SDL_GpuBlitRegion){
+            &(SDL_GPUBlitRegion){
                 .texture = swapchainTexture,
                 .w = w,
                 .h = h,
@@ -106,14 +106,14 @@ static int Draw(Context* context)
         );
     }
 
-    SDL_SubmitGpu(cmdbuf);
+    SDL_SubmitGPUCommandBuffer(cmdbuf);
 
     return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_ReleaseGpuTexture(context->Device, MipmapTexture);
+    SDL_ReleaseGPUTexture(context->Device, MipmapTexture);
     CommonQuit(context);
 }
 

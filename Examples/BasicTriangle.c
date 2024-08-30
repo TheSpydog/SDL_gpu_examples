@@ -1,8 +1,8 @@
 #include "Common.h"
 
-static SDL_GpuGraphicsPipeline* FillPipeline;
-static SDL_GpuGraphicsPipeline* LinePipeline;
-static SDL_GpuViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
+static SDL_GPUGraphicsPipeline* FillPipeline;
+static SDL_GPUGraphicsPipeline* LinePipeline;
+static SDL_GPUViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
 static SDL_Rect ScissorRect = { 320, 240, 320, 240 };
 
 static SDL_bool UseWireframeMode = SDL_FALSE;
@@ -18,14 +18,14 @@ static int Init(Context* context)
 	}
 
 	// Create the shaders
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
+	SDL_GPUShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
+	SDL_GPUShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -33,11 +33,11 @@ static int Init(Context* context)
 	}
 
 	// Create the pipelines
-	SDL_GpuGraphicsPipelineCreateInfo pipelineCreateInfo = {
+	SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = {
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
-			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
+			.colorAttachmentDescriptions = (SDL_GPUColorAttachmentDescription[]){{
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -57,7 +57,7 @@ static int Init(Context* context)
 	};
 
 	pipelineCreateInfo.rasterizerState.fillMode = SDL_GPU_FILLMODE_FILL;
-	FillPipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
+	FillPipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (FillPipeline == NULL)
 	{
 		SDL_Log("Failed to create fill pipeline!");
@@ -65,7 +65,7 @@ static int Init(Context* context)
 	}
 
 	pipelineCreateInfo.rasterizerState.fillMode = SDL_GPU_FILLMODE_LINE;
-	LinePipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
+	LinePipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (LinePipeline == NULL)
 	{
 		SDL_Log("Failed to create line pipeline!");
@@ -73,8 +73,8 @@ static int Init(Context* context)
 	}
 
 	// Clean up shader resources
-	SDL_ReleaseGpuShader(context->Device, vertexShader);
-	SDL_ReleaseGpuShader(context->Device, fragmentShader);
+	SDL_ReleaseGPUShader(context->Device, vertexShader);
+	SDL_ReleaseGPUShader(context->Device, fragmentShader);
 
 	// Finally, print instructions!
 	SDL_Log("Press Left to toggle wireframe mode");
@@ -106,46 +106,46 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
-		SDL_Log("GpuAcquireCommandBuffer failed");
+		SDL_Log("GPUAcquireCommandBuffer failed");
 		return -1;
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
-		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
+		SDL_GPUColorAttachmentInfo colorAttachmentInfo = { 0 };
 		colorAttachmentInfo.texture = swapchainTexture;
 		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_BindGpuGraphicsPipeline(renderPass, UseWireframeMode ? LinePipeline : FillPipeline);
+		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_BindGPUGraphicsPipeline(renderPass, UseWireframeMode ? LinePipeline : FillPipeline);
 		if (UseSmallViewport)
 		{
-			SDL_SetGpuViewport(renderPass, &SmallViewport);
+			SDL_SetGPUViewport(renderPass, &SmallViewport);
 		}
 		if (UseScissorRect)
 		{
-			SDL_SetGpuScissor(renderPass, &ScissorRect);
+			SDL_SetGPUScissor(renderPass, &ScissorRect);
 		}
-		SDL_DrawGpuPrimitives(renderPass, 3, 1, 0, 0);
-		SDL_EndGpuRenderPass(renderPass);
+		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+		SDL_EndGPURenderPass(renderPass);
 	}
 
-	SDL_SubmitGpu(cmdbuf);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-	SDL_ReleaseGpuGraphicsPipeline(context->Device, FillPipeline);
-	SDL_ReleaseGpuGraphicsPipeline(context->Device, LinePipeline);
+	SDL_ReleaseGPUGraphicsPipeline(context->Device, FillPipeline);
+	SDL_ReleaseGPUGraphicsPipeline(context->Device, LinePipeline);
 
 	UseWireframeMode = SDL_FALSE;
 	UseSmallViewport = SDL_FALSE;

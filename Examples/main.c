@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	InitializeAssetLoader();
 	SDL_AddEventWatch(AppLifecycleWatcher, NULL);
 
-	SDL_Log("Welcome to the SDL_Gpu example suite!");
+	SDL_Log("Welcome to the SDL_GPU example suite!");
 	SDL_Log("Press A/D (or LB/RB) to move between examples!");
 
 	SDL_Gamepad* gamepad = NULL;
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 				if (evt.user.code == 0)
 				{
 #ifdef SDL_PLATFORM_GDK
-					SDL_GDKSuspendGpu(context.Device);
+					SDL_GDKSuspendGPU(context.Device);
 					canDraw = SDL_FALSE;
 					SDL_GDKSuspendComplete();
 #endif
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 				else if (evt.user.code == 1)
 				{
 #ifdef SDL_PLATFORM_GDK
-					SDL_GDKResumeGpu(context.Device);
+					SDL_GDKResumeGPU(context.Device);
 					canDraw = SDL_TRUE;
 #endif
 				}

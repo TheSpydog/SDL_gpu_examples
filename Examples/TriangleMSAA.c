@@ -1,10 +1,10 @@
 #include "Common.h"
 
-static SDL_GpuGraphicsPipeline* Pipelines[4];
-static SDL_GpuTexture* MSAARenderTextures[4];
+static SDL_GPUGraphicsPipeline* Pipelines[4];
+static SDL_GPUTexture* MSAARenderTextures[4];
 static int SampleCounts;
 
-static SDL_GpuTextureFormat RTFormat;
+static SDL_GPUTextureFormat RTFormat;
 
 static int CurrentSampleCount = 0;
 
@@ -17,14 +17,14 @@ static int Init(Context* context)
 	}
 
 	// Create the shaders
-	SDL_GpuShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
+	SDL_GPUShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
 		return -1;
 	}
 
-	SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
+	SDL_GPUShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
 	if (fragmentShader == NULL)
 	{
 		SDL_Log("Failed to create fragment shader!");
@@ -32,11 +32,11 @@ static int Init(Context* context)
 	}
 
 	// Create the pipelines
-	RTFormat = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window);
-	SDL_GpuGraphicsPipelineCreateInfo pipelineCreateInfo = {
+	RTFormat = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window);
+	SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = {
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
-			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
+			.colorAttachmentDescriptions = (SDL_GPUColorAttachmentDescription[]){{
 				.format = RTFormat,
 				.blendState = {
 					.blendEnable = SDL_TRUE,
@@ -59,8 +59,8 @@ static int Init(Context* context)
 	SampleCounts = 0;
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
-		SDL_GpuSampleCount sampleCount = (SDL_GpuSampleCount) i;
-		if (!SDL_SupportsGpuSampleCount(
+		SDL_GPUSampleCount sampleCount = (SDL_GPUSampleCount) i;
+		if (!SDL_GPUTextureSupportsSampleCount(
 			context->Device,
 			RTFormat,
 			sampleCount)) {
@@ -68,14 +68,14 @@ static int Init(Context* context)
 			continue;
 		}
 		pipelineCreateInfo.multisampleState.sampleCount = sampleCount;
-		Pipelines[SampleCounts] = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
+		Pipelines[SampleCounts] = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 		if (Pipelines[SampleCounts] == NULL)
 		{
 			SDL_Log("Failed to create pipeline!");
 			return -1;
 		}
 		// Create the render target textures
-		SDL_GpuTextureCreateInfo textureCreateInfo = {
+		SDL_GPUTextureCreateInfo textureCreateInfo = {
 			.type = SDL_GPU_TEXTURETYPE_2D,
 			.width = 640,
 			.height = 480,
@@ -85,17 +85,17 @@ static int Init(Context* context)
 			.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT,
 			.sampleCount = sampleCount
 		};
-		MSAARenderTextures[SampleCounts] = SDL_CreateGpuTexture(context->Device, &textureCreateInfo);
+		MSAARenderTextures[SampleCounts] = SDL_CreateGPUTexture(context->Device, &textureCreateInfo);
 		if (MSAARenderTextures[SampleCounts] == NULL) {
 			SDL_Log("Failed to create MSAA render target texture!");
-			SDL_ReleaseGpuGraphicsPipeline(context->Device, Pipelines[SampleCounts]);
+			SDL_ReleaseGPUGraphicsPipeline(context->Device, Pipelines[SampleCounts]);
 		}
 		SampleCounts += 1;
 	}
 
 	// Clean up shader resources
-	SDL_ReleaseGpuShader(context->Device, vertexShader);
-	SDL_ReleaseGpuShader(context->Device, fragmentShader);
+	SDL_ReleaseGPUShader(context->Device, vertexShader);
+	SDL_ReleaseGPUShader(context->Device, fragmentShader);
 
 	// Print the instructions
 	SDL_Log("Press Left/Right to cycle between sample counts");
@@ -134,39 +134,39 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
-		SDL_Log("GpuAcquireCommandBuffer failed");
+		SDL_Log("GPUAcquireCommandBuffer failed");
 		return -1;
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
-		SDL_GpuRenderPass* renderPass;
-		SDL_GpuColorAttachmentInfo colorAttachmentInfo = {
+		SDL_GPURenderPass* renderPass;
+		SDL_GPUColorAttachmentInfo colorAttachmentInfo = {
 			.texture = MSAARenderTextures[CurrentSampleCount],
 			.clearColor = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
 			.loadOp = SDL_GPU_LOADOP_CLEAR,
 			.storeOp = SDL_GPU_STOREOP_STORE
 		};
 
-		renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_BindGpuGraphicsPipeline(renderPass, Pipelines[CurrentSampleCount]);
-		SDL_DrawGpuPrimitives(renderPass, 3, 1, 0, 0);
-		SDL_EndGpuRenderPass(renderPass);
+		renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_BindGPUGraphicsPipeline(renderPass, Pipelines[CurrentSampleCount]);
+		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+		SDL_EndGPURenderPass(renderPass);
 
-		SDL_BlitGpu(
+		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = MSAARenderTextures[CurrentSampleCount],
 				.x = 160,
 				.w = 320,
 				.h = 240,
 			},
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = swapchainTexture,
 				.w = w,
 				.h = h,
@@ -177,7 +177,7 @@ static int Draw(Context* context)
 		);
 	}
 
-	SDL_SubmitGpu(cmdbuf);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
 	return 0;
 }
@@ -186,8 +186,8 @@ static void Quit(Context* context)
 {
 	for (int i = 0; i < SampleCounts; i += 1)
 	{
-		SDL_ReleaseGpuGraphicsPipeline(context->Device, Pipelines[i]);
-		SDL_ReleaseGpuTexture(context->Device, MSAARenderTextures[i]);
+		SDL_ReleaseGPUGraphicsPipeline(context->Device, Pipelines[i]);
+		SDL_ReleaseGPUTexture(context->Device, MSAARenderTextures[i]);
 	}
 
 	CurrentSampleCount = 0;

@@ -1,6 +1,6 @@
 #include "Common.h"
 
-static SDL_GpuTexture *Texture3D;
+static SDL_GPUTexture *Texture3D;
 
 static int Init(Context* context)
 {
@@ -10,11 +10,11 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuTextureFormat swapchainFormat = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window);
+    SDL_GPUTextureFormat swapchainFormat = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window);
 
-    Texture3D = SDL_CreateGpuTexture(
+    Texture3D = SDL_CreateGPUTexture(
         context->Device,
-        &(SDL_GpuTextureCreateInfo){
+        &(SDL_GPUTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_3D,
             .format = swapchainFormat,
             .width = 64,
@@ -37,8 +37,8 @@ static int Draw(Context* context)
 {
     Uint32 w, h;
 
-    SDL_GpuCommandBuffer *cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
-    SDL_GpuTexture *swapchainTexture = SDL_AcquireGpuSwapchainTexture(
+    SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    SDL_GPUTexture *swapchainTexture = SDL_AcquireGPUSwapchainTexture(
         cmdbuf,
         context->Window,
         &w,
@@ -47,9 +47,9 @@ static int Draw(Context* context)
 
     if (swapchainTexture != NULL)
     {
-        SDL_GpuRenderPass *renderPass = SDL_BeginGpuRenderPass(
+        SDL_GPURenderPass *renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GpuColorAttachmentInfo){
+            &(SDL_GPUColorAttachmentInfo){
                 .texture = Texture3D,
                 .cycle = SDL_TRUE,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
@@ -60,11 +60,11 @@ static int Draw(Context* context)
             1,
             NULL
         );
-        SDL_EndGpuRenderPass(renderPass);
+        SDL_EndGPURenderPass(renderPass);
 
-        renderPass = SDL_BeginGpuRenderPass(
+        renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GpuColorAttachmentInfo){
+            &(SDL_GPUColorAttachmentInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
@@ -75,11 +75,11 @@ static int Draw(Context* context)
             1,
             NULL
         );
-        SDL_EndGpuRenderPass(renderPass);
+        SDL_EndGPURenderPass(renderPass);
 
-        renderPass = SDL_BeginGpuRenderPass(
+        renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GpuColorAttachmentInfo){
+            &(SDL_GPUColorAttachmentInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
@@ -90,11 +90,11 @@ static int Draw(Context* context)
             1,
             NULL
         );
-        SDL_EndGpuRenderPass(renderPass);
+        SDL_EndGPURenderPass(renderPass);
 
-        renderPass = SDL_BeginGpuRenderPass(
+        renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GpuColorAttachmentInfo){
+            &(SDL_GPUColorAttachmentInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
@@ -105,20 +105,20 @@ static int Draw(Context* context)
             1,
             NULL
         );
-        SDL_EndGpuRenderPass(renderPass);
+        SDL_EndGPURenderPass(renderPass);
 
         for (int i = 0; i < 4; i += 1) {
             Uint32 destX = (i % 2) * (w / 2);
             Uint32 destY = (i > 1) ? (h / 2) : 0;
-            SDL_BlitGpu(
+            SDL_BlitGPUTexture(
                 cmdbuf,
-                &(SDL_GpuBlitRegion){
+                &(SDL_GPUBlitRegion){
                     .texture = Texture3D,
                     .layerOrDepthPlane = i,
                     .w = 64,
                     .h = 64,
                 },
-                &(SDL_GpuBlitRegion){
+                &(SDL_GPUBlitRegion){
                     .texture = swapchainTexture,
                     .x = destX,
                     .y = destY,
@@ -132,14 +132,14 @@ static int Draw(Context* context)
         }
     }
 
-    SDL_SubmitGpu(cmdbuf);
+    SDL_SubmitGPUCommandBuffer(cmdbuf);
 
     return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_ReleaseGpuTexture(context->Device, Texture3D);
+    SDL_ReleaseGPUTexture(context->Device, Texture3D);
     CommonQuit(context);
 }
 

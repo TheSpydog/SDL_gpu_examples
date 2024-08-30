@@ -12,10 +12,10 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_CreateGpuDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, SDL_FALSE, NULL);
+	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, NULL);
 	if (context->Device == NULL)
 	{
-		SDL_Log("GpuCreateDevice failed");
+		SDL_Log("GPUCreateDevice failed");
 		return -1;
 	}
 
@@ -26,9 +26,9 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 		return -1;
 	}
 
-	if (!SDL_ClaimGpuWindow(context->Device, context->Window))
+	if (!SDL_ClaimWindowForGPUDevice(context->Device, context->Window))
 	{
-		SDL_Log("GpuClaimWindow failed");
+		SDL_Log("GPUClaimWindow failed");
 		return -1;
 	}
 
@@ -37,9 +37,9 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 
 void CommonQuit(Context* context)
 {
-	SDL_UnclaimGpuWindow(context->Device, context->Window);
+	SDL_ReleaseWindowFromGPUDevice(context->Device, context->Window);
 	SDL_DestroyWindow(context->Window);
-	SDL_DestroyGpuDevice(context->Device);
+	SDL_DestroyGPUDevice(context->Device);
 }
 
 static const char* BasePath = NULL;
@@ -48,8 +48,8 @@ void InitializeAssetLoader()
 	BasePath = SDL_GetBasePath();
 }
 
-SDL_GpuShader* LoadShader(
-	SDL_GpuDevice* device,
+SDL_GPUShader* LoadShader(
+	SDL_GPUDevice* device,
 	const char* shaderFilename,
 	Uint32 samplerCount,
 	Uint32 uniformBufferCount,
@@ -57,7 +57,7 @@ SDL_GpuShader* LoadShader(
 	Uint32 storageTextureCount
 ) {
 	// Auto-detect the shader stage from the file name for convenience
-	SDL_GpuShaderStage stage;
+	SDL_GPUShaderStage stage;
 	if (SDL_strstr(shaderFilename, ".vert"))
 	{
 		stage = SDL_GPU_SHADERSTAGE_VERTEX;
@@ -83,8 +83,8 @@ SDL_GpuShader* LoadShader(
 		return NULL;
 	}
 
-	SDL_GpuShader* shader;
-	SDL_GpuShaderCreateInfo shaderInfo = {
+	SDL_GPUShader* shader;
+	SDL_GPUShaderCreateInfo shaderInfo = {
 		.code = code,
 		.codeSize = codeSize,
 		.entryPointName = "main",
@@ -95,9 +95,9 @@ SDL_GpuShader* LoadShader(
 		.storageBufferCount = storageBufferCount,
 		.storageTextureCount = storageTextureCount
 	};
-	if (SDL_GetGpuDriver(device) == SDL_GPU_DRIVER_VULKAN)
+	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
-		shader = SDL_CreateGpuShader(device, &shaderInfo);
+		shader = SDL_CreateGPUShader(device, &shaderInfo);
 	}
 	else
 	{
@@ -114,10 +114,10 @@ SDL_GpuShader* LoadShader(
 	return shader;
 }
 
-SDL_GpuComputePipeline* CreateComputePipelineFromShader(
-	SDL_GpuDevice* device,
+SDL_GPUComputePipeline* CreateComputePipelineFromShader(
+	SDL_GPUDevice* device,
 	const char* shaderFilename,
-	SDL_GpuComputePipelineCreateInfo *createInfo
+	SDL_GPUComputePipelineCreateInfo *createInfo
 ) {
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
@@ -131,16 +131,16 @@ SDL_GpuComputePipeline* CreateComputePipelineFromShader(
 	}
 
 	// Make a copy of the create data, then overwrite the parts we need
-	SDL_GpuComputePipelineCreateInfo newCreateInfo = *createInfo;
+	SDL_GPUComputePipelineCreateInfo newCreateInfo = *createInfo;
 	newCreateInfo.code = code;
 	newCreateInfo.codeSize = codeSize;
 	newCreateInfo.entryPointName = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
-	SDL_GpuComputePipeline* pipeline;
-	if (SDL_GetGpuDriver(device) == SDL_GPU_DRIVER_VULKAN)
+	SDL_GPUComputePipeline* pipeline;
+	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
-		pipeline = SDL_CreateGpuComputePipeline(device, &newCreateInfo);
+		pipeline = SDL_CreateGPUComputePipeline(device, &newCreateInfo);
 	}
 	else
 	{

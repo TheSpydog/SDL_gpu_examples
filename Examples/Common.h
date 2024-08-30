@@ -8,7 +8,7 @@ typedef struct Context
 	const char* ExampleName;
 	const char* BasePath;
 	SDL_Window* Window;
-	SDL_GpuDevice* Device;
+	SDL_GPUDevice* Device;
 	SDL_bool LeftPressed;
 	SDL_bool RightPressed;
 	SDL_bool DownPressed;
@@ -23,18 +23,18 @@ void InitializeAssetLoader();
 SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels);
 float* LoadHDRImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels);
 
-SDL_GpuShader* LoadShader(
-	SDL_GpuDevice* device,
+SDL_GPUShader* LoadShader(
+	SDL_GPUDevice* device,
 	const char* shaderFilename,
 	Uint32 samplerCount,
 	Uint32 uniformBufferCount,
 	Uint32 storageBufferCount,
 	Uint32 storageTextureCount
 );
-SDL_GpuComputePipeline* CreateComputePipelineFromShader(
-	SDL_GpuDevice* device,
+SDL_GPUComputePipeline* CreateComputePipelineFromShader(
+	SDL_GPUDevice* device,
 	const char* shaderFilename,
-	SDL_GpuComputePipelineCreateInfo* createInfo
+	SDL_GPUComputePipelineCreateInfo* createInfo
 );
 
 // Vertex Formats

@@ -1,6 +1,6 @@
 #include "Common.h"
 
-static SDL_GpuTexture* Texture;
+static SDL_GPUTexture* Texture;
 
 static Uint32 TextureWidth, TextureHeight;
 
@@ -24,9 +24,9 @@ static int Init(Context* context)
 	TextureHeight = imageData->h;
 
 	// Create texture resource
-	Texture = SDL_CreateGpuTexture(
+	Texture = SDL_CreateGPUTexture(
 		context->Device,
-		&(SDL_GpuTextureCreateInfo){
+		&(SDL_GPUTextureCreateInfo){
 			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
@@ -37,30 +37,30 @@ static int Init(Context* context)
 		}
 	);
 
-	SDL_GpuTransferBuffer* uploadTransferBuffer = SDL_CreateGpuTransferBuffer(
+	SDL_GPUTransferBuffer* uploadTransferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
-		&(SDL_GpuTransferBufferCreateInfo) {
+		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
 			.sizeInBytes = imageData->w * imageData->h * 4
 		}
 	);
 
-	Uint8* uploadTransferPtr = SDL_MapGpuTransferBuffer(
+	Uint8* uploadTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		uploadTransferBuffer,
 		SDL_FALSE
 	);
 	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
-	SDL_UnmapGpuTransferBuffer(context->Device, uploadTransferBuffer);
+	SDL_UnmapGPUTransferBuffer(context->Device, uploadTransferBuffer);
 
-	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
-	SDL_GpuCopyPass* copyPass = SDL_BeginGpuCopyPass(cmdbuf);
-	SDL_UploadToGpuTexture(
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(cmdbuf);
+	SDL_UploadToGPUTexture(
 		copyPass,
-		&(SDL_GpuTextureTransferInfo) {
+		&(SDL_GPUTextureTransferInfo) {
 			.transferBuffer = uploadTransferBuffer,
 		},
-		&(SDL_GpuTextureRegion){
+		&(SDL_GPUTextureRegion){
 			.texture = Texture,
 			.w = TextureWidth,
 			.h = TextureHeight,
@@ -68,10 +68,10 @@ static int Init(Context* context)
 		},
 		SDL_FALSE
 	);
-	SDL_EndGpuCopyPass(copyPass);
-	SDL_SubmitGpu(cmdbuf);
+	SDL_EndGPUCopyPass(copyPass);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
-	SDL_ReleaseGpuTransferBuffer(context->Device, uploadTransferBuffer);
+	SDL_ReleaseGPUTransferBuffer(context->Device, uploadTransferBuffer);
 	SDL_DestroySurface(imageData);
 
 	return 0;
@@ -85,13 +85,13 @@ static int Update(Context* context)
 static int Draw(Context* context)
 {
 	Uint32 w, h;
-	SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
-	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
-		SDL_GpuRenderPass* clearPass = SDL_BeginGpuRenderPass(
+		SDL_GPURenderPass* clearPass = SDL_BeginGPURenderPass(
 			cmdbuf,
-			(SDL_GpuColorAttachmentInfo[]){{
+			(SDL_GPUColorAttachmentInfo[]){{
 				.texture = swapchainTexture,
 				.loadOp = SDL_GPU_LOADOP_CLEAR,
 				.storeOp = SDL_GPU_STOREOP_STORE,
@@ -101,17 +101,17 @@ static int Draw(Context* context)
 			1,
 			NULL
 		);
-		SDL_EndGpuRenderPass(clearPass);
+		SDL_EndGPURenderPass(clearPass);
 
 		// Normal
-		SDL_BlitGpu(
+		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = swapchainTexture,
 				.w = w / 2,
 				.h = h / 2,
@@ -122,14 +122,14 @@ static int Draw(Context* context)
 		);
 
 		// Flipped Horizontally
-		SDL_BlitGpu(
+		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion) {
+			&(SDL_GPUBlitRegion) {
 			.texture = swapchainTexture,
 				.x = w / 2,
 				.w = w / 2,
@@ -141,14 +141,14 @@ static int Draw(Context* context)
 		);
 
 		// Flipped Vertically
-		SDL_BlitGpu(
+		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion) {
+			&(SDL_GPUBlitRegion) {
 			.texture = swapchainTexture,
 				.w = w / 2,
 				.y = h / 2,
@@ -160,14 +160,14 @@ static int Draw(Context* context)
 		);
 
 		// Flipped Horizontally and Vertically
-		SDL_BlitGpu(
+		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GpuBlitRegion){
+			&(SDL_GPUBlitRegion){
 				.texture = Texture,
 				.w = TextureWidth,
 				.h = TextureHeight,
 			},
-			&(SDL_GpuBlitRegion) {
+			&(SDL_GPUBlitRegion) {
 			.texture = swapchainTexture,
 				.x = w / 2,
 				.w = w / 2,
@@ -180,14 +180,14 @@ static int Draw(Context* context)
 		);
 	}
 
-	SDL_SubmitGpu(cmdbuf);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-	SDL_ReleaseGpuTexture(context->Device, Texture);
+	SDL_ReleaseGPUTexture(context->Device, Texture);
 
 	CommonQuit(context);
 }

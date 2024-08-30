@@ -1,9 +1,9 @@
 #include "Common.h"
 
-static SDL_GpuGraphicsPipeline* DrawPipeline;
-static SDL_GpuTexture* Texture;
-static SDL_GpuSampler* Sampler;
-static SDL_GpuBuffer* VertexBuffer;
+static SDL_GPUGraphicsPipeline* DrawPipeline;
+static SDL_GPUTexture* Texture;
+static SDL_GPUSampler* Sampler;
+static SDL_GPUBuffer* VertexBuffer;
 
 static int Init(Context* context)
 {
@@ -13,24 +13,24 @@ static int Init(Context* context)
         return result;
     }
 
-    SDL_GpuShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert", 0, 0, 0, 0);
+    SDL_GPUShader *vertexShader = LoadShader(context->Device, "TexturedQuad.vert", 0, 0, 0, 0);
     if (vertexShader == NULL)
     {
         SDL_Log("Failed to create vertex shader!");
         return -1;
     }
 
-    SDL_GpuShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag", 1, 0, 0, 0);
+    SDL_GPUShader *fragmentShader = LoadShader(context->Device, "TexturedQuad.frag", 1, 0, 0, 0);
     if (fragmentShader == NULL)
     {
         SDL_Log("Failed to create fragment shader!");
         return -1;
     }
 
-    SDL_GpuComputePipeline* fillTexturePipeline = CreateComputePipelineFromShader(
+    SDL_GPUComputePipeline* fillTexturePipeline = CreateComputePipelineFromShader(
 	context->Device,
 	"FillTexture.comp",
-	&(SDL_GpuComputePipelineCreateInfo) {
+	&(SDL_GPUComputePipelineCreateInfo) {
 		.writeOnlyStorageTextureCount = 1,
 		.threadCountX = 8,
 		.threadCountY = 8,
@@ -38,11 +38,11 @@ static int Init(Context* context)
 	}
     );
 
-    DrawPipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &(SDL_GpuGraphicsPipelineCreateInfo){
+    DrawPipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &(SDL_GPUGraphicsPipelineCreateInfo){
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
-			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
+			.colorAttachmentDescriptions = (SDL_GPUColorAttachmentDescription[]){{
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -56,16 +56,16 @@ static int Init(Context* context)
 			}}
 		},
         .primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-		.vertexInputState = (SDL_GpuVertexInputState){
+		.vertexInputState = (SDL_GPUVertexInputState){
 			.vertexBindingCount = 1,
-			.vertexBindings = (SDL_GpuVertexBinding[]){{
+			.vertexBindings = (SDL_GPUVertexBinding[]){{
 				.binding = 0,
 				.inputRate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
 				.instanceStepRate = 0,
 				.stride = sizeof(PositionTextureVertex)
 			}},
 			.vertexAttributeCount = 2,
-			.vertexAttributes = (SDL_GpuVertexAttribute[]){{
+			.vertexAttributes = (SDL_GPUVertexAttribute[]){{
 				.binding = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
 				.location = 0,
@@ -82,13 +82,13 @@ static int Init(Context* context)
         .fragmentShader = fragmentShader
     });
 
-    SDL_ReleaseGpuShader(context->Device, vertexShader);
-    SDL_ReleaseGpuShader(context->Device, fragmentShader);
+    SDL_ReleaseGPUShader(context->Device, vertexShader);
+    SDL_ReleaseGPUShader(context->Device, fragmentShader);
 
     int w, h;
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
-    Texture = SDL_CreateGpuTexture(context->Device, &(SDL_GpuTextureCreateInfo){
+    Texture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
         .type = SDL_GPU_TEXTURETYPE_2D,
         .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
         .width = w,
@@ -98,28 +98,28 @@ static int Init(Context* context)
         .usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
     });
 
-    Sampler = SDL_CreateGpuSampler(context->Device, &(SDL_GpuSamplerCreateInfo){
+    Sampler = SDL_CreateGPUSampler(context->Device, &(SDL_GPUSamplerCreateInfo){
         .addressModeU = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
         .addressModeV = SDL_GPU_SAMPLERADDRESSMODE_REPEAT
     });
 
-    VertexBuffer = SDL_CreateGpuBuffer(
+    VertexBuffer = SDL_CreateGPUBuffer(
         context->Device,
-        &(SDL_GpuBufferCreateInfo) {
+        &(SDL_GPUBufferCreateInfo) {
             .usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
             .sizeInBytes = sizeof(PositionTextureVertex) * 6
         }
     );
 
-    SDL_GpuTransferBuffer* transferBuffer = SDL_CreateGpuTransferBuffer(
+    SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
-        &(SDL_GpuTransferBufferCreateInfo) {
+        &(SDL_GPUTransferBufferCreateInfo) {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
             .sizeInBytes = sizeof(PositionTextureVertex) * 6
         }
 	);
 
-	PositionTextureVertex* transferData = SDL_MapGpuTransferBuffer(
+	PositionTextureVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		transferBuffer,
 		SDL_FALSE
@@ -132,18 +132,18 @@ static int Init(Context* context)
 	transferData[4] = (PositionTextureVertex) {  1,  1, 0, 1, 1 };
 	transferData[5] = (PositionTextureVertex) { -1,  1, 0, 0, 1 };
 
-	SDL_UnmapGpuTransferBuffer(context->Device, transferBuffer);
+	SDL_UnmapGPUTransferBuffer(context->Device, transferBuffer);
 
-	SDL_GpuCommandBuffer* cmdBuf = SDL_AcquireGpuCommandBuffer(context->Device);
-	SDL_GpuCopyPass* copyPass = SDL_BeginGpuCopyPass(cmdBuf);
+	SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(cmdBuf);
 
-	SDL_UploadToGpuBuffer(
+	SDL_UploadToGPUBuffer(
 		copyPass,
-		&(SDL_GpuTransferBufferLocation) {
+		&(SDL_GPUTransferBufferLocation) {
 			.transferBuffer = transferBuffer,
 			.offset = 0
 		},
-		&(SDL_GpuBufferRegion) {
+		&(SDL_GPUBufferRegion) {
 			.buffer = VertexBuffer,
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 6
@@ -151,11 +151,11 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
-	SDL_EndGpuCopyPass(copyPass);
+	SDL_EndGPUCopyPass(copyPass);
 
-    SDL_GpuComputePass* computePass = SDL_BeginGpuComputePass(
+    SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
         cmdBuf,
-        (SDL_GpuStorageTextureWriteOnlyBinding[]){{
+        (SDL_GPUStorageTextureWriteOnlyBinding[]){{
             .texture = Texture
         }},
         1,
@@ -163,14 +163,14 @@ static int Init(Context* context)
         0
     );
 
-    SDL_BindGpuComputePipeline(computePass, fillTexturePipeline);
-    SDL_DispatchGpuCompute(computePass, w / 8, h / 8, 1);
-    SDL_EndGpuComputePass(computePass);
+    SDL_BindGPUComputePipeline(computePass, fillTexturePipeline);
+    SDL_DispatchGPUCompute(computePass, w / 8, h / 8, 1);
+    SDL_EndGPUComputePass(computePass);
 
-	SDL_SubmitGpu(cmdBuf);
+	SDL_SubmitGPUCommandBuffer(cmdBuf);
 
-    SDL_ReleaseGpuComputePipeline(context->Device, fillTexturePipeline);
-	SDL_ReleaseGpuTransferBuffer(context->Device, transferBuffer);
+    SDL_ReleaseGPUComputePipeline(context->Device, fillTexturePipeline);
+	SDL_ReleaseGPUTransferBuffer(context->Device, transferBuffer);
 
     return 0;
 }
@@ -182,20 +182,20 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
     if (cmdbuf == NULL)
     {
-        SDL_Log("GpuAcquireCommandBuffer failed!");
+        SDL_Log("GPUAcquireCommandBuffer failed!");
         return -1;
     }
 
     Uint32 w, h;
-    SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
     if (swapchainTexture != NULL)
     {
-        SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(
+        SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            (SDL_GpuColorAttachmentInfo[]){{
+            (SDL_GPUColorAttachmentInfo[]){{
                 .texture = swapchainTexture,
                 .loadOp = SDL_GPU_LOADOP_CLEAR,
                 .storeOp = SDL_GPU_STOREOP_STORE,
@@ -206,25 +206,25 @@ static int Draw(Context* context)
             NULL
         );
 
-        SDL_BindGpuGraphicsPipeline(renderPass, DrawPipeline);
-        SDL_BindGpuVertexBuffers(renderPass, 0, &(SDL_GpuBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
-        SDL_BindGpuFragmentSamplers(renderPass, 0, &(SDL_GpuTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
-        SDL_DrawGpuPrimitives(renderPass, 6, 1, 0, 0);
+        SDL_BindGPUGraphicsPipeline(renderPass, DrawPipeline);
+        SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
+        SDL_BindGPUFragmentSamplers(renderPass, 0, &(SDL_GPUTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
+        SDL_DrawGPUPrimitives(renderPass, 6, 1, 0, 0);
 
-        SDL_EndGpuRenderPass(renderPass);
+        SDL_EndGPURenderPass(renderPass);
     }
 
-    SDL_SubmitGpu(cmdbuf);
+    SDL_SubmitGPUCommandBuffer(cmdbuf);
 
     return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_ReleaseGpuGraphicsPipeline(context->Device, DrawPipeline);
-    SDL_ReleaseGpuTexture(context->Device, Texture);
-    SDL_ReleaseGpuSampler(context->Device, Sampler);
-    SDL_ReleaseGpuBuffer(context->Device, VertexBuffer);
+    SDL_ReleaseGPUGraphicsPipeline(context->Device, DrawPipeline);
+    SDL_ReleaseGPUTexture(context->Device, Texture);
+    SDL_ReleaseGPUSampler(context->Device, Sampler);
+    SDL_ReleaseGPUBuffer(context->Device, VertexBuffer);
 
     CommonQuit(context);
 }

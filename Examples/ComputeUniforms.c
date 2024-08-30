@@ -1,7 +1,7 @@
 #include "Common.h"
 
-static SDL_GpuComputePipeline* GradientPipeline;
-static SDL_GpuTexture* GradientRenderTexture;
+static SDL_GPUComputePipeline* GradientPipeline;
+static SDL_GPUTexture* GradientRenderTexture;
 
 typedef struct GradientUniforms
 {
@@ -21,7 +21,7 @@ static int Init(Context* context)
     GradientPipeline = CreateComputePipelineFromShader(
         context->Device,
         "GradientTexture.comp",
-        &(SDL_GpuComputePipelineCreateInfo) {
+        &(SDL_GPUComputePipelineCreateInfo) {
             .writeOnlyStorageTextureCount = 1,
             .uniformBufferCount = 1,
             .threadCountX = 8,
@@ -33,8 +33,8 @@ static int Init(Context* context)
     int w, h;
     SDL_GetWindowSizeInPixels(context->Window, &w, &h);
 
-    GradientRenderTexture = SDL_CreateGpuTexture(context->Device, &(SDL_GpuTextureCreateInfo){
-        .format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
+    GradientRenderTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
+        .format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
         .type = SDL_GPU_TEXTURETYPE_2D,
         .width = w,
         .height = h,
@@ -57,20 +57,20 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
     if (cmdbuf == NULL)
     {
-        SDL_Log("GpuAcquireCommandBuffer failed!");
+        SDL_Log("GPUAcquireCommandBuffer failed!");
         return -1;
     }
 
     Uint32 w, h;
-    SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
     if (swapchainTexture != NULL)
     {
-        SDL_GpuComputePass* computePass = SDL_BeginGpuComputePass(
+        SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
             cmdbuf,
-            (SDL_GpuStorageTextureWriteOnlyBinding[]){{
+            (SDL_GPUStorageTextureWriteOnlyBinding[]){{
                 .texture = GradientRenderTexture,
                 .cycle = SDL_TRUE
             }},
@@ -79,20 +79,20 @@ static int Draw(Context* context)
             0
         );
 
-        SDL_BindGpuComputePipeline(computePass, GradientPipeline);
-        SDL_PushGpuComputeUniformData(cmdbuf, 0, &GradientUniformValues, sizeof(GradientUniforms));
-        SDL_DispatchGpuCompute(computePass, w / 8 , h / 8 , 1);
+        SDL_BindGPUComputePipeline(computePass, GradientPipeline);
+        SDL_PushGPUComputeUniformData(cmdbuf, 0, &GradientUniformValues, sizeof(GradientUniforms));
+        SDL_DispatchGPUCompute(computePass, w / 8 , h / 8 , 1);
 
-        SDL_EndGpuComputePass(computePass);
+        SDL_EndGPUComputePass(computePass);
 
-        SDL_BlitGpu(
+        SDL_BlitGPUTexture(
             cmdbuf,
-            &(SDL_GpuBlitRegion){
+            &(SDL_GPUBlitRegion){
                 .texture = GradientRenderTexture,
                 .w = w,
                 .h = h,
             },
-            &(SDL_GpuBlitRegion){
+            &(SDL_GPUBlitRegion){
                 .texture = swapchainTexture,
                 .w = w,
                 .h = h,
@@ -103,15 +103,15 @@ static int Draw(Context* context)
         );
     }
 
-    SDL_SubmitGpu(cmdbuf);
+    SDL_SubmitGPUCommandBuffer(cmdbuf);
 
     return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_ReleaseGpuComputePipeline(context->Device, GradientPipeline);
-    SDL_ReleaseGpuTexture(context->Device, GradientRenderTexture);
+    SDL_ReleaseGPUComputePipeline(context->Device, GradientPipeline);
+    SDL_ReleaseGPUTexture(context->Device, GradientRenderTexture);
 
     CommonQuit(context);
 }

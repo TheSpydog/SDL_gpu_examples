@@ -17,7 +17,7 @@ static const Resolution Resolutions[] =
 };
 static Uint32 ResolutionCount = SDL_arraysize(Resolutions);
 
-static SDL_GpuGraphicsPipeline* Pipeline;
+static SDL_GPUGraphicsPipeline* Pipeline;
 static Sint32 ResolutionIndex;
 
 static int Init(Context* context)
@@ -30,25 +30,25 @@ static int Init(Context* context)
 
     ResolutionIndex = 0;
 
-    SDL_GpuShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
+    SDL_GPUShader* vertexShader = LoadShader(context->Device, "RawTriangle.vert", 0, 0, 0, 0);
     if (vertexShader == NULL)
     {
         SDL_Log("Failed to create vertex shader!");
         return -1;
     }
 
-    SDL_GpuShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
+    SDL_GPUShader* fragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
     if (fragmentShader == NULL)
     {
         SDL_Log("Failed to create fragment shader!");
         return -1;
     }
 
-    SDL_GpuGraphicsPipelineCreateInfo pipelineCreateInfo = {
+    SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = {
 		.attachmentInfo = {
 			.colorAttachmentCount = 1,
-			.colorAttachmentDescriptions = (SDL_GpuColorAttachmentDescription[]){{
-				.format = SDL_GetGpuSwapchainTextureFormat(context->Device, context->Window),
+			.colorAttachmentDescriptions = (SDL_GPUColorAttachmentDescription[]){{
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 				.blendState = {
 					.blendEnable = SDL_TRUE,
 					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
@@ -68,15 +68,15 @@ static int Init(Context* context)
         .rasterizerState.fillMode = SDL_GPU_FILLMODE_FILL
 	};
 
-    Pipeline = SDL_CreateGpuGraphicsPipeline(context->Device, &pipelineCreateInfo);
+    Pipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
     if (Pipeline == NULL)
     {
         SDL_Log("Failed to create pipeline!");
         return -1;
     }
 
-    SDL_ReleaseGpuShader(context->Device, vertexShader);
-    SDL_ReleaseGpuShader(context->Device, fragmentShader);
+    SDL_ReleaseGPUShader(context->Device, vertexShader);
+    SDL_ReleaseGPUShader(context->Device, fragmentShader);
 
     SDL_Log("Press Left and Right to resize the window!");
 
@@ -117,37 +117,37 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GpuCommandBuffer* cmdbuf = SDL_AcquireGpuCommandBuffer(context->Device);
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
 	if (cmdbuf == NULL)
 	{
-		SDL_Log("GpuAcquireCommandBuffer failed");
+		SDL_Log("GPUAcquireCommandBuffer failed");
 		return -1;
 	}
 
 	Uint32 w, h;
-	SDL_GpuTexture* swapchainTexture = SDL_AcquireGpuSwapchainTexture(cmdbuf, context->Window, &w, &h);
+	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
-		SDL_GpuColorAttachmentInfo colorAttachmentInfo = { 0 };
+		SDL_GPUColorAttachmentInfo colorAttachmentInfo = { 0 };
 		colorAttachmentInfo.texture = swapchainTexture;
 		colorAttachmentInfo.clearColor = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
 		colorAttachmentInfo.loadOp = SDL_GPU_LOADOP_CLEAR;
 		colorAttachmentInfo.storeOp = SDL_GPU_STOREOP_STORE;
 
-		SDL_GpuRenderPass* renderPass = SDL_BeginGpuRenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
-		SDL_BindGpuGraphicsPipeline(renderPass, Pipeline);
-		SDL_DrawGpuPrimitives(renderPass, 3, 1, 0, 0);
-		SDL_EndGpuRenderPass(renderPass);
+		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		SDL_BindGPUGraphicsPipeline(renderPass, Pipeline);
+		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+		SDL_EndGPURenderPass(renderPass);
 	}
 
-	SDL_SubmitGpu(cmdbuf);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
 	return 0;
 }
 
 static void Quit(Context* context)
 {
-    SDL_ReleaseGpuGraphicsPipeline(context->Device, Pipeline);
+    SDL_ReleaseGPUGraphicsPipeline(context->Device, Pipeline);
     CommonQuit(context);
 }
 
