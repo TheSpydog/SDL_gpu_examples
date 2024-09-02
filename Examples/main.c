@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) < 0)
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
 	{
 		SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
 		return 1;
