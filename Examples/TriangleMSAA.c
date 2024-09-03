@@ -82,7 +82,7 @@ static int Init(Context* context)
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
 			.format = RTFormat,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT,
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
 			.sampleCount = sampleCount
 		};
 		MSAARenderTextures[SampleCounts] = SDL_CreateGPUTexture(context->Device, &textureCreateInfo);

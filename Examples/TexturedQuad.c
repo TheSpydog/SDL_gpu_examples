@@ -167,7 +167,7 @@ static int Init(Context* context)
 	VertexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX,
 			.sizeInBytes = sizeof(PositionTextureVertex) * 4
 		}
 	);
@@ -180,7 +180,7 @@ static int Init(Context* context)
 	IndexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX,
 			.sizeInBytes = sizeof(Uint16) * 6
 		}
 	);
@@ -192,7 +192,7 @@ static int Init(Context* context)
 		.height = imageData->h,
 		.layerCountOrDepth = 1,
 		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
 	});
 	SDL_SetGPUTextureName(
 		context->Device,

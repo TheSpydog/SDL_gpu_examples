@@ -33,7 +33,7 @@ static int Init(Context* context)
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 

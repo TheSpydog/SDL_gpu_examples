@@ -95,7 +95,7 @@ static int Init(Context* context)
         .height = h,
         .layerCountOrDepth = 1,
         .levelCount = 1,
-        .usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+        .usageFlags = SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE | SDL_GPU_TEXTUREUSAGE_SAMPLER
     });
 
     Sampler = SDL_CreateGPUSampler(context->Device, &(SDL_GPUSamplerCreateInfo){
@@ -106,7 +106,7 @@ static int Init(Context* context)
     VertexBuffer = SDL_CreateGPUBuffer(
         context->Device,
         &(SDL_GPUBufferCreateInfo) {
-            .usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+            .usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX,
             .sizeInBytes = sizeof(PositionTextureVertex) * 6
         }
     );

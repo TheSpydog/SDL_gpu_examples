@@ -38,7 +38,7 @@ static int Init(Context* context)
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -51,7 +51,7 @@ static int Init(Context* context)
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -64,7 +64,7 @@ static int Init(Context* context)
 			.height = imageData->h / 2,
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET
 		}
 	);
 
@@ -73,7 +73,7 @@ static int Init(Context* context)
 	OriginalBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
 			.sizeInBytes = sizeof(bufferData)
 		}
 	);
@@ -81,7 +81,7 @@ static int Init(Context* context)
 	BufferCopy = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ_BIT, /* arbitrary */
+			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
 			.sizeInBytes = sizeof(bufferData)
 		}
 	);

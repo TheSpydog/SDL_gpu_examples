@@ -40,7 +40,7 @@ static int Init(Context* context)
         .height = h,
         .layerCountOrDepth = 1,
         .levelCount = 1,
-        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE_BIT
+        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
     });
 
     GradientUniformValues.time = 0;

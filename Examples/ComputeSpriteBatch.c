@@ -182,7 +182,7 @@ static int Init(Context* context)
 			.height = imageData->h,
 			.layerCountOrDepth = 1,
 			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -209,7 +209,7 @@ static int Init(Context* context)
 	SpriteComputeBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ,
 			.sizeInBytes = SPRITE_COUNT * sizeof(ComputeSpriteInstance)
 		}
 	);
@@ -217,7 +217,7 @@ static int Init(Context* context)
 	SpriteVertexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE_BIT | SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE | SDL_GPU_BUFFERUSAGE_VERTEX,
 			.sizeInBytes = SPRITE_COUNT * 4 * sizeof(PositionTextureColorVertex)
 		}
 	);
@@ -225,7 +225,7 @@ static int Init(Context* context)
 	SpriteIndexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_INDEX,
 			.sizeInBytes = SPRITE_COUNT * 6 * sizeof(Uint32)
 		}
 	);

@@ -21,7 +21,7 @@ static int Init(Context* context)
             .height = 64,
             .layerCountOrDepth = 4,
             .levelCount = 1,
-            .usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET_BIT | SDL_GPU_TEXTUREUSAGE_SAMPLER_BIT
+            .usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER
         }
     );
 

@@ -86,7 +86,7 @@ static int Init(Context* context)
 	VertexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX,
 			.sizeInBytes = sizeof(PositionColorVertex) * 3
 		}
 	);

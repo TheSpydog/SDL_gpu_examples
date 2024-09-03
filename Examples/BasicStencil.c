@@ -33,7 +33,7 @@ static int Init(Context* context)
 		context->Device,
 		SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
 		SDL_GPU_TEXTURETYPE_2D,
-		SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
+		SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
 	))
 	{
 		depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT;
@@ -42,7 +42,7 @@ static int Init(Context* context)
 		context->Device,
 		SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
 		SDL_GPU_TEXTURETYPE_2D,
-		SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
+		SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
 	))
 	{
 		depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT;
@@ -143,7 +143,7 @@ static int Init(Context* context)
 	VertexBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX_BIT,
+			.usageFlags = SDL_GPU_BUFFERUSAGE_VERTEX,
 			.sizeInBytes = sizeof(PositionColorVertex) * 6
 		}
 	);
@@ -161,7 +161,7 @@ static int Init(Context* context)
 			.levelCount = 1,
 			.sampleCount = SDL_GPU_SAMPLECOUNT_1,
 			.format = depthStencilFormat,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET_BIT
+			.usageFlags = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
 		}
 	);
 
