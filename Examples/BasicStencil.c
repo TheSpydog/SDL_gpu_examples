@@ -78,7 +78,6 @@ static int Init(Context* context)
 				.compareOp = SDL_GPU_COMPAREOP_NEVER,
 				.failOp = SDL_GPU_STENCILOP_REPLACE
 			},
-			.reference = 1,
 			.writeMask = 0xFF
 		},
 		.rasterizerState = (SDL_GPURasterizerState){
@@ -125,7 +124,6 @@ static int Init(Context* context)
 		.frontStencilState = (SDL_GPUStencilOpState){
 			.compareOp = SDL_GPU_COMPAREOP_EQUAL
 		},
-		.reference = 0,
 		.compareMask = 0xFF,
 		.writeMask = 0
 	};
@@ -253,9 +251,13 @@ static int Draw(Context* context)
 			&depthStencilAttachmentInfo
 		);
 
+		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = VertexBuffer, .offset = 0 }, 1);
+
+		SDL_SetGPUStencilReference(renderPass, 1);
 		SDL_BindGPUGraphicsPipeline(renderPass, MaskerPipeline);
-		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
 		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+
+		SDL_SetGPUStencilReference(renderPass, 0);
 		SDL_BindGPUGraphicsPipeline(renderPass, MaskeePipeline);
 		SDL_DrawGPUPrimitives(renderPass, 3, 1, 3, 0);
 
