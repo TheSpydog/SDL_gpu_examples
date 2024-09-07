@@ -31,9 +31,9 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
 			.height = imageData->h,
-			.layerCountOrDepth = 1,
-			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -41,7 +41,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.sizeInBytes = imageData->w * imageData->h * 4
+			.size = imageData->w * imageData->h * 4
 		}
 	);
 
@@ -58,7 +58,7 @@ static int Init(Context* context)
 	SDL_UploadToGPUTexture(
 		copyPass,
 		&(SDL_GPUTextureTransferInfo) {
-			.transferBuffer = uploadTransferBuffer,
+			.transfer_buffer = uploadTransferBuffer,
 		},
 		&(SDL_GPUTextureRegion){
 			.texture = Texture,
@@ -91,11 +91,11 @@ static int Draw(Context* context)
 	{
 		SDL_GPURenderPass* clearPass = SDL_BeginGPURenderPass(
 			cmdbuf,
-			(SDL_GPUColorAttachmentInfo[]){{
+			(SDL_GPUColorTargetInfo[]){{
 				.texture = swapchainTexture,
-				.loadOp = SDL_GPU_LOADOP_CLEAR,
-				.storeOp = SDL_GPU_STOREOP_STORE,
-				.clearColor = { 0, 0, 0, 1 },
+				.load_op = SDL_GPU_LOADOP_CLEAR,
+				.store_op = SDL_GPU_STOREOP_STORE,
+				.clear_color = { 0, 0, 0, 1 },
 				.cycle = SDL_FALSE
 			}},
 			1,

@@ -15,11 +15,11 @@ static int Init(Context* context)
         &(SDL_GPUTextureCreateInfo){
             .type = SDL_GPU_TEXTURETYPE_2D,
             .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
-            .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET,
+            .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET,
             .width = 32,
             .height = 32,
-            .layerCountOrDepth = 1,
-            .levelCount = 3
+            .layer_count_or_depth = 1,
+            .num_levels = 3
         }
     );
 
@@ -28,7 +28,7 @@ static int Init(Context* context)
         context->Device,
         &(SDL_GPUTransferBufferCreateInfo) {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .sizeInBytes = byteCount
+            .size = byteCount
         }
     );
     Uint8* textureTransferData = SDL_MapGPUTransferBuffer(
@@ -53,7 +53,7 @@ static int Init(Context* context)
     SDL_UploadToGPUTexture(
         copyPass,
         &(SDL_GPUTextureTransferInfo){
-            .transferBuffer = textureTransferBuffer
+            .transfer_buffer = textureTransferBuffer
         },
         &(SDL_GPUTextureRegion) {
             .texture = MipmapTexture,
@@ -93,7 +93,7 @@ static int Draw(Context* context)
                 .texture = MipmapTexture,
                 .w = 8,
                 .h = 8,
-                .mipLevel = 2
+                .mip_level = 2
             },
             &(SDL_GPUBlitRegion){
                 .texture = swapchainTexture,

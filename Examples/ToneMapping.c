@@ -68,11 +68,11 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 		device,
 		spvFile,
 		&(SDL_GPUComputePipelineCreateInfo){
-			.readOnlyStorageTextureCount = 1,
-			.writeOnlyStorageTextureCount = 1,
-			.threadCountX = 8,
-			.threadCountY = 8,
-			.threadCountZ = 1,
+			.num_readonly_storage_textures = 1,
+			.num_writeonly_storage_textures = 1,
+			.threadcount_x = 8,
+			.threadcount_y = 8,
+			.threadcount_z = 1,
 		}
 	);
 }
@@ -130,9 +130,9 @@ static int Init(Context* context)
         .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
         .width = img_x,
         .height = img_y,
-        .layerCountOrDepth = 1,
-        .levelCount = 1,
-        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ
+        .layer_count_or_depth = 1,
+        .num_levels = 1,
+        .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ
     });
 
 	ToneMapTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
@@ -140,9 +140,9 @@ static int Init(Context* context)
 		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT,
 		.width = img_x,
 		.height = img_y,
-		.layerCountOrDepth = 1,
-		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
+		.layer_count_or_depth = 1,
+		.num_levels = 1,
+		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
 	});
 
 	TransferTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
@@ -150,9 +150,9 @@ static int Init(Context* context)
 		.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 		.width = img_x,
 		.height = img_y,
-		.layerCountOrDepth = 1,
-		.levelCount = 1,
-		.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
+		.layer_count_or_depth = 1,
+		.num_levels = 1,
+		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
 	});
 
     SDL_ReleaseGPUShader(context->Device, vertexShader);
@@ -162,7 +162,7 @@ static int Init(Context* context)
         context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.sizeInBytes = sizeof(float) * 4 * img_x * img_y
+			.size = sizeof(float) * 4 * img_x * img_y
 		}
     );
 
@@ -182,7 +182,7 @@ static int Init(Context* context)
     SDL_UploadToGPUTexture(
         copyPass,
         &(SDL_GPUTextureTransferInfo) {
-        	.transferBuffer = imageDataTransferBuffer,
+        	.transfer_buffer = imageDataTransferBuffer,
         	.offset = 0, /* Zeroes out the rest */
         },
         &(SDL_GPUTextureRegion){

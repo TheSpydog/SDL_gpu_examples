@@ -22,11 +22,11 @@ static int Init(Context* context)
         context->Device,
         "GradientTexture.comp",
         &(SDL_GPUComputePipelineCreateInfo) {
-            .writeOnlyStorageTextureCount = 1,
-            .uniformBufferCount = 1,
-            .threadCountX = 8,
-            .threadCountY = 8,
-            .threadCountZ = 1,
+            .num_writeonly_storage_textures = 1,
+            .num_uniform_buffers = 1,
+            .threadcount_x = 8,
+            .threadcount_y = 8,
+            .threadcount_z = 1,
         }
     );
 
@@ -38,9 +38,9 @@ static int Init(Context* context)
         .type = SDL_GPU_TEXTURETYPE_2D,
         .width = w,
         .height = h,
-        .layerCountOrDepth = 1,
-        .levelCount = 1,
-        .usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
+        .layer_count_or_depth = 1,
+        .num_levels = 1,
+        .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
     });
 
     GradientUniformValues.time = 0;

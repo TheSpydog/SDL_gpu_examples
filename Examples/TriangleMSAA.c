@@ -34,40 +34,40 @@ static int Init(Context* context)
 	// Create the pipelines
 	RTFormat = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window);
 	SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = {
-		.attachmentInfo = {
-			.colorAttachmentCount = 1,
-			.colorAttachmentDescriptions = (SDL_GPUColorAttachmentDescription[]){{
+		.target_info = {
+			.num_color_targets = 1,
+			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 				.format = RTFormat,
-				.blendState = {
-					.blendEnable = SDL_TRUE,
-					.alphaBlendOp = SDL_GPU_BLENDOP_ADD,
-					.colorBlendOp = SDL_GPU_BLENDOP_ADD,
-					.colorWriteMask = 0xF,
-					.srcColorBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
-					.srcAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ONE,
-					.dstColorBlendFactor = SDL_GPU_BLENDFACTOR_ZERO,
-					.dstAlphaBlendFactor = SDL_GPU_BLENDFACTOR_ZERO
+				.blend_state = {
+					.enable_blend = SDL_TRUE,
+					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
+					.color_blend_op = SDL_GPU_BLENDOP_ADD,
+					.color_write_mask = 0xF,
+					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+					.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+					.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+					.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO
 				}
 			}},
 		},
-		.multisampleState.sampleMask = 0xFFFF,
-		.primitiveType = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-		.vertexShader = vertexShader,
-		.fragmentShader = fragmentShader,
+		.multisample_state.sample_mask = 0xFFFF,
+		.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+		.vertex_shader = vertexShader,
+		.fragment_shader = fragmentShader,
 	};
 
 	SampleCounts = 0;
 	for (int i = 0; i < SDL_arraysize(Pipelines); i += 1)
 	{
-		SDL_GPUSampleCount sampleCount = (SDL_GPUSampleCount) i;
+		SDL_GPUSampleCount sample_count = (SDL_GPUSampleCount) i;
 		if (!SDL_GPUTextureSupportsSampleCount(
 			context->Device,
 			RTFormat,
-			sampleCount)) {
+			sample_count)) {
 			SDL_Log("Sample count %d not supported", (1 << CurrentSampleCount));
 			continue;
 		}
-		pipelineCreateInfo.multisampleState.sampleCount = sampleCount;
+		pipelineCreateInfo.multisample_state.sample_count = sample_count;
 		Pipelines[SampleCounts] = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 		if (Pipelines[SampleCounts] == NULL)
 		{
@@ -79,11 +79,11 @@ static int Init(Context* context)
 			.type = SDL_GPU_TEXTURETYPE_2D,
 			.width = 640,
 			.height = 480,
-			.layerCountOrDepth = 1,
-			.levelCount = 1,
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
 			.format = RTFormat,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
-			.sampleCount = sampleCount
+			.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
+			.sample_count = sample_count
 		};
 		MSAARenderTextures[SampleCounts] = SDL_CreateGPUTexture(context->Device, &textureCreateInfo);
 		if (MSAARenderTextures[SampleCounts] == NULL) {
@@ -146,14 +146,14 @@ static int Draw(Context* context)
 	if (swapchainTexture != NULL)
 	{
 		SDL_GPURenderPass* renderPass;
-		SDL_GPUColorAttachmentInfo colorAttachmentInfo = {
+		SDL_GPUColorTargetInfo colorTargetInfo = {
 			.texture = MSAARenderTextures[CurrentSampleCount],
-			.clearColor = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
-			.loadOp = SDL_GPU_LOADOP_CLEAR,
-			.storeOp = SDL_GPU_STOREOP_STORE
+			.clear_color = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
+			.load_op = SDL_GPU_LOADOP_CLEAR,
+			.store_op = SDL_GPU_STOREOP_STORE
 		};
 
-		renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorAttachmentInfo, 1, NULL);
+		renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
 		SDL_BindGPUGraphicsPipeline(renderPass, Pipelines[CurrentSampleCount]);
 		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
 		SDL_EndGPURenderPass(renderPass);

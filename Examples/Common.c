@@ -86,14 +86,14 @@ SDL_GPUShader* LoadShader(
 	SDL_GPUShader* shader;
 	SDL_GPUShaderCreateInfo shaderInfo = {
 		.code = code,
-		.codeSize = codeSize,
-		.entryPointName = "main",
+		.code_size = codeSize,
+		.entrypoint = "main",
 		.format = SDL_GPU_SHADERFORMAT_SPIRV,
 		.stage = stage,
-		.samplerCount = samplerCount,
-		.uniformBufferCount = uniformBufferCount,
-		.storageBufferCount = storageBufferCount,
-		.storageTextureCount = storageTextureCount
+		.num_samplers = samplerCount,
+		.num_uniform_buffers = uniformBufferCount,
+		.num_storage_buffers = storageBufferCount,
+		.num_storage_textures = storageTextureCount
 	};
 	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
 	{
@@ -133,8 +133,8 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	// Make a copy of the create data, then overwrite the parts we need
 	SDL_GPUComputePipelineCreateInfo newCreateInfo = *createInfo;
 	newCreateInfo.code = code;
-	newCreateInfo.codeSize = codeSize;
-	newCreateInfo.entryPointName = "main";
+	newCreateInfo.code_size = codeSize;
+	newCreateInfo.entrypoint = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
 	SDL_GPUComputePipeline* pipeline;

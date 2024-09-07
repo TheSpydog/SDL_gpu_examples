@@ -36,9 +36,9 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
 			.height = imageData->h,
-			.layerCountOrDepth = 1,
-			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -49,9 +49,9 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w,
 			.height = imageData->h,
-			.layerCountOrDepth = 1,
-			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER
 		}
 	);
 
@@ -62,9 +62,9 @@ static int Init(Context* context)
 			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 			.width = imageData->w / 2,
 			.height = imageData->h / 2,
-			.layerCountOrDepth = 1,
-			.levelCount = 1,
-			.usageFlags = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET
 		}
 	);
 
@@ -73,16 +73,16 @@ static int Init(Context* context)
 	OriginalBuffer = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
-			.sizeInBytes = sizeof(bufferData)
+			.usage = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
+			.size = sizeof(bufferData)
 		}
 	);
 
 	BufferCopy = SDL_CreateGPUBuffer(
 		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
-			.usageFlags = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
-			.sizeInBytes = sizeof(bufferData)
+			.usage = SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ, /* arbitrary */
+			.size = sizeof(bufferData)
 		}
 	);
 
@@ -90,7 +90,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
-			.sizeInBytes = imageData->w * imageData->h * 4 + sizeof(bufferData)
+			.size = imageData->w * imageData->h * 4 + sizeof(bufferData)
 		}
 	);
 
@@ -98,7 +98,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.sizeInBytes = imageData->w * imageData->h * 4 + sizeof(bufferData)
+			.size = imageData->w * imageData->h * 4 + sizeof(bufferData)
 		}
 	);
 
@@ -118,7 +118,7 @@ static int Init(Context* context)
 	SDL_UploadToGPUTexture(
 		copyPass,
 		&(SDL_GPUTextureTransferInfo) {
-			.transferBuffer = uploadTransferBuffer,
+			.transfer_buffer = uploadTransferBuffer,
 			.offset = 0, /* Zeroes out the rest */
 		},
 		&(SDL_GPUTextureRegion){
@@ -155,7 +155,7 @@ static int Init(Context* context)
 	SDL_UploadToGPUBuffer(
 		copyPass,
 		&(SDL_GPUTransferBufferLocation) {
-			.transferBuffer = uploadTransferBuffer,
+			.transfer_buffer = uploadTransferBuffer,
 			.offset = imageData->w * imageData->h * 4,
 		},
 		&(SDL_GPUBufferRegion) {
@@ -213,7 +213,7 @@ static int Init(Context* context)
 			.d = 1
 		},
 		&(SDL_GPUTextureTransferInfo) {
-			.transferBuffer = downloadTransferBuffer,
+			.transfer_buffer = downloadTransferBuffer,
 			.offset = 0, /* Zeroes out the rest */
 		}
 	);
@@ -226,7 +226,7 @@ static int Init(Context* context)
 			.size = sizeof(bufferData)
 		},
 		&(SDL_GPUTransferBufferLocation) {
-			.transferBuffer = downloadTransferBuffer,
+			.transfer_buffer = downloadTransferBuffer,
 			.offset = imageData->w * imageData->h * 4
 		}
 	);
@@ -287,11 +287,11 @@ static int Draw(Context* context)
 	{
 		SDL_GPURenderPass* clearPass = SDL_BeginGPURenderPass(
 			cmdbuf,
-			(SDL_GPUColorAttachmentInfo[]){{
+			(SDL_GPUColorTargetInfo[]){{
 				.texture = swapchainTexture,
-				.loadOp = SDL_GPU_LOADOP_CLEAR,
-				.storeOp = SDL_GPU_STOREOP_STORE,
-				.clearColor = { 0, 0, 0, 1 },
+				.load_op = SDL_GPU_LOADOP_CLEAR,
+				.store_op = SDL_GPU_STOREOP_STORE,
+				.clear_color = { 0, 0, 0, 1 },
 				.cycle = SDL_FALSE
 			}},
 			1,

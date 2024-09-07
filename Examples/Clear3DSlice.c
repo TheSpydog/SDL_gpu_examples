@@ -19,9 +19,9 @@ static int Init(Context* context)
             .format = swapchainFormat,
             .width = 64,
             .height = 64,
-            .layerCountOrDepth = 4,
-            .levelCount = 1,
-            .usageFlags = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER
+            .layer_count_or_depth = 4,
+            .num_levels = 1,
+            .usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER
         }
     );
 
@@ -49,13 +49,13 @@ static int Draw(Context* context)
     {
         SDL_GPURenderPass *renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GPUColorAttachmentInfo){
+            &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
                 .cycle = SDL_TRUE,
-                .loadOp = SDL_GPU_LOADOP_CLEAR,
-                .storeOp = SDL_GPU_STOREOP_STORE,
-                .clearColor = { 1.0f, 0.0f, 0.0f, 1.0f },
-                .layerOrDepthPlane = 0
+                .load_op = SDL_GPU_LOADOP_CLEAR,
+                .store_op = SDL_GPU_STOREOP_STORE,
+                .clear_color = { 1.0f, 0.0f, 0.0f, 1.0f },
+                .layer_or_depth_plane = 0
             },
             1,
             NULL
@@ -64,13 +64,13 @@ static int Draw(Context* context)
 
         renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GPUColorAttachmentInfo){
+            &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
-                .loadOp = SDL_GPU_LOADOP_CLEAR,
-                .storeOp = SDL_GPU_STOREOP_STORE,
-                .clearColor = { 0.0f, 1.0f, 0.0f, 1.0f },
-                .layerOrDepthPlane = 1
+                .load_op = SDL_GPU_LOADOP_CLEAR,
+                .store_op = SDL_GPU_STOREOP_STORE,
+                .clear_color = { 0.0f, 1.0f, 0.0f, 1.0f },
+                .layer_or_depth_plane = 1
             },
             1,
             NULL
@@ -79,13 +79,13 @@ static int Draw(Context* context)
 
         renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GPUColorAttachmentInfo){
+            &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
-                .loadOp = SDL_GPU_LOADOP_CLEAR,
-                .storeOp = SDL_GPU_STOREOP_STORE,
-                .clearColor = { 0.0f, 0.0f, 1.0f, 1.0f },
-                .layerOrDepthPlane = 2
+                .load_op = SDL_GPU_LOADOP_CLEAR,
+                .store_op = SDL_GPU_STOREOP_STORE,
+                .clear_color = { 0.0f, 0.0f, 1.0f, 1.0f },
+                .layer_or_depth_plane = 2
             },
             1,
             NULL
@@ -94,13 +94,13 @@ static int Draw(Context* context)
 
         renderPass = SDL_BeginGPURenderPass(
             cmdbuf,
-            &(SDL_GPUColorAttachmentInfo){
+            &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
                 .cycle = SDL_FALSE,
-                .loadOp = SDL_GPU_LOADOP_CLEAR,
-                .storeOp = SDL_GPU_STOREOP_STORE,
-                .clearColor = { 1.0f, 0.0f, 1.0f, 1.0f },
-                .layerOrDepthPlane = 3
+                .load_op = SDL_GPU_LOADOP_CLEAR,
+                .store_op = SDL_GPU_STOREOP_STORE,
+                .clear_color = { 1.0f, 0.0f, 1.0f, 1.0f },
+                .layer_or_depth_plane = 3
             },
             1,
             NULL
@@ -114,7 +114,7 @@ static int Draw(Context* context)
                 cmdbuf,
                 &(SDL_GPUBlitRegion){
                     .texture = Texture3D,
-                    .layerOrDepthPlane = i,
+                    .layer_or_depth_plane = i,
                     .w = 64,
                     .h = 64,
                 },
