@@ -237,8 +237,8 @@ static int Draw(Context* context)
 		SDL_GPUDepthStencilTargetInfo depthStencilTargetInfo = { 0 };
 		depthStencilTargetInfo.texture = DepthStencilTexture;
 		depthStencilTargetInfo.cycle = SDL_TRUE;
-		depthStencilTargetInfo.clear_value.depth = 0;
-		depthStencilTargetInfo.clear_value.stencil = 0;
+		depthStencilTargetInfo.clear_depth = 0;
+		depthStencilTargetInfo.clear_stencil = 0;
 		depthStencilTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
 		depthStencilTargetInfo.store_op = SDL_GPU_STOREOP_DONT_CARE;
 		depthStencilTargetInfo.stencil_load_op = SDL_GPU_LOADOP_CLEAR;
