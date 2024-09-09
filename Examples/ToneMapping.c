@@ -333,19 +333,16 @@ static int Draw(Context* context)
 		/* Blit to swapchain */
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = BlitSourceTexture,
-				.w = w,
-				.h = h,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.w = swapchainWidth,
-				.h = swapchainHeight,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = BlitSourceTexture,
+				.source.w = w,
+				.source.h = h,
+				.destination.texture = swapchainTexture,
+				.destination.w = swapchainWidth,
+				.destination.h = swapchainHeight,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
     }
 

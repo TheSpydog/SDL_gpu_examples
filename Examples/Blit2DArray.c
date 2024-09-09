@@ -275,39 +275,31 @@ static int Init(Context* context)
 
 	SDL_BlitGPUTexture(
 		uploadCmdBuf,
-		&(SDL_GPUBlitRegion){
-			.texture = SourceTexture,
-			.layer_or_depth_plane = 0,
-			.w = srcWidth,
-			.h = srcHeight,
-		},
-		&(SDL_GPUBlitRegion){
-			.texture = DestinationTexture,
-			.layer_or_depth_plane = 0,
-			.w = srcWidth / 2,
-			.h = srcHeight / 2,
-		},
-		SDL_FLIP_NONE,
-		SDL_GPU_FILTER_LINEAR,
-		SDL_FALSE
+		&(SDL_GPUBlitInfo){
+			.source.texture = SourceTexture,
+			.source.w = srcWidth,
+			.source.h = srcHeight,
+			.destination.texture = DestinationTexture,
+			.destination.w = srcWidth / 2,
+			.destination.h = srcHeight / 2,
+			.load_op = SDL_GPU_LOADOP_DONT_CARE,
+			.filter = SDL_GPU_FILTER_LINEAR
+		}
 	);
 	SDL_BlitGPUTexture(
 		uploadCmdBuf,
-		&(SDL_GPUBlitRegion){
-			.texture = SourceTexture,
-			.layer_or_depth_plane = 1,
-			.w = srcWidth,
-			.h = srcHeight,
-		},
-		&(SDL_GPUBlitRegion){
-			.texture = DestinationTexture,
-			.layer_or_depth_plane = 1,
-			.w = srcWidth / 2,
-			.h = srcHeight / 2,
-		},
-		SDL_FLIP_NONE,
-		SDL_GPU_FILTER_LINEAR,
-		SDL_FALSE
+		&(SDL_GPUBlitInfo){
+			.source.texture = SourceTexture,
+			.source.layer_or_depth_plane = 1,
+			.source.w = srcWidth,
+			.source.h = srcHeight,
+			.destination.texture = DestinationTexture,
+			.destination.layer_or_depth_plane = 1,
+			.destination.w = srcWidth / 2,
+			.destination.h = srcHeight / 2,
+			.load_op = SDL_GPU_LOADOP_LOAD,
+			.filter = SDL_GPU_FILTER_LINEAR
+		}
 	);
 
 	SDL_SubmitGPUCommandBuffer(uploadCmdBuf);

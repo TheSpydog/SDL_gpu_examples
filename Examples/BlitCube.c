@@ -270,21 +270,18 @@ static int Init(Context* context)
 	for (int i = 0; i < 6; i += 1) {
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = SourceTexture,
-				.layer_or_depth_plane = i,
-				.w = 32,
-				.h = 32,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = DestinationTexture,
-				.layer_or_depth_plane = i,
-				.w = 32,
-				.h = 32,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_LINEAR,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = SourceTexture,
+				.source.layer_or_depth_plane = i,
+				.source.w = 32,
+				.source.h = 32,
+				.destination.texture = DestinationTexture,
+				.destination.layer_or_depth_plane = i,
+				.destination.w = 32,
+				.destination.h = 32,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_LINEAR
+			}
 		);
 	}
 

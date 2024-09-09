@@ -106,77 +106,68 @@ static int Draw(Context* context)
 		// Normal
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = Texture,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.w = w / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = Texture,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.w = w / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 
 		// Flipped Horizontally
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = Texture,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion) {
-			.texture = swapchainTexture,
-				.x = w / 2,
-				.w = w / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_HORIZONTAL,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = Texture,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.x = w / 2,
+				.destination.w = w / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_LOAD,
+				.flip_mode = SDL_FLIP_HORIZONTAL,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 
 		// Flipped Vertically
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = Texture,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion) {
-			.texture = swapchainTexture,
-				.w = w / 2,
-				.y = h / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_VERTICAL,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = Texture,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.w = w / 2,
+				.destination.y = h / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_LOAD,
+				.flip_mode = SDL_FLIP_VERTICAL,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 
 		// Flipped Horizontally and Vertically
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = Texture,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion) {
-			.texture = swapchainTexture,
-				.x = w / 2,
-				.w = w / 2,
-				.y = h / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = Texture,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.x = w / 2,
+				.destination.w = w / 2,
+				.destination.y = h / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_LOAD,
+				.flip_mode = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 	}
 

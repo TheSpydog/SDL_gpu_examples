@@ -160,20 +160,17 @@ static int Draw(Context* context)
 
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = MSAARenderTextures[CurrentSampleCount],
-				.x = 160,
-				.w = 320,
-				.h = 240,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.w = w,
-				.h = h,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_LINEAR,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = MSAARenderTextures[CurrentSampleCount],
+				.source.x = 160,
+				.source.w = 320,
+				.source.h = 240,
+				.destination.texture = swapchainTexture,
+				.destination.w = w,
+				.destination.h = h,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_LINEAR
+			}
 		);
 	}
 

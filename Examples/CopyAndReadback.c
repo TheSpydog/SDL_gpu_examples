@@ -186,19 +186,16 @@ static int Init(Context* context)
 	// Render the half-size version
 	SDL_BlitGPUTexture(
 		cmdbuf,
-		&(SDL_GPUBlitRegion){
-			.texture = OriginalTexture,
-			.w = imageData->w,
-			.h = imageData->h,
-		},
-		&(SDL_GPUBlitRegion){
-			.texture = TextureSmall,
-			.w = imageData->w / 2,
-			.h = imageData->h / 2,
-		},
-		SDL_FLIP_NONE,
-		SDL_GPU_FILTER_LINEAR,
-		SDL_FALSE
+		&(SDL_GPUBlitInfo){
+			.source.texture = OriginalTexture,
+			.source.w = imageData->w,
+			.source.h = imageData->h,
+			.destination.texture = TextureSmall,
+			.destination.w = imageData->w / 2,
+			.destination.h = imageData->h / 2,
+			.load_op = SDL_GPU_LOADOP_DONT_CARE,
+			.filter = SDL_GPU_FILTER_LINEAR
+		}
 	);
 
 	// Download the original bytes from the copy
@@ -301,57 +298,47 @@ static int Draw(Context* context)
 
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = OriginalTexture,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.w = w / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = OriginalTexture,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.w = w / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = TextureCopy,
-				.w = TextureWidth,
-				.h = TextureHeight,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.x = w / 2,
-				.y = 0,
-				.w = w / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = TextureCopy,
+				.source.w = TextureWidth,
+				.source.h = TextureHeight,
+				.destination.texture = swapchainTexture,
+				.destination.x = w / 2,
+				.destination.w = w / 2,
+				.destination.h = w / 2,
+				.load_op = SDL_GPU_LOADOP_LOAD,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 
 		SDL_BlitGPUTexture(
 			cmdbuf,
-			&(SDL_GPUBlitRegion){
-				.texture = TextureSmall,
-				.w = TextureWidth / 2,
-				.h = TextureHeight / 2,
-			},
-			&(SDL_GPUBlitRegion){
-				.texture = swapchainTexture,
-				.x = w / 4,
-				.y = h / 2,
-				.w = w / 2,
-				.h = h / 2,
-			},
-			SDL_FLIP_NONE,
-			SDL_GPU_FILTER_NEAREST,
-			SDL_FALSE
+			&(SDL_GPUBlitInfo){
+				.source.texture = TextureSmall,
+				.source.w = TextureWidth / 2,
+				.source.h = TextureHeight / 2,
+				.destination.texture = swapchainTexture,
+				.destination.x = w / 4,
+				.destination.y = h / 2,
+				.destination.w = w / 2,
+				.destination.h = h / 2,
+				.load_op = SDL_GPU_LOADOP_LOAD,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
 		);
 	}
 

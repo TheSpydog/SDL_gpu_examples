@@ -89,20 +89,16 @@ static int Draw(Context* context)
         /* Blit the smallest mip level */
         SDL_BlitGPUTexture(
             cmdbuf,
-            &(SDL_GPUBlitRegion){
-                .texture = MipmapTexture,
-                .w = 8,
-                .h = 8,
-                .mip_level = 2
-            },
-            &(SDL_GPUBlitRegion){
-                .texture = swapchainTexture,
-                .w = w,
-                .h = h,
-            },
-            SDL_FLIP_NONE,
-            SDL_GPU_FILTER_NEAREST,
-            SDL_FALSE
+            &(SDL_GPUBlitInfo){
+                .source.texture = MipmapTexture,
+                .source.w = 8,
+                .source.h = 8,
+                .source.mip_level = 2,
+                .destination.texture = swapchainTexture,
+                .destination.w = w,
+                .destination.h = h,
+                .load_op = SDL_GPU_LOADOP_DONT_CARE
+            }
         );
     }
 
