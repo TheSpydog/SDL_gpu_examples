@@ -60,19 +60,19 @@ static int Init(Context* context)
 		.vertex_input_state = (SDL_GPUVertexInputState){
 			.num_vertex_bindings = 1,
 			.vertex_bindings = (SDL_GPUVertexBinding[]){{
-				.binding = 0,
+				.index = 0,
 				.input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
 				.instance_step_rate = 0,
 				.pitch = sizeof(PositionColorVertex)
 			}},
 			.num_vertex_attributes = 2,
 			.vertex_attributes = (SDL_GPUVertexAttribute[]){{
-				.binding = 0,
+				.binding_index = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
 				.location = 0,
 				.offset = 0
 			}, {
-				.binding = 0,
+				.binding_index = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM,
 				.location = 1,
 				.offset = sizeof(float) * 3

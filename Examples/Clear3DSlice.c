@@ -112,22 +112,19 @@ static int Draw(Context* context)
             Uint32 destY = (i > 1) ? (h / 2) : 0;
             SDL_BlitGPUTexture(
                 cmdbuf,
-                &(SDL_GPUBlitRegion){
-                    .texture = Texture3D,
-                    .layer_or_depth_plane = i,
-                    .w = 64,
-                    .h = 64,
-                },
-                &(SDL_GPUBlitRegion){
-                    .texture = swapchainTexture,
-                    .x = destX,
-                    .y = destY,
-                    .w = (w / 2),
-                    .h = (h / 2),
-                },
-                SDL_FLIP_NONE,
-                SDL_GPU_FILTER_NEAREST,
-                SDL_FALSE
+                &(SDL_GPUBlitInfo){
+                    .source.texture = Texture3D,
+                    .source.layer_or_depth_plane = i,
+                    .source.w = 64,
+                    .source.h = 64,
+                    .destination.texture = swapchainTexture,
+                    .destination.x = destX,
+                    .destination.y = destY,
+                    .destination.w = w / 2,
+                    .destination.h = h / 2,
+                    .load_op = SDL_GPU_LOADOP_LOAD,
+                    .filter = SDL_GPU_FILTER_NEAREST
+                }
             );
         }
     }
