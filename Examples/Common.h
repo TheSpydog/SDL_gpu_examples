@@ -104,6 +104,7 @@ extern Example ComputeUniforms_Example;
 extern Example ToneMapping_Example;
 extern Example CustomSampling_Example;
 extern Example DrawIndirect_Example;
+extern Example ComputeSampler_Example;
 extern Example ComputeSpriteBatch_Example;
 extern Example CopyAndReadback_Example;
 extern Example CopyConsistency_Example;

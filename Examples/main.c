@@ -20,6 +20,7 @@ static Example* Examples[] =
 	&ToneMapping_Example,
 	&CustomSampling_Example,
 	&DrawIndirect_Example,
+	&ComputeSampler_Example,
 	&ComputeSpriteBatch_Example,
 	&CopyAndReadback_Example,
 	&CopyConsistency_Example,
