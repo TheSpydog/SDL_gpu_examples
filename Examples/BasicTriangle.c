@@ -37,10 +37,7 @@ static int Init(Context* context)
 		.target_info = {
 			.num_color_targets = 1,
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
-				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
-				.blend_state = {
-					.enable_blend = SDL_FALSE
-				}
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window)
 			}},
 		},
 		.multisample_state.sample_mask = 0xFFFF,
