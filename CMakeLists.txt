@@ -32,6 +32,7 @@ add_executable(SDL_gpu_examples
     Examples/WindowResize.c
     Examples/Blit2DArray.c
     Examples/BlitCube.c
+    Examples/BlitCubeArray.c
     Examples/BlitMirror.c
     Examples/GenerateMipmaps.c
 )

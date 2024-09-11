@@ -30,6 +30,7 @@ static Example* Examples[] =
 	&WindowResize_Example,
 	&Blit2DArray_Example,
 	&BlitCube_Example,
+	&BlitCubeArray_Example,
 	&BlitMirror_Example,
 	&GenerateMipmaps_Example,
 };
