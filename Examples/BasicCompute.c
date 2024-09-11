@@ -67,7 +67,6 @@ static int Init(Context* context)
 				.offset = sizeof(float) * 3
 			}}
 		},
-        .multisample_state.sample_mask = 0xFFFF,
         .vertex_shader = vertexShader,
         .fragment_shader = fragmentShader
     });

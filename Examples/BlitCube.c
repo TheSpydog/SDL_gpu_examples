@@ -56,7 +56,6 @@ static int Init(Context* context)
 				.offset = 0
 			}}
 		},
-		.multisample_state.sample_mask = 0xFFFF,
 		.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertex_shader = vertexShader,
 		.fragment_shader = fragmentShader
