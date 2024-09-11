@@ -57,17 +57,7 @@ static int Init(Context* context)
 		.target_info = {
 			.num_color_targets = 1,
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
-				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
-				.blend_state = {
-					.enable_blend = SDL_TRUE,
-					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
-					.color_blend_op = SDL_GPU_BLENDOP_ADD,
-					.color_write_mask = 0xF,
-					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-					.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-					.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-					.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO
-				}
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window)
 			}},
 			.has_depth_stencil_target = SDL_TRUE,
 			.depth_stencil_format = depthStencilFormat
@@ -76,7 +66,15 @@ static int Init(Context* context)
 			.enable_stencil_test = SDL_TRUE,
 			.front_stencil_state = (SDL_GPUStencilOpState){
 				.compare_op = SDL_GPU_COMPAREOP_NEVER,
-				.fail_op = SDL_GPU_STENCILOP_REPLACE
+				.fail_op = SDL_GPU_STENCILOP_REPLACE,
+				.pass_op = SDL_GPU_STENCILOP_KEEP,
+				.depth_fail_op = SDL_GPU_STENCILOP_KEEP,
+			},
+			.back_stencil_state = (SDL_GPUStencilOpState){
+				.compare_op = SDL_GPU_COMPAREOP_NEVER,
+				.fail_op = SDL_GPU_STENCILOP_REPLACE,
+				.pass_op = SDL_GPU_STENCILOP_KEEP,
+				.depth_fail_op = SDL_GPU_STENCILOP_KEEP,
 			},
 			.write_mask = 0xFF
 		},
@@ -122,7 +120,16 @@ static int Init(Context* context)
 	pipelineCreateInfo.depth_stencil_state = (SDL_GPUDepthStencilState){
 		.enable_stencil_test = SDL_TRUE,
 		.front_stencil_state = (SDL_GPUStencilOpState){
-			.compare_op = SDL_GPU_COMPAREOP_EQUAL
+			.compare_op = SDL_GPU_COMPAREOP_EQUAL,
+			.fail_op = SDL_GPU_STENCILOP_KEEP,
+			.pass_op = SDL_GPU_STENCILOP_KEEP,
+			.depth_fail_op = SDL_GPU_STENCILOP_KEEP,
+		},
+		.back_stencil_state = (SDL_GPUStencilOpState){
+			.compare_op = SDL_GPU_COMPAREOP_NEVER,
+			.fail_op = SDL_GPU_STENCILOP_KEEP,
+			.pass_op = SDL_GPU_STENCILOP_KEEP,
+			.depth_fail_op = SDL_GPU_STENCILOP_KEEP,
 		},
 		.compare_mask = 0xFF,
 		.write_mask = 0

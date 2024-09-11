@@ -42,17 +42,7 @@ static int Init(Context* context)
 		.target_info = {
 			.num_color_targets = 1,
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
-				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
-				.blend_state = {
-					.enable_blend = SDL_TRUE,
-					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
-					.color_blend_op = SDL_GPU_BLENDOP_ADD,
-					.color_write_mask = 0xF,
-					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-					.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-					.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-					.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO
-				}
+				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window)
 			}}
 		},
         .primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
