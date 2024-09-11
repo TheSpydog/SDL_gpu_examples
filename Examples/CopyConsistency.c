@@ -43,9 +43,8 @@ static int Init(Context* context)
 					.enable_blend = SDL_TRUE,
 					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
 					.color_blend_op = SDL_GPU_BLENDOP_ADD,
-					.color_write_mask = 0xF,
-					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-					.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+					.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
 					.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
 					.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA
 				}
@@ -72,7 +71,6 @@ static int Init(Context* context)
 				.offset = sizeof(float) * 3
 			}}
 		},
-		.multisample_state.sample_mask = 0xFFFF,
 		.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 		.vertex_shader = vertexShader,
 		.fragment_shader = fragmentShader,
