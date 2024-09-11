@@ -283,9 +283,9 @@ static int Init(Context* context)
 		SDL_FALSE
 	);
 
-	SDL_DestroySurface(imageData);
 	SDL_EndGPUCopyPass(copyPass);
 	SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
+	SDL_DestroySurface(imageData);
 	SDL_ReleaseGPUTransferBuffer(context->Device, bufferTransferBuffer);
 	SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
 
