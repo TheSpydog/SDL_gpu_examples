@@ -305,7 +305,7 @@ static int Draw(Context* context)
 				.destination.texture = swapchainTexture,
 				.destination.w = w / 2,
 				.destination.h = h / 2,
-				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.load_op = SDL_GPU_LOADOP_LOAD,
 				.filter = SDL_GPU_FILTER_NEAREST
 			}
 		);
@@ -319,7 +319,7 @@ static int Draw(Context* context)
 				.destination.texture = swapchainTexture,
 				.destination.x = w / 2,
 				.destination.w = w / 2,
-				.destination.h = w / 2,
+				.destination.h = h / 2,
 				.load_op = SDL_GPU_LOADOP_LOAD,
 				.filter = SDL_GPU_FILTER_NEAREST
 			}
