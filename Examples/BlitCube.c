@@ -41,16 +41,16 @@ static int Init(Context* context)
 			}},
 		},
 		.vertex_input_state = (SDL_GPUVertexInputState){
-			.num_vertex_bindings = 1,
-			.vertex_bindings = (SDL_GPUVertexBinding[]){{
-				.index = 0,
+			.num_vertex_buffers = 1,
+			.vertex_buffer_descriptions = (SDL_GPUVertexBufferDescription[]){{
+				.slot = 0,
 				.input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
 				.instance_step_rate = 0,
 				.pitch = sizeof(PositionVertex)
 			}},
 			.num_vertex_attributes = 1,
 			.vertex_attributes = (SDL_GPUVertexAttribute[]){{
-				.binding_index = 0,
+				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
 				.location = 0,
 				.offset = 0
