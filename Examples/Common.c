@@ -95,14 +95,7 @@ SDL_GPUShader* LoadShader(
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
-	{
-		shader = SDL_CreateGPUShader(device, &shaderInfo);
-	}
-	else
-	{
-		shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
-	}
+	shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
