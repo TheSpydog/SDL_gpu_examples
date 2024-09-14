@@ -12,7 +12,7 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, NULL);
+	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), SDL_TRUE, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GPUCreateDevice failed");
@@ -83,7 +83,6 @@ SDL_GPUShader* LoadShader(
 		return NULL;
 	}
 
-	SDL_GPUShader* shader;
 	SDL_GPUShaderCreateInfo shaderInfo = {
 		.code = code,
 		.code_size = codeSize,
@@ -95,14 +94,7 @@ SDL_GPUShader* LoadShader(
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
-	{
-		shader = SDL_CreateGPUShader(device, &shaderInfo);
-	}
-	else
-	{
-		shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
-	}
+	SDL_GPUShader* shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -137,15 +129,7 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.entrypoint = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
-	SDL_GPUComputePipeline* pipeline;
-	if (SDL_GetGPUDriver(device) == SDL_GPU_DRIVER_VULKAN)
-	{
-		pipeline = SDL_CreateGPUComputePipeline(device, &newCreateInfo);
-	}
-	else
-	{
-		pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
-	}
+	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");

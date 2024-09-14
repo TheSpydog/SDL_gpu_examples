@@ -1,7 +1,7 @@
 /* Special thanks to Matt Taylor for this overview of tonemapping: https://64.github.io/tonemapping/ */
 
 #include "Common.h"
-#include "SDL_gpu_shadercross.h" /* SDL_ShaderCross_GetShaderFormats() */
+#include "SDL_gpu_shadercross.h" /* SDL_ShaderCross_GetSPIRVShaderFormats() */
 
 static SDL_GPUTexture* HDRTexture;
 static SDL_GPUTexture* ToneMapTexture;
@@ -80,7 +80,7 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 static int Init(Context* context)
 {
 	/* Manually set up example for HDR rendering */
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetShaderFormats(), SDL_TRUE, NULL);
+	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), SDL_TRUE, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GPUCreateDevice failed");
