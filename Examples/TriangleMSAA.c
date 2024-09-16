@@ -2,6 +2,7 @@
 
 static SDL_GPUGraphicsPipeline* Pipelines[4];
 static SDL_GPUTexture* MSAARenderTextures[4];
+static SDL_GPUTexture* ResolveTexture;
 static int SampleCounts;
 
 static SDL_GPUTextureFormat RTFormat;
@@ -71,9 +72,13 @@ static int Init(Context* context)
 			.layer_count_or_depth = 1,
 			.num_levels = 1,
 			.format = RTFormat,
-			.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
+			.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET,
 			.sample_count = sample_count
 		};
+		if (sample_count == SDL_GPU_SAMPLECOUNT_1)
+		{
+			textureCreateInfo.usage |= SDL_GPU_TEXTUREUSAGE_SAMPLER;
+		}
 		MSAARenderTextures[SampleCounts] = SDL_CreateGPUTexture(context->Device, &textureCreateInfo);
 		if (MSAARenderTextures[SampleCounts] == NULL) {
 			SDL_Log("Failed to create MSAA render target texture!");
@@ -81,6 +86,20 @@ static int Init(Context* context)
 		}
 		SampleCounts += 1;
 	}
+
+	// Create resolve texture
+	ResolveTexture = SDL_CreateGPUTexture(
+		context->Device,
+		&(SDL_GPUTextureCreateInfo) {
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.width = 640,
+			.height = 480,
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+			.format = RTFormat,
+			.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER
+		}
+	);
 
 	// Clean up shader resources
 	SDL_ReleaseGPUShader(context->Device, vertexShader);
@@ -139,18 +158,28 @@ static int Draw(Context* context)
 			.texture = MSAARenderTextures[CurrentSampleCount],
 			.clear_color = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
 			.load_op = SDL_GPU_LOADOP_CLEAR,
-			.store_op = SDL_GPU_STOREOP_STORE
 		};
+
+		if (CurrentSampleCount == SDL_GPU_SAMPLECOUNT_1)
+		{
+			colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+		}
+		else
+		{
+			colorTargetInfo.store_op = SDL_GPU_STOREOP_RESOLVE;
+			colorTargetInfo.resolve_texture = ResolveTexture;
+		}
 
 		renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
 		SDL_BindGPUGraphicsPipeline(renderPass, Pipelines[CurrentSampleCount]);
 		SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
 		SDL_EndGPURenderPass(renderPass);
 
+		SDL_GPUTexture* blitSourceTexture = (colorTargetInfo.resolve_texture != NULL) ? colorTargetInfo.resolve_texture : colorTargetInfo.texture;
 		SDL_BlitGPUTexture(
 			cmdbuf,
 			&(SDL_GPUBlitInfo){
-				.source.texture = MSAARenderTextures[CurrentSampleCount],
+				.source.texture = blitSourceTexture,
 				.source.x = 160,
 				.source.w = 320,
 				.source.h = 240,
@@ -175,6 +204,7 @@ static void Quit(Context* context)
 		SDL_ReleaseGPUGraphicsPipeline(context->Device, Pipelines[i]);
 		SDL_ReleaseGPUTexture(context->Device, MSAARenderTextures[i]);
 	}
+	SDL_ReleaseGPUTexture(context->Device, ResolveTexture);
 
 	CurrentSampleCount = 0;
 

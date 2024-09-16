@@ -83,7 +83,7 @@ static int Init(Context* context)
 	RenderPipeline = SDL_CreateGPUGraphicsPipeline(
 		context->Device,
 		&(SDL_GPUGraphicsPipelineCreateInfo){
-			.target_info = (SDL_GpuGraphicsPipelineTargetInfo){
+			.target_info = (SDL_GPUGraphicsPipelineTargetInfo){
 				.num_color_targets = 1,
 				.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 					.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window)
