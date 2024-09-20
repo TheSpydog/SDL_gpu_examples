@@ -72,7 +72,7 @@ static int Draw(Context* context)
             cmdbuf,
             (SDL_GPUStorageTextureWriteOnlyBinding[]){{
                 .texture = GradientRenderTexture,
-                .cycle = SDL_TRUE
+                .cycle = true
             }},
             1,
             NULL,

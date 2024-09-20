@@ -59,11 +59,11 @@ static int Init(Context* context)
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window)
 			}},
-			.has_depth_stencil_target = SDL_TRUE,
+			.has_depth_stencil_target = true,
 			.depth_stencil_format = depthStencilFormat
 		},
 		.depth_stencil_state = (SDL_GPUDepthStencilState){
-			.enable_stencil_test = SDL_TRUE,
+			.enable_stencil_test = true,
 			.front_stencil_state = (SDL_GPUStencilOpState){
 				.compare_op = SDL_GPU_COMPAREOP_NEVER,
 				.fail_op = SDL_GPU_STENCILOP_REPLACE,
@@ -117,7 +117,7 @@ static int Init(Context* context)
 	}
 
 	pipelineCreateInfo.depth_stencil_state = (SDL_GPUDepthStencilState){
-		.enable_stencil_test = SDL_TRUE,
+		.enable_stencil_test = true,
 		.front_stencil_state = (SDL_GPUStencilOpState){
 			.compare_op = SDL_GPU_COMPAREOP_EQUAL,
 			.fail_op = SDL_GPU_STENCILOP_KEEP,
@@ -180,7 +180,7 @@ static int Init(Context* context)
 	PositionColorVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionColorVertex) { -0.5f, -0.5f, 0, 255, 255,   0, 255 };
@@ -206,7 +206,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionColorVertex) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);
@@ -242,7 +242,7 @@ static int Draw(Context* context)
 
 		SDL_GPUDepthStencilTargetInfo depthStencilTargetInfo = { 0 };
 		depthStencilTargetInfo.texture = DepthStencilTexture;
-		depthStencilTargetInfo.cycle = SDL_TRUE;
+		depthStencilTargetInfo.cycle = true;
 		depthStencilTargetInfo.clear_depth = 0;
 		depthStencilTargetInfo.clear_stencil = 0;
 		depthStencilTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;

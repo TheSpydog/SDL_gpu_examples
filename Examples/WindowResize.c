@@ -74,12 +74,12 @@ static int Init(Context* context)
 
 static int Update(Context* context)
 {
-    SDL_bool changeResolution = SDL_FALSE;
+    bool changeResolution = false;
 
     if (context->RightPressed)
     {
         ResolutionIndex = (ResolutionIndex + 1) % ResolutionCount;
-        changeResolution = SDL_TRUE;
+        changeResolution = true;
     }
 
     if (context->LeftPressed)
@@ -89,7 +89,7 @@ static int Update(Context* context)
         {
             ResolutionIndex = ResolutionCount - 1;
         }
-        changeResolution = SDL_TRUE;
+        changeResolution = true;
     }
 
     if (changeResolution)

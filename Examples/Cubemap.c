@@ -123,7 +123,7 @@ static int Init(Context* context)
 	PositionVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionVertex) { -10, -10, -10 };
@@ -184,7 +184,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionVertex) * 24
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -198,7 +198,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 36
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);

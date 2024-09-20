@@ -111,7 +111,7 @@ static int Init(Context* context)
 	PositionTextureVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE
+		false
 	);
 
     transferData[0] = (PositionTextureVertex) { -1, -1, 0, 0, 0 };
@@ -137,7 +137,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);
@@ -189,7 +189,7 @@ static int Draw(Context* context)
                 .load_op = SDL_GPU_LOADOP_CLEAR,
                 .store_op = SDL_GPU_STOREOP_STORE,
                 .clear_color.a = 1,
-                .cycle = SDL_FALSE
+                .cycle = false
             }},
             1,
             NULL

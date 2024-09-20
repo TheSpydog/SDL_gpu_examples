@@ -92,7 +92,7 @@ static int Init(Context* context)
 	PositionColorVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionColorVertex) {    -1,    -1, 0, 255,   0,   0, 255 };
@@ -116,7 +116,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionColorVertex) * 3
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);

@@ -139,7 +139,7 @@ static int Init(Context* context)
 	PositionTextureVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionTextureVertex) { -1,  1, 0, 0, 0 };
@@ -170,7 +170,7 @@ static int Init(Context* context)
 	Uint8* textureTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(textureTransferPtr, imageData1->pixels, imageSizeInBytes);
 	SDL_memcpy(textureTransferPtr + imageSizeInBytes, imageData2->pixels, imageSizeInBytes);
@@ -191,7 +191,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 4
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -205,7 +205,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUTexture(
@@ -220,7 +220,7 @@ static int Init(Context* context)
 			.h = imageData1->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUTexture(
@@ -236,7 +236,7 @@ static int Init(Context* context)
 			.h = imageData1->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_DestroySurface(imageData1);

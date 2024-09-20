@@ -9,10 +9,10 @@ typedef struct Context
 	const char* BasePath;
 	SDL_Window* Window;
 	SDL_GPUDevice* Device;
-	SDL_bool LeftPressed;
-	SDL_bool RightPressed;
-	SDL_bool DownPressed;
-	SDL_bool UpPressed;
+	bool LeftPressed;
+	bool RightPressed;
+	bool DownPressed;
+	bool UpPressed;
 	float DeltaTime;
 } Context;
 

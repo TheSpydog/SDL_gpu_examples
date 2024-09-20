@@ -4,9 +4,9 @@ static SDL_GPUGraphicsPipeline* Pipeline;
 static SDL_GPUBuffer* VertexBuffer;
 static SDL_GPUBuffer* IndexBuffer;
 
-static SDL_bool UseVertexOffset = SDL_FALSE;
-static SDL_bool UseIndexOffset = SDL_FALSE;
-static SDL_bool UseIndexBuffer = SDL_TRUE;
+static bool UseVertexOffset = false;
+static bool UseIndexOffset = false;
+static bool UseIndexBuffer = true;
 
 static int Init(Context* context)
 {
@@ -105,7 +105,7 @@ static int Init(Context* context)
 	PositionColorVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		transferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionColorVertex) { -1, -1, 0, 255,   0,   0, 255 };
@@ -143,7 +143,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionColorVertex) * 9
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -157,7 +157,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);
@@ -239,9 +239,9 @@ static void Quit(Context* context)
 	SDL_ReleaseGPUBuffer(context->Device, VertexBuffer);
     SDL_ReleaseGPUBuffer(context->Device, IndexBuffer);
 
-    UseVertexOffset = SDL_FALSE;
-    UseIndexOffset = SDL_FALSE;
-	UseIndexBuffer = SDL_TRUE;
+    UseVertexOffset = false;
+    UseIndexOffset = false;
+	UseIndexBuffer = true;
 
 	CommonQuit(context);
 }

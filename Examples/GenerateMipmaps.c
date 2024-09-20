@@ -34,7 +34,7 @@ static int Init(Context* context)
     Uint8* textureTransferData = SDL_MapGPUTransferBuffer(
         context->Device,
         textureTransferBuffer,
-        SDL_FALSE
+        false
     );
 
     SDL_Surface* imageData = LoadImage("cube0.bmp", 4);
@@ -61,7 +61,7 @@ static int Init(Context* context)
             .h = 32,
             .d = 1
         },
-        SDL_FALSE
+        false
     );
     SDL_EndGPUCopyPass(copyPass);
     SDL_GenerateMipmapsForGPUTexture(cmdbuf, MipmapTexture);

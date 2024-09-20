@@ -51,7 +51,7 @@ static int Init(Context* context)
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 				.blend_state = {
-					.enable_blend = SDL_TRUE,
+					.enable_blend = true,
 					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
 					.color_blend_op = SDL_GPU_BLENDOP_ADD,
 					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
@@ -145,7 +145,7 @@ static int Init(Context* context)
 	PositionTextureVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionTextureVertex){ -0.5f, -0.5f, 0, 0, 0 };
@@ -175,7 +175,7 @@ static int Init(Context* context)
 	Uint8* textureTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
@@ -195,7 +195,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 4
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -209,7 +209,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUTexture(
@@ -224,7 +224,7 @@ static int Init(Context* context)
 			.h = imageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_DestroySurface(imageData);

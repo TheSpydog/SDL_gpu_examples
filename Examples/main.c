@@ -35,7 +35,7 @@ static Example* Examples[] =
 	&GenerateMipmaps_Example,
 };
 
-SDL_bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
+bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
 {
 	/* This callback may be on a different thread, so let's
 	 * push these events as USER events so they appear
@@ -58,7 +58,7 @@ SDL_bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
 		evt.user.code = 1;
 		SDL_PushEvent(&evt);
 	}
-	return SDL_FALSE;
+	return false;
 }
 
 int main(int argc, char **argv)
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 	SDL_Log("Press A/D (or LB/RB) to move between examples!");
 
 	SDL_Gamepad* gamepad = NULL;
-	SDL_bool canDraw = SDL_TRUE;
+	bool canDraw = true;
 
 	while (!quit)
 	{
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 				{
 #ifdef SDL_PLATFORM_GDK
 					SDL_GDKSuspendGPU(context.Device);
-					canDraw = SDL_FALSE;
+					canDraw = false;
 					SDL_GDKSuspendComplete();
 #endif
 				}
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 				{
 #ifdef SDL_PLATFORM_GDK
 					SDL_GDKResumeGPU(context.Device);
-					canDraw = SDL_TRUE;
+					canDraw = true;
 #endif
 				}
 			}
@@ -178,19 +178,19 @@ int main(int argc, char **argv)
 				}
 				else if (evt.key.key == SDLK_LEFT)
 				{
-					context.LeftPressed = SDL_TRUE;
+					context.LeftPressed = true;
 				}
 				else if (evt.key.key == SDLK_RIGHT)
 				{
-					context.RightPressed = SDL_TRUE;
+					context.RightPressed = true;
 				}
 				else if (evt.key.key == SDLK_DOWN)
 				{
-					context.DownPressed = SDL_TRUE;
+					context.DownPressed = true;
 				}
 				else if (evt.key.key == SDLK_UP)
 				{
-					context.UpPressed = SDL_TRUE;
+					context.UpPressed = true;
 				}
 			}
 			else if (evt.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN)
@@ -211,19 +211,19 @@ int main(int argc, char **argv)
 				}
 				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_LEFT)
 				{
-					context.LeftPressed = SDL_TRUE;
+					context.LeftPressed = true;
 				}
 				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_RIGHT)
 				{
-					context.RightPressed = SDL_TRUE;
+					context.RightPressed = true;
 				}
 				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN)
 				{
-					context.DownPressed = SDL_TRUE;
+					context.DownPressed = true;
 				}
 				else if (evt.gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)
 				{
-					context.UpPressed = SDL_TRUE;
+					context.UpPressed = true;
 				}
 			}
 		}

@@ -51,7 +51,7 @@ static int Draw(Context* context)
             cmdbuf,
             &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
-                .cycle = SDL_TRUE,
+                .cycle = true,
                 .load_op = SDL_GPU_LOADOP_CLEAR,
                 .store_op = SDL_GPU_STOREOP_STORE,
                 .clear_color = { 1.0f, 0.0f, 0.0f, 1.0f },
@@ -66,7 +66,7 @@ static int Draw(Context* context)
             cmdbuf,
             &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
-                .cycle = SDL_FALSE,
+                .cycle = false,
                 .load_op = SDL_GPU_LOADOP_CLEAR,
                 .store_op = SDL_GPU_STOREOP_STORE,
                 .clear_color = { 0.0f, 1.0f, 0.0f, 1.0f },
@@ -81,7 +81,7 @@ static int Draw(Context* context)
             cmdbuf,
             &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
-                .cycle = SDL_FALSE,
+                .cycle = false,
                 .load_op = SDL_GPU_LOADOP_CLEAR,
                 .store_op = SDL_GPU_STOREOP_STORE,
                 .clear_color = { 0.0f, 0.0f, 1.0f, 1.0f },
@@ -96,7 +96,7 @@ static int Draw(Context* context)
             cmdbuf,
             &(SDL_GPUColorTargetInfo){
                 .texture = Texture3D,
-                .cycle = SDL_FALSE,
+                .cycle = false,
                 .load_op = SDL_GPU_LOADOP_CLEAR,
                 .store_op = SDL_GPU_STOREOP_STORE,
                 .clear_color = { 1.0f, 0.0f, 1.0f, 1.0f },

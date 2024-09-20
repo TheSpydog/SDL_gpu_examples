@@ -5,9 +5,9 @@ static SDL_GPUGraphicsPipeline* LinePipeline;
 static SDL_GPUViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
 static SDL_Rect ScissorRect = { 320, 240, 320, 240 };
 
-static SDL_bool UseWireframeMode = SDL_FALSE;
-static SDL_bool UseSmallViewport = SDL_FALSE;
-static SDL_bool UseScissorRect = SDL_FALSE;
+static bool UseWireframeMode = false;
+static bool UseSmallViewport = false;
+static bool UseScissorRect = false;
 
 static int Init(Context* context)
 {
@@ -136,9 +136,9 @@ static void Quit(Context* context)
 	SDL_ReleaseGPUGraphicsPipeline(context->Device, FillPipeline);
 	SDL_ReleaseGPUGraphicsPipeline(context->Device, LinePipeline);
 
-	UseWireframeMode = SDL_FALSE;
-	UseSmallViewport = SDL_FALSE;
-	UseScissorRect = SDL_FALSE;
+	UseWireframeMode = false;
+	UseSmallViewport = false;
+	UseScissorRect = false;
 
 	CommonQuit(context);
 }

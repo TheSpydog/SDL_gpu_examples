@@ -105,7 +105,7 @@ static int Init(Context* context)
 	Uint8* uploadTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		uploadTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(uploadTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_memcpy(uploadTransferPtr + (imageData->w * imageData->h * 4), bufferData, sizeof(bufferData));
@@ -127,7 +127,7 @@ static int Init(Context* context)
 			.h = imageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	// Copy original to copy
@@ -148,7 +148,7 @@ static int Init(Context* context)
 		imageData->w,
 		imageData->h,
 		1,
-		SDL_FALSE
+		false
 	);
 
 	// Upload original buffer
@@ -163,7 +163,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(bufferData)
 		},
-		SDL_FALSE
+		false
 	);
 
 	// Copy original to copy
@@ -178,7 +178,7 @@ static int Init(Context* context)
 			.offset = 0
 		},
 		sizeof(bufferData),
-		SDL_FALSE
+		false
 	);
 
 	SDL_EndGPUCopyPass(copyPass);
@@ -231,14 +231,14 @@ static int Init(Context* context)
 	SDL_EndGPUCopyPass(copyPass);
 
 	SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(cmdbuf);
-	SDL_WaitForGPUFences(context->Device, SDL_TRUE, &fence, 1);
+	SDL_WaitForGPUFences(context->Device, true, &fence, 1);
 	SDL_ReleaseGPUFence(context->Device, fence);
 
 	// Compare the original bytes to the copied bytes
 	Uint8 *downloadedData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		downloadTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	if (SDL_memcmp(downloadedData, imageData->pixels, imageData->w * imageData->h * 4) == 0)
@@ -289,7 +289,7 @@ static int Draw(Context* context)
 				.load_op = SDL_GPU_LOADOP_CLEAR,
 				.store_op = SDL_GPU_STOREOP_STORE,
 				.clear_color = { 0, 0, 0, 1 },
-				.cycle = SDL_FALSE
+				.cycle = false
 			}},
 			1,
 			NULL

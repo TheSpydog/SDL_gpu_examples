@@ -156,7 +156,7 @@ static int Init(Context* context)
 	Uint8 *textureTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
@@ -231,7 +231,7 @@ static int Init(Context* context)
 	Uint32* indexTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		indexBufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	for (Uint32 i = 0, j = 0; i < SPRITE_COUNT * 6; i += 6, j += 4)
@@ -264,7 +264,7 @@ static int Init(Context* context)
 			.h = imageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -278,7 +278,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = SPRITE_COUNT * 6 * sizeof(Uint32)
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_DestroySurface(imageData);
@@ -322,7 +322,7 @@ static int Draw(Context* context)
 		ComputeSpriteInstance* dataPtr = SDL_MapGPUTransferBuffer(
 			context->Device,
 			SpriteComputeTransferBuffer,
-			SDL_TRUE
+			true
 		);
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
@@ -355,7 +355,7 @@ static int Draw(Context* context)
 				.offset = 0,
 				.size = SPRITE_COUNT * sizeof(ComputeSpriteInstance)
 			},
-			SDL_TRUE
+			true
 		);
 		SDL_EndGPUCopyPass(copyPass);
 
@@ -366,7 +366,7 @@ static int Draw(Context* context)
 			0,
 			&(SDL_GPUStorageBufferWriteOnlyBinding){
 				.buffer = SpriteVertexBuffer,
-				.cycle = SDL_TRUE
+				.cycle = true
 			},
 			1
 		);
@@ -389,7 +389,7 @@ static int Draw(Context* context)
 			cmdBuf,
 			&(SDL_GPUColorTargetInfo){
 				.texture = swapchainTexture,
-				.cycle = SDL_FALSE,
+				.cycle = false,
 				.load_op = SDL_GPU_LOADOP_CLEAR,
 				.store_op = SDL_GPU_STOREOP_STORE,
 				.clear_color = { 0, 0, 0, 1 }

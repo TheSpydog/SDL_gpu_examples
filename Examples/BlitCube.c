@@ -124,7 +124,7 @@ static int Init(Context* context)
 	PositionVertex* bufferTransferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	bufferTransferData[0] = (PositionVertex) { -10, -10, -10 };
@@ -182,7 +182,7 @@ static int Init(Context* context)
 	Uint8* textureTransferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	const char* imageNames[] = {
@@ -217,7 +217,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionVertex) * 24
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -231,7 +231,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 36
 		},
-		SDL_FALSE
+		false
 	);
 
 	for (int i = 0; i < 6; i += 1) {
@@ -248,7 +248,7 @@ static int Init(Context* context)
 				.h = 32,
 				.d = 1,
 			},
-			SDL_FALSE
+			false
 		);
 	}
 

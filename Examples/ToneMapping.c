@@ -80,7 +80,7 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 static int Init(Context* context)
 {
 	/* Manually set up example for HDR rendering */
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), SDL_TRUE, NULL);
+	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), true, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GPUCreateDevice failed");
@@ -169,7 +169,7 @@ static int Init(Context* context)
     Uint8* imageTransferPtr = SDL_MapGPUTransferBuffer(
 	    context->Device,
 	    imageDataTransferBuffer,
-	    SDL_FALSE
+	    false
     );
     SDL_memcpy(imageTransferPtr, hdrImageData, sizeof(float) * 4 * img_x * img_y);
     SDL_UnmapGPUTransferBuffer(context->Device, imageDataTransferBuffer);
@@ -191,7 +191,7 @@ static int Init(Context* context)
             .h = img_y,
             .d = 1
         },
-        SDL_FALSE
+        false
     );
 
     SDL_EndGPUCopyPass(copyPass);
@@ -274,7 +274,7 @@ static int Draw(Context* context)
 			cmdbuf,
 			(SDL_GPUStorageTextureWriteOnlyBinding[]){{
 				.texture = ToneMapTexture,
-				.cycle = SDL_TRUE
+				.cycle = true
 			}},
 			1,
 			NULL,
@@ -302,7 +302,7 @@ static int Draw(Context* context)
 				cmdbuf,
 				(SDL_GPUStorageTextureWriteOnlyBinding[]){{
 					.texture = TransferTexture,
-					.cycle = SDL_TRUE
+					.cycle = true
 				}},
 				1,
 				NULL,

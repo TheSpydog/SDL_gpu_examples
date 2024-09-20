@@ -115,7 +115,7 @@ static int Init(Context* context)
 		.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 		.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 		.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
-		.enable_anisotropy = SDL_TRUE,
+		.enable_anisotropy = true,
 		.max_anisotropy = 4
 	});
 	// AnisotropicWrap
@@ -126,7 +126,7 @@ static int Init(Context* context)
 		.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
 		.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
 		.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
-		.enable_anisotropy = SDL_TRUE,
+		.enable_anisotropy = true,
 		.max_anisotropy = 4
 	});
 
@@ -142,7 +142,7 @@ static int Init(Context* context)
 	Uint8* textureTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
 	SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
@@ -163,7 +163,7 @@ static int Init(Context* context)
 			.h = imageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
     SDL_EndGPUCopyPass(copyPass);
@@ -219,7 +219,7 @@ static int Draw(Context* context)
                 .texture = WriteTexture,
                 .layer = 0,
                 .mip_level = 0,
-                .cycle = SDL_TRUE
+                .cycle = true
             },
             1,
             NULL,

@@ -40,7 +40,7 @@ static int Init(Context* context)
 			.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 				.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
 				.blend_state = {
-					.enable_blend = SDL_TRUE,
+					.enable_blend = true,
 					.alpha_blend_op = SDL_GPU_BLENDOP_ADD,
 					.color_blend_op = SDL_GPU_BLENDOP_ADD,
 					.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
@@ -170,7 +170,7 @@ static int Init(Context* context)
 	PositionTextureVertex* transferData = SDL_MapGPUTransferBuffer(
 		context->Device,
 		bufferTransferBuffer,
-		SDL_FALSE
+		false
 	);
 
 	transferData[0] = (PositionTextureVertex){ -1.0f,  1.0f, 0, 0, 0 };
@@ -205,7 +205,7 @@ static int Init(Context* context)
 	Uint8* textureTransferPtr = SDL_MapGPUTransferBuffer(
 		context->Device,
 		textureTransferBuffer,
-		SDL_FALSE
+		false
 	);
 	SDL_memcpy(textureTransferPtr, leftImageData->pixels, leftImageData->w * leftImageData->h * 4);
 	SDL_memcpy(textureTransferPtr + (leftImageData->w * leftImageData->h * 4), rightImageData->pixels, rightImageData->w * rightImageData->h * 4);
@@ -226,7 +226,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 4
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -240,7 +240,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(PositionTextureVertex) * 4
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUBuffer(
@@ -254,7 +254,7 @@ static int Init(Context* context)
 			.offset = 0,
 			.size = sizeof(Uint16) * 6
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUTexture(
@@ -269,7 +269,7 @@ static int Init(Context* context)
 			.h = leftImageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_UploadToGPUTexture(
@@ -284,7 +284,7 @@ static int Init(Context* context)
 			.h = rightImageData->h,
 			.d = 1
 		},
-		SDL_FALSE
+		false
 	);
 
 	SDL_DestroySurface(leftImageData);
@@ -335,7 +335,7 @@ static int Draw(Context* context)
 				.buffer = VertexBuffer,
 			},
 			sizeof(PositionTextureVertex) * 4,
-			SDL_FALSE
+			false
 		);
 		SDL_CopyGPUTextureToTexture(
 			copyPass,
@@ -348,7 +348,7 @@ static int Draw(Context* context)
 			16,
 			16,
 			1,
-			SDL_FALSE
+			false
 		);
 		SDL_EndGPUCopyPass(copyPass);
 
@@ -372,7 +372,7 @@ static int Draw(Context* context)
 				.buffer = VertexBuffer,
 			},
 			sizeof(PositionTextureVertex) * 4,
-			SDL_FALSE
+			false
 		);
 		SDL_CopyGPUTextureToTexture(
 			copyPass,
@@ -385,7 +385,7 @@ static int Draw(Context* context)
 			16,
 			16,
 			1,
-			SDL_FALSE
+			false
 		);
 		SDL_EndGPUCopyPass(copyPass);
 

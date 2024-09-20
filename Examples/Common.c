@@ -12,7 +12,7 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), SDL_TRUE, NULL);
+	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), true, NULL);
 	if (context->Device == NULL)
 	{
 		SDL_Log("GPUCreateDevice failed");
@@ -94,7 +94,7 @@ SDL_GPUShader* LoadShader(
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	SDL_GPUShader* shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, SDL_FALSE);
+	SDL_GPUShader* shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, false);
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -129,7 +129,7 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.entrypoint = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
-	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, SDL_TRUE);
+	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, true);
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");
