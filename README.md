@@ -1,8 +1,8 @@
-WIP collection of examples to demonstrate the usage of the SDL_gpu proposal.
+WIP collection of examples to demonstrate the usage of the SDL_GPU API.
 
 To clone and build:
 ```
-git clone https://github.com/thatcosmonaut/SDL -b gpu
+git clone https://github.com/libsdl-org/SDL
 cd SDL
 mkdir build
 cd build
@@ -16,3 +16,4 @@ cd build
 cmake .. -DSDL3_DIR="full/path/to/SDL/build"
 ```
 then run `make` or your favorite IDE.
+
