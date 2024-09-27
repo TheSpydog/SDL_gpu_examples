@@ -195,15 +195,19 @@ static int Draw(Context* context)
     Uint32 vertexOffset = UseVertexOffset ? 3 : 0;
     Uint32 indexOffset = UseIndexOffset ? 3 : 0;
 
-	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-	if (cmdbuf == NULL)
-	{
-		SDL_Log("GPUAcquireCommandBuffer failed");
-		return -1;
-	}
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    if (cmdbuf == NULL)
+    {
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+        return -1;
+    }
 
-	Uint32 w, h;
-	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
+
 	if (swapchainTexture != NULL)
 	{
 		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };

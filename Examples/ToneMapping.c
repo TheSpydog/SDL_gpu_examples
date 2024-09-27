@@ -69,7 +69,7 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 		spvFile,
 		&(SDL_GPUComputePipelineCreateInfo){
 			.num_readonly_storage_textures = 1,
-			.num_writeonly_storage_textures = 1,
+			.num_readwrite_storage_textures = 1,
 			.threadcount_x = 8,
 			.threadcount_y = 8,
 			.threadcount_z = 1,
@@ -261,18 +261,22 @@ static int Draw(Context* context)
     SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
     if (cmdbuf == NULL)
     {
-        SDL_Log("GPUAcquireCommandBuffer failed");
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
         return -1;
     }
 
-    Uint32 swapchainWidth, swapchainHeight;
-    SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainWidth, &swapchainHeight);
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
+
     if (swapchainTexture != NULL)
     {
 		/* Tonemap */
 		SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
 			cmdbuf,
-			(SDL_GPUStorageTextureWriteOnlyBinding[]){{
+			(SDL_GPUStorageTextureReadWriteBinding[]){{
 				.texture = ToneMapTexture,
 				.cycle = true
 			}},
@@ -300,7 +304,7 @@ static int Draw(Context* context)
 		) {
 			computePass = SDL_BeginGPUComputePass(
 				cmdbuf,
-				(SDL_GPUStorageTextureWriteOnlyBinding[]){{
+				(SDL_GPUStorageTextureReadWriteBinding[]){{
 					.texture = TransferTexture,
 					.cycle = true
 				}},
@@ -329,6 +333,9 @@ static int Draw(Context* context)
 
 			BlitSourceTexture = TransferTexture;
 		}
+
+		int swapchainWidth, swapchainHeight;
+		SDL_GetWindowSizeInPixels(context->Window, &swapchainWidth, &swapchainHeight);
 
 		/* Blit to swapchain */
 		SDL_BlitGPUTexture(

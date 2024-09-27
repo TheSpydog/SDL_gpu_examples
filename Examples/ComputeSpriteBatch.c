@@ -130,7 +130,7 @@ static int Init(Context* context)
 		"SpriteBatch.comp",
 		&(SDL_GPUComputePipelineCreateInfo){
 			.num_readonly_storage_buffers = 1,
-			.num_writeonly_storage_buffers = 1,
+			.num_readwrite_storage_buffers = 1,
 			.threadcount_x = 64,
 			.threadcount_y = 1,
 			.threadcount_z = 1
@@ -306,15 +306,18 @@ static int Draw(Context* context)
 		-1
 	);
 
-	Uint32 w, h;
+    SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    if (cmdBuf == NULL)
+    {
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+        return -1;
+    }
 
-	SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
-	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(
-		cmdBuf,
-		context->Window,
-		&w,
-		&h
-	);
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdBuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
 
 	if (swapchainTexture != NULL)
 	{
@@ -364,7 +367,7 @@ static int Draw(Context* context)
 			cmdBuf,
 			NULL,
 			0,
-			&(SDL_GPUStorageBufferWriteOnlyBinding){
+			&(SDL_GPUStorageBufferReadWriteBinding){
 				.buffer = SpriteVertexBuffer,
 				.cycle = true
 			},

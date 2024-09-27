@@ -31,7 +31,7 @@ static int Init(Context* context)
 	context->Device,
 	"FillTexture.comp",
 	&(SDL_GPUComputePipelineCreateInfo) {
-		.num_writeonly_storage_textures = 1,
+		.num_readwrite_storage_textures = 1,
 		.threadcount_x = 8,
 		.threadcount_y = 8,
 		.threadcount_z = 1,
@@ -144,7 +144,7 @@ static int Init(Context* context)
 
     SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
         cmdBuf,
-        (SDL_GPUStorageTextureWriteOnlyBinding[]){{
+        (SDL_GPUStorageTextureReadWriteBinding[]){{
             .texture = Texture
         }},
         1,
@@ -174,12 +174,16 @@ static int Draw(Context* context)
     SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
     if (cmdbuf == NULL)
     {
-        SDL_Log("GPUAcquireCommandBuffer failed!");
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
         return -1;
     }
 
-    Uint32 w, h;
-    SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
+
     if (swapchainTexture != NULL)
     {
         SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(

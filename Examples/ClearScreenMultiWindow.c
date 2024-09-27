@@ -33,17 +33,19 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-	if (cmdbuf == NULL)
-	{
-		SDL_Log("GPUAcquireCommandBuffer failed");
-		return -1;
-	}
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    if (cmdbuf == NULL)
+    {
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+        return -1;
+    }
 
-	Uint32 w, h;
-	SDL_GPUTexture* swapchainTexture;
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGpuSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
 
-	swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
 	if (swapchainTexture != NULL)
 	{
 		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
@@ -56,7 +58,11 @@ static int Draw(Context* context)
 		SDL_EndGPURenderPass(renderPass);
 	}
 
-	swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, SecondWindow, &w, &h);
+	if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, SecondWindow, &swapchainTexture)) {
+		SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
+
 	if (swapchainTexture != NULL)
 	{
 		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };

@@ -142,17 +142,24 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-	if (cmdbuf == NULL)
-	{
-		SDL_Log("GPUAcquireCommandBuffer failed");
-		return -1;
-	}
+    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+    if (cmdbuf == NULL)
+    {
+        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+        return -1;
+    }
 
-	Uint32 w, h;
-	SDL_GPUTexture* swapchainTexture = SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &w, &h);
+    SDL_GPUTexture* swapchainTexture;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+        SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+        return -1;
+    }
+
 	if (swapchainTexture != NULL)
 	{
+		int w, h;
+		SDL_GetWindowSizeInPixels(context->Window, &w, &h);
+
 		SDL_GPURenderPass* renderPass;
 		SDL_GPUColorTargetInfo colorTargetInfo = {
 			.texture = MSAARenderTextures[CurrentSampleCount],
