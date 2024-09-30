@@ -65,16 +65,14 @@ static int Draw(Context* context)
     }
 
     SDL_GPUTexture* swapchainTexture;
-    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+    Uint32 w, h;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &w, &h)) {
         SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
         return -1;
     }
 
     if (swapchainTexture != NULL)
     {
-        int w, h;
-        SDL_GetWindowSizeInPixels(context->Window, &w, &h);
-
         SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
             cmdbuf,
             (SDL_GPUStorageTextureReadWriteBinding[]){{

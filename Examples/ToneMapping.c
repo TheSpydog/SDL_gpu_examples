@@ -266,7 +266,8 @@ static int Draw(Context* context)
     }
 
     SDL_GPUTexture* swapchainTexture;
-    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture)) {
+	Uint32 swapchainWidth, swapchainHeight;
+    if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &swapchainWidth, &swapchainHeight)) {
         SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
         return -1;
     }
@@ -333,9 +334,6 @@ static int Draw(Context* context)
 
 			BlitSourceTexture = TransferTexture;
 		}
-
-		int swapchainWidth, swapchainHeight;
-		SDL_GetWindowSizeInPixels(context->Window, &swapchainWidth, &swapchainHeight);
 
 		/* Blit to swapchain */
 		SDL_BlitGPUTexture(
