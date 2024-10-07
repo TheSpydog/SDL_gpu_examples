@@ -94,7 +94,7 @@ SDL_GPUShader* LoadShader(
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	SDL_GPUShader* shader = SDL_ShaderCross_CompileFromSPIRV(device, &shaderInfo, false);
+	SDL_GPUShader* shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &shaderInfo);
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -129,7 +129,7 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	newCreateInfo.entrypoint = "main";
 	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
 
-	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileFromSPIRV(device, &newCreateInfo, true);
+	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileComputePipelineFromSPIRV(device, &newCreateInfo);
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");
