@@ -26,20 +26,20 @@ static SDL_GPUTextureFormat TextureFormats[] =
 
 static const char* TextureNames[] =
 {
-	"4x4",
-	"5x4",
-	"5x5",
-	"6x5",
-	"6x6",
-	"8x5",
-	"8x6",
-	"8x8",
-	"10x5",
-	"10x6",
-	"10x8",
-	"10x10",
-	"12x10",
-	"12x12",
+	"4x4.astc",
+	"5x4.astc",
+	"5x5.astc",
+	"6x5.astc",
+	"6x6.astc",
+	"8x5.astc",
+	"8x6.astc",
+	"8x8.astc",
+	"10x5.astc",
+	"10x6.astc",
+	"10x8.astc",
+	"10x10.astc",
+	"12x10.astc",
+	"12x12.astc",
 };
 
 static bool SupportsASTC;
@@ -230,7 +230,8 @@ static int Init(Context* context)
 				.height = imageHeight,
 				.layer_count_or_depth = 1,
 				.type = SDL_GPU_TEXTURETYPE_2D,
-				.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER
+				.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+				.num_levels = 1,
 			}
 		);
 

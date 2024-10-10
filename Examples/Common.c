@@ -201,6 +201,11 @@ void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* p
 
 	size_t fileSize;
 	void* fileContents = SDL_LoadFile(fullPath, &fileSize);
+	if (fileContents == NULL)
+	{
+		SDL_assert(!"Could not load ASTC image!");
+		return NULL;
+	}
 
 	AstcHeader* header = (AstcHeader*)fileContents;
 	if (header->magic[0] != 0x13 || header->magic[1] != 0xAB || header->magic[2] != 0xA1 || header->magic[3] != 0x5C)
