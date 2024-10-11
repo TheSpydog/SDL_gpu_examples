@@ -34,6 +34,7 @@ add_executable(SDL_gpu_examples
     Examples/BlitCube.c
     Examples/BlitMirror.c
     Examples/GenerateMipmaps.c
+    Examples/ASTC.c
 )
 
 target_include_directories(SDL_gpu_examples PRIVATE shadercross)

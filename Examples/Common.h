@@ -22,6 +22,7 @@ void CommonQuit(Context* context);
 void InitializeAssetLoader();
 SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels);
 float* LoadHDRImage(const char* imageFilename, int* pWidth, int* pHeight, int* pChannels, int desiredChannels);
+void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* pImageDataLength);
 
 SDL_GPUShader* LoadShader(
 	SDL_GPUDevice* device,
@@ -116,5 +117,6 @@ extern Example Blit2DArray_Example;
 extern Example BlitCube_Example;
 extern Example BlitMirror_Example;
 extern Example GenerateMipmaps_Example;
+extern Example ASTC_Example;
 
 #endif

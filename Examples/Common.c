@@ -183,6 +183,53 @@ float* LoadHDRImage(const char* imageFilename, int* pWidth, int* pHeight, int* p
 	return stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels);
 }
 
+typedef struct AstcHeader
+{
+	Uint8 magic[4];
+	Uint8 blockX;
+	Uint8 blockY;
+	Uint8 blockZ;
+	Uint8 dimX[3];
+	Uint8 dimY[3];
+	Uint8 dimZ[3];
+} AstcHeader;
+
+void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* pImageDataLength)
+{
+	char fullPath[256];
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/astc/%s", BasePath, imageFilename);
+
+	size_t fileSize;
+	void* fileContents = SDL_LoadFile(fullPath, &fileSize);
+	if (fileContents == NULL)
+	{
+		SDL_assert(!"Could not load ASTC image!");
+		return NULL;
+	}
+
+	AstcHeader* header = (AstcHeader*)fileContents;
+	if (header->magic[0] != 0x13 || header->magic[1] != 0xAB || header->magic[2] != 0xA1 || header->magic[3] != 0x5C)
+	{
+		SDL_assert(!"Bad magic number!");
+		return NULL;
+	}
+
+	// Get the image dimensions in texels
+	*pWidth = header->dimX[0] + (header->dimX[1] << 8) + (header->dimX[2] << 16);
+	*pHeight = header->dimY[0] + (header->dimY[1] << 8) + (header->dimY[2] << 16);
+
+	// Get the size of the texture data
+	unsigned int block_count_x = (*pWidth + header->blockX - 1) / header->blockX;
+	unsigned int block_count_y = (*pHeight + header->blockY - 1) / header->blockY;
+	*pImageDataLength = block_count_x * block_count_y * 16;
+
+	void* data = SDL_malloc(*pImageDataLength);
+	SDL_memcpy(data, (char*)fileContents + sizeof(AstcHeader), *pImageDataLength);
+	SDL_free(fileContents);
+
+	return data;
+}
+
 // Matrix Math
 
 Matrix4x4 Matrix4x4_Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2)
