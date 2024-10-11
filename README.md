@@ -1,4 +1,4 @@
-WIP collection of examples to demonstrate the usage of the SDL_GPU API.
+Collection of examples to demonstrate the usage of the SDL_GPU API.
 
 To clone and build:
 ```
@@ -17,3 +17,4 @@ cmake .. -DSDL3_DIR="full/path/to/SDL/build"
 ```
 then run `make` or your favorite IDE.
 
+You will also need the SPIRV-Cross dynamic library in your executable directory. You can grab the latest prebuilt library from [this page](https://github.com/KhronosGroup/SPIRV-Cross/actions). Scroll down to Artifacts, then download the package for your target operating system. In the downloaded package, go to `lib/` (`bin/` on Windows) and copy the `spirv-cross-c-shared.dll/so/dylib` into your build directory.
