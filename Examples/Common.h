@@ -2,6 +2,7 @@
 #define SDL_GPU_EXAMPLES_H
 
 #include <SDL3/SDL.h>
+#include "SDL_gpu_shadercross.h"
 
 typedef struct Context
 {
@@ -35,7 +36,7 @@ SDL_GPUShader* LoadShader(
 SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	SDL_GPUDevice* device,
 	const char* shaderFilename,
-	SDL_GPUComputePipelineCreateInfo* createInfo
+	SDL_ShaderCross_ComputeResourceInfo *resourceInfo
 );
 
 // Vertex Formats

@@ -25,7 +25,7 @@ typedef struct ComputeSpriteInstance
 	float r, g, b, a;
 } ComputeSpriteInstance;
 
-const Uint32 SPRITE_COUNT = 8192;
+const Uint32 SPRITE_COUNT = 65536;
 
 static int Init(Context* context)
 {
@@ -128,7 +128,7 @@ static int Init(Context* context)
 	ComputePipeline = CreateComputePipelineFromShader(
 		context->Device,
 		"SpriteBatch.comp",
-		&(SDL_GPUComputePipelineCreateInfo){
+		&(SDL_ShaderCross_ComputeResourceInfo){
 			.num_readonly_storage_buffers = 1,
 			.num_readwrite_storage_buffers = 1,
 			.threadcount_x = 64,

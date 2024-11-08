@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "SDL_gpu_shadercross.h"
 
 static SDL_GPUGraphicsPipeline* DrawPipeline;
 static SDL_GPUTexture* Texture;
@@ -28,14 +29,14 @@ static int Init(Context* context)
     }
 
     SDL_GPUComputePipeline* fillTexturePipeline = CreateComputePipelineFromShader(
-	context->Device,
-	"FillTexture.comp",
-	&(SDL_GPUComputePipelineCreateInfo) {
-		.num_readwrite_storage_textures = 1,
-		.threadcount_x = 8,
-		.threadcount_y = 8,
-		.threadcount_z = 1,
-	}
+        context->Device,
+        "FillTexture.comp",
+        &(SDL_ShaderCross_ComputeResourceInfo) {
+            .num_readwrite_storage_textures = 1,
+            .threadcount_x = 8,
+            .threadcount_y = 8,
+            .threadcount_z = 1,
+        }
     );
 
     DrawPipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &(SDL_GPUGraphicsPipelineCreateInfo){

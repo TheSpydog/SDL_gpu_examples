@@ -61,7 +61,7 @@ static int Init(Context* context)
     Pipeline = CreateComputePipelineFromShader(
         context->Device,
         "TexturedQuad.comp",
-        &(SDL_GPUComputePipelineCreateInfo){
+        &(SDL_ShaderCross_ComputeResourceInfo){
             .num_samplers = 1,
             .num_readwrite_storage_textures = 1,
             .num_uniform_buffers = 1,

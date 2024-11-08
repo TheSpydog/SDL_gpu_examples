@@ -67,7 +67,7 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 	return CreateComputePipelineFromShader(
 		device,
 		spvFile,
-		&(SDL_GPUComputePipelineCreateInfo){
+		&(SDL_ShaderCross_ComputeResourceInfo){
 			.num_readonly_storage_textures = 1,
 			.num_readwrite_storage_textures = 1,
 			.threadcount_x = 8,

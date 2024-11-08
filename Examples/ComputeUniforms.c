@@ -21,7 +21,7 @@ static int Init(Context* context)
     GradientPipeline = CreateComputePipelineFromShader(
         context->Device,
         "GradientTexture.comp",
-        &(SDL_GPUComputePipelineCreateInfo) {
+        &(SDL_ShaderCross_ComputeResourceInfo) {
             .num_readwrite_storage_textures = 1,
             .num_uniform_buffers = 1,
             .threadcount_x = 8,

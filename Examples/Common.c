@@ -1,6 +1,4 @@
 #include "Common.h"
-
-#define SDL_GPU_SHADERCROSS_IMPLEMENTATION
 #include <SDL_gpu_shadercross.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -83,18 +81,21 @@ SDL_GPUShader* LoadShader(
 		return NULL;
 	}
 
-	SDL_GPUShaderCreateInfo shaderInfo = {
-		.code = code,
-		.code_size = codeSize,
-		.entrypoint = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV,
-		.stage = stage,
+	SDL_ShaderCross_ShaderResourceInfo resourceInfo = {
 		.num_samplers = samplerCount,
 		.num_uniform_buffers = uniformBufferCount,
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	SDL_GPUShader* shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &shaderInfo);
+
+	SDL_GPUShader* shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
+		device,
+		code,
+		codeSize,
+		"main",
+		stage,
+		&resourceInfo);
+
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -109,7 +110,7 @@ SDL_GPUShader* LoadShader(
 SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	SDL_GPUDevice* device,
 	const char* shaderFilename,
-	SDL_GPUComputePipelineCreateInfo *createInfo
+	SDL_ShaderCross_ComputeResourceInfo *resourceInfo
 ) {
 	char fullPath[256];
 	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
@@ -122,14 +123,13 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 		return NULL;
 	}
 
-	// Make a copy of the create data, then overwrite the parts we need
-	SDL_GPUComputePipelineCreateInfo newCreateInfo = *createInfo;
-	newCreateInfo.code = code;
-	newCreateInfo.code_size = codeSize;
-	newCreateInfo.entrypoint = "main";
-	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
+	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileComputePipelineFromSPIRV(
+		device,
+		code,
+		codeSize,
+		"main",
+		resourceInfo);
 
-	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileComputePipelineFromSPIRV(device, &newCreateInfo);
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");
