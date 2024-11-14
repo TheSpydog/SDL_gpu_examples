@@ -1,7 +1,6 @@
 /* Special thanks to Matt Taylor for this overview of tonemapping: https://64.github.io/tonemapping/ */
 
 #include "Common.h"
-#include "SDL_gpu_shadercross.h" /* SDL_ShaderCross_GetSPIRVShaderFormats() */
 
 static SDL_GPUTexture* HDRTexture;
 static SDL_GPUTexture* ToneMapTexture;
@@ -79,16 +78,14 @@ static SDL_GPUComputePipeline* BuildPostProcessComputePipeline(SDL_GPUDevice *de
 
 static int Init(Context* context)
 {
-	/* Manually set up example for HDR rendering */
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), true, NULL);
-	if (context->Device == NULL)
+	int result = CommonInit(context, 0);
+	if (result < 0)
 	{
-		SDL_Log("GPUCreateDevice failed");
-		return -1;
+		return result;
 	}
 
-    int img_x, img_y, n;
-    float *hdrImageData = LoadHDRImage("memorial.hdr", &img_x, &img_y, &n, 4);
+    int n;
+    float *hdrImageData = LoadHDRImage("memorial.hdr", &w, &h, &n, 4);
 
     if (hdrImageData == NULL)
     {
@@ -96,20 +93,7 @@ static int Init(Context* context)
         return -1;
     }
 
-    context->Window = SDL_CreateWindow(context->ExampleName, img_x, img_y, 0);
-	if (context->Window == NULL)
-	{
-		SDL_Log("CreateWindow failed: %s", SDL_GetError());
-		return -1;
-	}
-
-	if (!SDL_ClaimWindowForGPUDevice(context->Device, context->Window))
-	{
-		SDL_Log("GPUClaimWindow failed");
-		return -1;
-	}
-
-    SDL_GetWindowSizeInPixels(context->Window, &w, &h);
+	SDL_SetWindowSize(context->Window, w, h);
 
 	SDL_GPUShader* vertexShader = LoadShader(context->Device, "PositionColorTransform.vert", 0, 0, 0, 0);
 	if (vertexShader == NULL)
@@ -128,8 +112,8 @@ static int Init(Context* context)
     HDRTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
         .format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
-        .width = img_x,
-        .height = img_y,
+        .width = w,
+        .height = h,
         .layer_count_or_depth = 1,
         .num_levels = 1,
         .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ
@@ -138,8 +122,8 @@ static int Init(Context* context)
 	ToneMapTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT,
-		.width = img_x,
-		.height = img_y,
+		.width = w,
+		.height = h,
 		.layer_count_or_depth = 1,
 		.num_levels = 1,
 		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
@@ -148,8 +132,8 @@ static int Init(Context* context)
 	TransferTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
 		.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
-		.width = img_x,
-		.height = img_y,
+		.width = w,
+		.height = h,
 		.layer_count_or_depth = 1,
 		.num_levels = 1,
 		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
@@ -162,7 +146,7 @@ static int Init(Context* context)
         context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = sizeof(float) * 4 * img_x * img_y
+			.size = sizeof(float) * 4 * w * h
 		}
     );
 
@@ -171,7 +155,7 @@ static int Init(Context* context)
 	    imageDataTransferBuffer,
 	    false
     );
-    SDL_memcpy(imageTransferPtr, hdrImageData, sizeof(float) * 4 * img_x * img_y);
+    SDL_memcpy(imageTransferPtr, hdrImageData, sizeof(float) * 4 * w * h);
     SDL_UnmapGPUTransferBuffer(context->Device, imageDataTransferBuffer);
 
     SDL_free(hdrImageData);
@@ -187,8 +171,8 @@ static int Init(Context* context)
         },
         &(SDL_GPUTextureRegion){
             .texture = HDRTexture,
-            .w = img_x,
-            .h = img_y,
+            .w = w,
+            .h = h,
             .d = 1
         },
         false

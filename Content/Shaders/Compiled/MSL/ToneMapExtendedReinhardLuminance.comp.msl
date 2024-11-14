@@ -1,0 +1,13 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+kernel void main0(texture2d<float> inImage [[texture(0)]], texture2d<float, access::write> outImage [[texture(1)]], uint3 gl_GlobalInvocationID [[thread_position_in_grid]])
+{
+    uint2 _31 = uint2(int2(gl_GlobalInvocationID.xy));
+    float3 _34 = inImage.read(uint2(_31), 0u).xyz;
+    float _35 = dot(_34, float3(0.2125999927520751953125, 0.715200006961822509765625, 0.072200000286102294921875));
+    outImage.write(float4(_34 * (((_35 * (1.0 + (_35 * 2.2818337583885295316576957702637e-06))) / (1.0 + _35)) / _35), 1.0), uint2(_31));
+}
+

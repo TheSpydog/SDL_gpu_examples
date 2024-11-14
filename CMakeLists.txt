@@ -37,11 +37,8 @@ add_executable(SDL_gpu_examples
     Examples/ASTC.c
 )
 
-target_include_directories(SDL_gpu_examples PRIVATE shadercross)
-
 target_link_libraries(SDL_gpu_examples
     SDL3::SDL3
-    SDL3::Headers
 )
 
 add_custom_command(TARGET SDL_gpu_examples POST_BUILD

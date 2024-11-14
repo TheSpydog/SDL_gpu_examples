@@ -1,6 +1,5 @@
 #include "Common.h"
 #include <SDL3/SDL_main.h>
-#include <SDL_gpu_shadercross.h>
 
 static Example* Examples[] =
 {
@@ -103,7 +102,6 @@ int main(int argc, char **argv)
 
 	InitializeAssetLoader();
 	SDL_AddEventWatch(AppLifecycleWatcher, NULL);
-	SDL_ShaderCross_Init();
 
 	SDL_Log("Welcome to the SDL_GPU example suite!");
 	SDL_Log("Press A/D (or LB/RB) to move between examples!");

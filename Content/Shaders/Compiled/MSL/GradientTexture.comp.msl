@@ -1,0 +1,17 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct type_UBO
+{
+    float ubo_time;
+};
+
+kernel void main0(constant type_UBO& UBO [[buffer(0)]], texture2d<float, access::write> OutImage [[texture(0)]], uint3 gl_GlobalInvocationID [[thread_position_in_grid]])
+{
+    uint2 _34 = uint2(OutImage.get_width(), OutImage.get_height());
+    float2 _41 = float2(gl_GlobalInvocationID.xy);
+    OutImage.write(float4(float3(0.5) + (cos((float3(UBO.ubo_time) + (_41 / float2(float(_34.x), float(_34.y))).xyx) + float3(0.0, 2.0, 4.0)) * 0.5), 1.0), uint2(uint2(int2(_41))));
+}
+

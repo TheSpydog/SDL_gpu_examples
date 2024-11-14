@@ -1,8 +1,5 @@
 #include "Common.h"
 
-#define SDL_GPU_SHADERCROSS_IMPLEMENTATION
-#include <SDL_gpu_shadercross.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MALLOC SDL_malloc
 #define STBI_REALLOC SDL_realloc
@@ -12,7 +9,11 @@
 
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
-	context->Device = SDL_CreateGPUDevice(SDL_ShaderCross_GetSPIRVShaderFormats(), true, NULL);
+	context->Device = SDL_CreateGPUDevice(
+		SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL,
+		true,
+		NULL);
+
 	if (context->Device == NULL)
 	{
 		SDL_Log("GPUCreateDevice failed");
@@ -73,7 +74,26 @@ SDL_GPUShader* LoadShader(
 	}
 
 	char fullPath[256];
-	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
+	SDL_GPUShaderFormat backendFormats = SDL_GetGPUShaderFormats(device);
+	SDL_GPUShaderFormat format = SDL_GPU_SHADERFORMAT_INVALID;
+	const char *entrypoint;
+
+	if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/SPIRV/%s.spv", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_SPIRV;
+		entrypoint = "main";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/MSL/%s.msl", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_MSL;
+		entrypoint = "main0";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/DXIL/%s.dxil", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_DXIL;
+		entrypoint = "main";
+	} else {
+		SDL_Log("%s", "Unrecognized backend shader format!");
+		return NULL;
+	}
 
 	size_t codeSize;
 	void* code = SDL_LoadFile(fullPath, &codeSize);
@@ -86,15 +106,15 @@ SDL_GPUShader* LoadShader(
 	SDL_GPUShaderCreateInfo shaderInfo = {
 		.code = code,
 		.code_size = codeSize,
-		.entrypoint = "main",
-		.format = SDL_GPU_SHADERFORMAT_SPIRV,
+		.entrypoint = entrypoint,
+		.format = format,
 		.stage = stage,
 		.num_samplers = samplerCount,
 		.num_uniform_buffers = uniformBufferCount,
 		.num_storage_buffers = storageBufferCount,
 		.num_storage_textures = storageTextureCount
 	};
-	SDL_GPUShader* shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &shaderInfo);
+	SDL_GPUShader* shader = SDL_CreateGPUShader(device, &shaderInfo);
 	if (shader == NULL)
 	{
 		SDL_Log("Failed to create shader!");
@@ -112,7 +132,26 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	SDL_GPUComputePipelineCreateInfo *createInfo
 ) {
 	char fullPath[256];
-	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/%s.spv", BasePath, shaderFilename);
+	SDL_GPUShaderFormat backendFormats = SDL_GetGPUShaderFormats(device);
+	SDL_GPUShaderFormat format = SDL_GPU_SHADERFORMAT_INVALID;
+	const char *entrypoint;
+
+	if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/SPIRV/%s.spv", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_SPIRV;
+		entrypoint = "main";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/MSL/%s.msl", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_MSL;
+		entrypoint = "main0";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/DXIL/%s.dxil", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_DXIL;
+		entrypoint = "main";
+	} else {
+		SDL_Log("%s", "Unrecognized backend shader format!");
+		return NULL;
+	}
 
 	size_t codeSize;
 	void* code = SDL_LoadFile(fullPath, &codeSize);
@@ -126,10 +165,10 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 	SDL_GPUComputePipelineCreateInfo newCreateInfo = *createInfo;
 	newCreateInfo.code = code;
 	newCreateInfo.code_size = codeSize;
-	newCreateInfo.entrypoint = "main";
-	newCreateInfo.format = SDL_GPU_SHADERFORMAT_SPIRV;
+	newCreateInfo.entrypoint = entrypoint;
+	newCreateInfo.format = format;
 
-	SDL_GPUComputePipeline* pipeline = SDL_ShaderCross_CompileComputePipelineFromSPIRV(device, &newCreateInfo);
+	SDL_GPUComputePipeline* pipeline = SDL_CreateGPUComputePipeline(device, &newCreateInfo);
 	if (pipeline == NULL)
 	{
 		SDL_Log("Failed to create compute pipeline!");

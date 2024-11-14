@@ -1,12 +1,24 @@
-# Requires glslangValidator installed from the Vulkan SDK
-for filename in *.vert; do
-    glslangValidator -V "$filename" -o "../Compiled/$filename.spv"
+# Requires shadercross CLI installed from SDL_shadercross
+for filename in *.vert.hlsl; do
+    if [ -f "$filename" ]; then
+        shadercross "$filename" -o "../Compiled/SPIRV/${filename/.hlsl/.spv}"
+        shadercross "$filename" -o "../Compiled/MSL/${filename/.hlsl/.msl}"
+        shadercross "$filename" -o "../Compiled/DXIL/${filename/.hlsl/.dxil}"
+    fi
 done
 
-for filename in *.frag; do
-    glslangValidator -V "$filename" -o "../Compiled/$filename.spv"
+for filename in *.frag.hlsl; do
+    if [ -f "$filename" ]; then
+        shadercross "$filename" -o "../Compiled/SPIRV/${filename/.hlsl/.spv}"
+        shadercross "$filename" -o "../Compiled/MSL/${filename/.hlsl/.msl}"
+        shadercross "$filename" -o "../Compiled/DXIL/${filename/.hlsl/.dxil}"
+    fi
 done
 
-for filename in *.comp; do
-    glslangValidator -V "$filename" -o "../Compiled/$filename.spv"
+for filename in *.comp.hlsl; do
+    if [ -f "$filename" ]; then
+        shadercross "$filename" -o "../Compiled/SPIRV/${filename/.hlsl/.spv}"
+        shadercross "$filename" -o "../Compiled/MSL/${filename/.hlsl/.msl}"
+        shadercross "$filename" -o "../Compiled/DXIL/${filename/.hlsl/.dxil}"
+    fi
 done
