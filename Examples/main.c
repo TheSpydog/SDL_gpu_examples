@@ -33,6 +33,7 @@ static Example* Examples[] =
 	&BlitMirror_Example,
 	&GenerateMipmaps_Example,
 	&ASTC_Example,
+	&Latency_Example,
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
