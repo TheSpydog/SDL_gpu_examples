@@ -3,6 +3,8 @@
 static SDL_GPUTexture *LagTexture;
 static int LagX = 1;
 static bool CaptureCursor = false;
+static int allowedFramesInFlight;
+static int fullscreen;
 
 static int Init(Context* context)
 {
@@ -72,6 +74,8 @@ static int Init(Context* context)
     SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
 
     SDL_Log("Press Left/Right to toggle capturing the mouse cursor.");
+    SDL_Log("Press Down to change the number of allowed frames in flight.");
+    SDL_Log("Press Up to toggle fullscreen mode.");
     SDL_Log("When the mouse cursor is captured the color directly above the cursor's point in the "
             "result of the test.");
     SDL_Log("Negative lag can occur when the cursor is below the tear line when tearing is enabled "
@@ -85,6 +89,10 @@ static int Init(Context* context)
     SDL_Log("  Purple: 5 frames lag");
     SDL_Log("  Blue:   6 frames lag");
 
+    allowedFramesInFlight = 2;
+    fullscreen = false;
+
+    SDL_SetGPUAllowedFramesInFlight(context->Device, allowedFramesInFlight);
     return 0;
 }
 
@@ -93,14 +101,19 @@ static int Update(Context* context)
     if (context->LeftPressed || context->RightPressed)
     {
         CaptureCursor = !CaptureCursor;
-        if (CaptureCursor)
-        {
-            SDL_Log("Capturing mouse cursor");
-        }
-        else
-        {
-            SDL_Log("Releasing mouse cursor");
-        }
+    }
+
+    if (context->DownPressed)
+    {
+        allowedFramesInFlight = SDL_clamp((allowedFramesInFlight + 1) % 4, 1, 3);
+        SDL_SetGPUAllowedFramesInFlight(context->Device, allowedFramesInFlight);
+        SDL_Log("Allowed frames in flight: %i", allowedFramesInFlight);
+    }
+
+    if (context->UpPressed)
+    {
+        fullscreen = !fullscreen;
+        SDL_SetWindowFullscreen(context->Window, fullscreen);
     }
 
     return 0;
