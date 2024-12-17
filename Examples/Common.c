@@ -10,7 +10,7 @@
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
 	context->Device = SDL_CreateGPUDevice(
-		SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL,
+		SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL,
 		false,
 		NULL);
 
