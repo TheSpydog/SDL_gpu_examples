@@ -13,6 +13,11 @@ struct SpriteVertex
     float4 color;
 };
 
+cbuffer UBO : register(b0, space2)
+{
+    float time : packoffset(c0);
+};
+
 StructuredBuffer<SpriteComputeData> ComputeBuffer : register(t0, space0);
 RWStructuredBuffer<SpriteVertex> VertexBuffer : register(u0, space1);
 
@@ -64,8 +69,9 @@ void main(uint3 GlobalInvocationID : SV_DispatchThreadID)
     VertexBuffer[n * 4u + 2].texcoord = float2(0.0f, 1.0f);
     VertexBuffer[n * 4u + 3].texcoord = float2(1.0f, 1.0f);
 
-    VertexBuffer[n * 4u]    .color = currentSpriteData.color;
-    VertexBuffer[n * 4u + 1].color = currentSpriteData.color;
-    VertexBuffer[n * 4u + 2].color = currentSpriteData.color;
-    VertexBuffer[n * 4u + 3].color = currentSpriteData.color;
+    float st = sin(time);
+    VertexBuffer[n * 4u]    .color = currentSpriteData.color * st;
+    VertexBuffer[n * 4u + 1].color = currentSpriteData.color * st;
+    VertexBuffer[n * 4u + 2].color = currentSpriteData.color * st;
+    VertexBuffer[n * 4u + 3].color = currentSpriteData.color * st;
 }

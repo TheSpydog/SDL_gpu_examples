@@ -25,7 +25,9 @@ typedef struct ComputeSpriteInstance
 	float r, g, b, a;
 } ComputeSpriteInstance;
 
-const Uint32 SPRITE_COUNT = 8192;
+const Uint32 SPRITE_COUNT = 819200;
+
+static float t;
 
 static int Init(Context* context)
 {
@@ -131,6 +133,7 @@ static int Init(Context* context)
 		&(SDL_GPUComputePipelineCreateInfo){
 			.num_readonly_storage_buffers = 1,
 			.num_readwrite_storage_buffers = 1,
+			.num_uniform_buffers = 1,
 			.threadcount_x = 64,
 			.threadcount_y = 1,
 			.threadcount_z = 1
@@ -292,6 +295,7 @@ static int Init(Context* context)
 
 static int Update(Context* context)
 {
+	t += 0.1f;
 	return 0;
 }
 
@@ -383,6 +387,7 @@ static int Draw(Context* context)
 			},
 			1
 		);
+		SDL_PushGPUComputeUniformData(cmdBuf, 0, &t, sizeof(float));
 		SDL_DispatchGPUCompute(computePass, SPRITE_COUNT / 64, 1, 1);
 
 		SDL_EndGPUComputePass(computePass);
