@@ -11,14 +11,14 @@ static SDL_GPUSwapchainComposition swapchainCompositions[] =
 	SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
 	SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
 	SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
-	SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048
+	SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084
 };
 static const char* swapchainCompositionNames[] =
 {
 	"SDL_GPU_SWAPCHAINCOMPOSITION_SDR",
 	"SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR",
 	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR",
-	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048"
+	"SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084"
 };
 static Sint32 swapchainCompositionCount = sizeof(swapchainCompositions)/sizeof(SDL_GPUSwapchainComposition);
 static Sint32 swapchainCompositionSelectionIndex = 0;
@@ -285,7 +285,7 @@ static int Draw(Context* context)
 		/* Transfer to target color space if necessary */
 		if (
 			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_SDR ||
-			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2048
+			currentSwapchainComposition == SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084
 		) {
 			computePass = SDL_BeginGPUComputePass(
 				cmdbuf,
