@@ -464,13 +464,13 @@ static int Draw(Context* context)
 		depthStencilTargetInfo.stencil_load_op = SDL_GPU_LOADOP_CLEAR;
 		depthStencilTargetInfo.stencil_store_op = SDL_GPU_STOREOP_STORE;
 
+		SDL_PushGPUVertexUniformData(cmdbuf, 0, &viewproj, sizeof(viewproj));
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, (float[]) { nearPlane, farPlane }, 8);
 
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, &depthStencilTargetInfo);
 		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = SceneVertexBuffer, .offset = 0 }, 1);
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = SceneIndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_BindGPUGraphicsPipeline(renderPass, ScenePipeline);
-		SDL_PushGPUVertexUniformData(cmdbuf, 0, &viewproj, sizeof(viewproj));
 		SDL_DrawGPUIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
 		SDL_EndGPURenderPass(renderPass);
 	}
