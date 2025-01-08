@@ -22,7 +22,7 @@ float GetDifference(float depth, float2 TexCoord, float distance)
 
 float4 main(float2 TexCoord : TEXCOORD0) : SV_Target0
 {
-    // get out depth value
+    // get our depth value
     float4 color = ColorTexture.Sample(ColorSampler, TexCoord);
     float depth = DepthTexture.Sample(DepthSampler, TexCoord).r;
 

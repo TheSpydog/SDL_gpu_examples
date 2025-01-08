@@ -27,28 +27,28 @@ static int Init(Context* context)
 		SDL_GPUShader* sceneVertexShader = LoadShader(context->Device, "PositionColorTransform.vert", 0, 1, 0, 0);
 		if (sceneVertexShader == NULL)
 		{
-			SDL_Log("Failed to create vertex shader!");
+			SDL_Log("Failed to create 'PositionColorTransform' vertex shader!");
 			return -1;
 		}
 
 		SDL_GPUShader* sceneFragmentShader = LoadShader(context->Device, "SolidColorDepth.frag", 0, 1, 0, 0);
 		if (sceneFragmentShader == NULL)
 		{
-			SDL_Log("Failed to create fragment shader!");
+			SDL_Log("Failed to create 'SolidColorDepth' fragment shader!");
 			return -1;
 		}
 
 		SDL_GPUShader* effectVertexShader = LoadShader(context->Device, "TexturedQuad.vert", 0, 0, 0, 0);
 		if (effectVertexShader == NULL)
 		{
-			SDL_Log("Failed to create vertex shader!");
+			SDL_Log("Failed to create 'TexturedQuad' vertex shader!");
 			return -1;
 		}
 
 		SDL_GPUShader* effectFragmentShader = LoadShader(context->Device, "DepthOutline.frag", 2, 1, 0, 0);
 		if (effectFragmentShader == NULL)
 		{
-			SDL_Log("Failed to create fragment shader!");
+			SDL_Log("Failed to create 'DepthOutline' fragment shader!");
 			return -1;
 		}
 
@@ -102,7 +102,7 @@ static int Init(Context* context)
 		ScenePipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 		if (ScenePipeline == NULL)
 		{
-			SDL_Log("Failed to create masker pipeline!");
+			SDL_Log("Failed to create Scene pipeline!");
 			return -1;
 		}
 
@@ -151,7 +151,7 @@ static int Init(Context* context)
 		EffectPipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 		if (EffectPipeline == NULL)
 		{
-			SDL_Log("Failed to create pipeline!");
+			SDL_Log("Failed to create Outline Effect pipeline!");
 			return -1;
 		}
 
@@ -199,7 +199,7 @@ static int Init(Context* context)
 		);
 	}
 
-	// Create Effect Sampler
+	// Create Outline Effect Sampler
 	EffectSampler = SDL_CreateGPUSampler(context->Device, &(SDL_GPUSamplerCreateInfo){
 		.min_filter = SDL_GPU_FILTER_NEAREST,
 		.mag_filter = SDL_GPU_FILTER_NEAREST,
@@ -321,7 +321,7 @@ static int Init(Context* context)
 		SDL_ReleaseGPUTransferBuffer(context->Device, bufferTransferBuffer);
 	}
 
-	// Create & Upload Effect Vertex and Index buffers
+	// Create & Upload Outline Effect Vertex and Index buffers
 	{
 		EffectVertexBuffer = SDL_CreateGPUBuffer(
 			context->Device,
@@ -416,18 +416,18 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-    if (cmdbuf == NULL)
-    {
-        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	if (cmdbuf == NULL)
+	{
+		SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    SDL_GPUTexture* swapchainTexture;
-    if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, NULL, NULL)) {
-        SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUTexture* swapchainTexture;
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, NULL, NULL)) {
+		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
 
 	// Render the 3D Scene (Color and Depth pass)
 	{
@@ -463,7 +463,7 @@ static int Draw(Context* context)
 		depthStencilTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
 		depthStencilTargetInfo.stencil_load_op = SDL_GPU_LOADOP_CLEAR;
 		depthStencilTargetInfo.stencil_store_op = SDL_GPU_STOREOP_STORE;
-		
+
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, (float[]) { nearPlane, farPlane }, 8);
 
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, &depthStencilTargetInfo);
@@ -475,7 +475,7 @@ static int Draw(Context* context)
 		SDL_EndGPURenderPass(renderPass);
 	}
 
-	// Render the Effects that sample from the Color/Depth textures and draw to the screen
+	// Render the Outline Effect that samples from the Color/Depth textures
 	if (swapchainTexture != NULL)
 	{
 		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
@@ -483,7 +483,7 @@ static int Draw(Context* context)
 		colorTargetInfo.clear_color = (SDL_FColor){ 0.2f, 0.5f, 0.4f, 1.0f };
 		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
 		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
-		
+
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, (float[]) { 1.0f / SceneWidth, 1.0f / SceneHeight }, 8);
 
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
