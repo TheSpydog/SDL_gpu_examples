@@ -36,6 +36,7 @@ add_executable(SDL_gpu_examples
     Examples/GenerateMipmaps.c
     Examples/ASTC.c
     Examples/Latency.c
+    Examples/DepthSampler.c
 )
 
 target_link_libraries(SDL_gpu_examples

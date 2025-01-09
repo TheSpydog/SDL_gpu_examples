@@ -34,6 +34,7 @@ static Example* Examples[] =
 	&GenerateMipmaps_Example,
 	&ASTC_Example,
 	&Latency_Example,
+	&DepthSampler_Example,
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)

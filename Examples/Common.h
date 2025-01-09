@@ -119,5 +119,6 @@ extern Example BlitMirror_Example;
 extern Example GenerateMipmaps_Example;
 extern Example ASTC_Example;
 extern Example Latency_Example;
+extern Example DepthSampler_Example;
 
 #endif
