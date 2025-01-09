@@ -429,9 +429,9 @@ static int Draw(Context* context)
 		return -1;
 	}
 
-	// Render the 3D Scene (Color and Depth pass)
 	if (swapchainTexture != NULL)
 	{
+		// Render the 3D Scene (Color and Depth pass)
 		float nearPlane = 20.0f;
 		float farPlane = 60.0f;
 
@@ -474,18 +474,15 @@ static int Draw(Context* context)
 		SDL_BindGPUGraphicsPipeline(renderPass, ScenePipeline);
 		SDL_DrawGPUIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
 		SDL_EndGPURenderPass(renderPass);
-	}
 
-	// Render the Outline Effect that samples from the Color/Depth textures
-	if (swapchainTexture != NULL)
-	{
-		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
-		colorTargetInfo.texture = swapchainTexture;
-		colorTargetInfo.clear_color = (SDL_FColor){ 0.2f, 0.5f, 0.4f, 1.0f };
-		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
-		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+		// Render the Outline Effect that samples from the Color/Depth textures
+		SDL_GPUColorTargetInfo swapchainTargetInfo = { 0 };
+		swapchainTargetInfo.texture = swapchainTexture;
+		swapchainTargetInfo.clear_color = (SDL_FColor){ 0.2f, 0.5f, 0.4f, 1.0f };
+		swapchainTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
+		swapchainTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
 
-		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
+		renderPass = SDL_BeginGPURenderPass(cmdbuf, &swapchainTargetInfo, 1, NULL);
 		SDL_BindGPUGraphicsPipeline(renderPass, EffectPipeline);
 		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){ .buffer = EffectVertexBuffer, .offset = 0 }, 1);
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = EffectIndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
