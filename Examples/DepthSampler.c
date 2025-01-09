@@ -430,6 +430,7 @@ static int Draw(Context* context)
 	}
 
 	// Render the 3D Scene (Color and Depth pass)
+	if (swapchainTexture != NULL)
 	{
 		float nearPlane = 20.0f;
 		float farPlane = 60.0f;
