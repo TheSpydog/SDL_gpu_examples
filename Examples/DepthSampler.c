@@ -484,8 +484,6 @@ static int Draw(Context* context)
 		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
 		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
 
-		SDL_PushGPUFragmentUniformData(cmdbuf, 0, (float[]) { 1.0f / SceneWidth, 1.0f / SceneHeight }, 8);
-
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
 		SDL_BindGPUGraphicsPipeline(renderPass, EffectPipeline);
 		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){ .buffer = EffectVertexBuffer, .offset = 0 }, 1);
