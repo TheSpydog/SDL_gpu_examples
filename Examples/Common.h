@@ -120,5 +120,6 @@ extern Example GenerateMipmaps_Example;
 extern Example ASTC_Example;
 extern Example Latency_Example;
 extern Example DepthSampler_Example;
+extern Example PullSpriteBatch_Example;
 
 #endif

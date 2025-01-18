@@ -35,6 +35,7 @@ static Example* Examples[] =
 	&ASTC_Example,
 	&Latency_Example,
 	&DepthSampler_Example,
+	&PullSpriteBatch_Example
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
