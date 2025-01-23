@@ -81,16 +81,16 @@ vertex main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]], c
 {
     main0_out out = {};
     uint _62 = gl_VertexIndex / 6u;
-    uint _80 = gl_VertexIndex - (_62 * 6u);
-    float _83 = DataBuffer._m0[_62].TexU + DataBuffer._m0[_62].TexW;
-    float _84 = DataBuffer._m0[_62].TexV + DataBuffer._m0[_62].TexH;
-    spvUnsafeArray<float2, 4> _89 = spvUnsafeArray<float2, 4>({ float2(DataBuffer._m0[_62].TexU, DataBuffer._m0[_62].TexV), float2(_83, DataBuffer._m0[_62].TexV), float2(DataBuffer._m0[_62].TexU, _84), float2(_83, _84) });
-    spvUnsafeArray<float2, 4> _60 = _89;
-    float _90 = cos(DataBuffer._m0[_62].Rotation);
-    float _91 = sin(DataBuffer._m0[_62].Rotation);
-    out.out_var_TEXCOORD0 = _60[_46[_80]];
+    uint _63 = gl_VertexIndex % 6u;
+    float _82 = DataBuffer._m0[_62].TexU + DataBuffer._m0[_62].TexW;
+    float _83 = DataBuffer._m0[_62].TexV + DataBuffer._m0[_62].TexH;
+    spvUnsafeArray<float2, 4> _88 = spvUnsafeArray<float2, 4>({ float2(DataBuffer._m0[_62].TexU, DataBuffer._m0[_62].TexV), float2(_82, DataBuffer._m0[_62].TexV), float2(DataBuffer._m0[_62].TexU, _83), float2(_82, _83) });
+    spvUnsafeArray<float2, 4> _60 = _88;
+    float _89 = cos(DataBuffer._m0[_62].Rotation);
+    float _90 = sin(DataBuffer._m0[_62].Rotation);
+    out.out_var_TEXCOORD0 = _60[_46[_63]];
     out.out_var_TEXCOORD1 = DataBuffer._m0[_62].Color;
-    out.gl_Position = UniformBlock.ViewProjectionMatrix * float4((float2x2(float2(_90, _91), float2(-_91, _90)) * (_51[_46[_80]] * DataBuffer._m0[_62].Scale)) + float2(DataBuffer._m0[_62].Position[0], DataBuffer._m0[_62].Position[1]), DataBuffer._m0[_62].Position[2], 1.0);
+    out.gl_Position = UniformBlock.ViewProjectionMatrix * float4((float2x2(float2(_89, _90), float2(-_90, _89)) * (_51[_46[_63]] * DataBuffer._m0[_62].Scale)) + float2(DataBuffer._m0[_62].Position[0], DataBuffer._m0[_62].Position[1]), DataBuffer._m0[_62].Position[2], 1.0);
     return out;
 }
 
