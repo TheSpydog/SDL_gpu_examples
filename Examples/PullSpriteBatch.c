@@ -234,7 +234,7 @@ static int Draw(Context* context)
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
 		{
-			int ravioli = SDL_rand(4);
+			Sint32 ravioli = SDL_rand(4);
 			dataPtr[i].x = (float)(SDL_rand(640));
 			dataPtr[i].y = (float)(SDL_rand(480));
 			dataPtr[i].z = 0;

@@ -21,7 +21,6 @@ static Example* Examples[] =
 	&CustomSampling_Example,
 	&DrawIndirect_Example,
 	&ComputeSampler_Example,
-	&ComputeSpriteBatch_Example,
 	&CopyAndReadback_Example,
 	&CopyConsistency_Example,
 	&Texture2DArray_Example,
@@ -35,6 +34,7 @@ static Example* Examples[] =
 	&ASTC_Example,
 	&Latency_Example,
 	&DepthSampler_Example,
+	&ComputeSpriteBatch_Example,
 	&PullSpriteBatch_Example
 };
 
