@@ -1,5 +1,4 @@
 #include "Common.h"
-#include <stdlib.h> // for srand
 
 static SDL_GPUGraphicsPipeline* RenderPipeline;
 static SDL_GPUSampler* Sampler;
@@ -49,7 +48,7 @@ static int Init(Context* context)
 		presentMode
 	);
 
-	srand(0);
+	SDL_srand(0);
 
 	// Create the shaders
 	SDL_GPUShader* vertShader = LoadShader(
@@ -235,11 +234,11 @@ static int Draw(Context* context)
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
 		{
-			int ravioli = rand() % 4;
-			dataPtr[i].x = (float)(rand() % 640);
-			dataPtr[i].y = (float)(rand() % 480);
+			int ravioli = SDL_rand(4);
+			dataPtr[i].x = (float)(SDL_rand(640));
+			dataPtr[i].y = (float)(SDL_rand(480));
 			dataPtr[i].z = 0;
-			dataPtr[i].rotation = ((float)rand())/(RAND_MAX/(SDL_PI_F * 2));
+			dataPtr[i].rotation = SDL_randf() * SDL_PI_F * 2;
 			dataPtr[i].w = 32;
 			dataPtr[i].h = 32;
 			dataPtr[i].tex_u = uCoords[ravioli];

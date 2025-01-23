@@ -1,5 +1,7 @@
+// This example is slightly inferior in terms of performance compared to PullSpriteBatch.c
+// Despite that, it is included as an example of a compute to graphics workflow.
+
 #include "Common.h"
-#include <stdlib.h> // for srand
 
 static SDL_GPUComputePipeline* ComputePipeline;
 static SDL_GPUGraphicsPipeline* RenderPipeline;
@@ -58,7 +60,7 @@ static int Init(Context* context)
 		presentMode
 	);
 
-	srand(0);
+	SDL_srand(0);
 
 	// Create the shaders
 	SDL_GPUShader* vertShader = LoadShader(
@@ -330,11 +332,11 @@ static int Draw(Context* context)
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
 		{
-			dataPtr[i].x = (float)(rand() % 640);
-			dataPtr[i].y = (float)(rand() % 480);
+			dataPtr[i].x = (float)(SDL_rand(640));
+			dataPtr[i].y = (float)(SDL_rand(480));
 			dataPtr[i].z = 0;
 			dataPtr[i].w = 1;
-			dataPtr[i].rotation = ((float)rand())/(RAND_MAX/(SDL_PI_F * 2));
+			dataPtr[i].rotation = SDL_randf() * SDL_PI_F * 2;
 			dataPtr[i].w = 32;
 			dataPtr[i].h = 32;
 			dataPtr[i].r = 1.0f;
