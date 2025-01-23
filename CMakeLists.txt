@@ -37,6 +37,7 @@ add_executable(SDL_gpu_examples
     Examples/ASTC.c
     Examples/Latency.c
     Examples/DepthSampler.c
+    Examples/PullSpriteBatch.c
 )
 
 target_link_libraries(SDL_gpu_examples
