@@ -1,9 +1,11 @@
 struct SpriteData
 {
-    float3 position;
-    float rotation;
-    float2 scale;
-    float4 color;
+    float3 Position;
+    float Rotation;
+    float2 Scale;
+    float2 Padding;
+    float TexU, TexV, TexW, TexH;
+    float4 Color;
 };
 
 struct Output
@@ -34,21 +36,28 @@ Output main(uint id : SV_VertexID)
     SpriteData sprite = DataBuffer[spriteIndex];
     uint vert = triangleIndices[id - spriteIndex * 6];
 
-    float c = cos(sprite.rotation);
-    float s = sin(sprite.rotation);
+    float2 texcoord[4] = {
+        {sprite.TexU,               sprite.TexV              },
+        {sprite.TexU + sprite.TexW, sprite.TexV              },
+        {sprite.TexU,               sprite.TexV + sprite.TexH},
+        {sprite.TexU + sprite.TexW, sprite.TexV + sprite.TexH}
+    };
+
+    float c = cos(sprite.Rotation);
+    float s = sin(sprite.Rotation);
 
     float2 coord = vertexPos[vert];
-    coord *= sprite.scale;
+    coord *= sprite.Scale;
     float2x2 rotation = {c, s, -s, c};
     coord = mul(coord, rotation);
 
-    float3 coordWithDepth = float3(coord + sprite.position.xy, sprite.position.z);
+    float3 coordWithDepth = float3(coord + sprite.Position.xy, sprite.Position.z);
 
     Output output;
 
     output.Position = mul(ViewProjectionMatrix, float4(coordWithDepth, 1.0f));
-    output.Texcoord = vertexPos[vert]; // replace this with sprite atlas data
-    output.Color = sprite.color;
+    output.Texcoord = texcoord[vert];
+    output.Color = sprite.Color;
 
     return output;
 }

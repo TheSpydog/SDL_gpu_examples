@@ -12,6 +12,7 @@ typedef struct SpriteInstance
 	float x, y, z;
 	float rotation;
 	float w, h, padding_a, padding_b;
+	float tex_u, tex_v, tex_w, tex_h;
 	float r, g, b, a;
 } SpriteInstance;
 
@@ -89,7 +90,7 @@ static int Init(Context* context)
 	SDL_ReleaseGPUShader(context->Device, fragShader);
 
 	// Load the image data
-	SDL_Surface *imageData = LoadImage("ravioli.bmp", 4);
+	SDL_Surface *imageData = LoadImage("ravioli_atlas.bmp", 4);
 	if (imageData == NULL)
 	{
 		SDL_Log("Could not load image data!");
@@ -187,6 +188,9 @@ static int Update(Context* context)
 	return 0;
 }
 
+static float uCoords[4] = { 0.0f, 0.5f, 0.0f, 0.5f };
+static float vCoords[4] = { 0.0f, 0.0f, 0.5f, 0.5f };
+
 static int Draw(Context* context)
 {
 	Matrix4x4 cameraMatrix = Matrix4x4_CreateOrthographicOffCenter(
@@ -222,13 +226,17 @@ static int Draw(Context* context)
 
 		for (Uint32 i = 0; i < SPRITE_COUNT; i += 1)
 		{
+			int ravioli = rand() % 4;
 			dataPtr[i].x = (float)(rand() % 640);
 			dataPtr[i].y = (float)(rand() % 480);
 			dataPtr[i].z = 0;
-			dataPtr[i].w = 1;
 			dataPtr[i].rotation = ((float)rand())/(RAND_MAX/(SDL_PI_F * 2));
 			dataPtr[i].w = 32;
 			dataPtr[i].h = 32;
+			dataPtr[i].tex_u = uCoords[ravioli];
+			dataPtr[i].tex_v = vCoords[ravioli];
+			dataPtr[i].tex_w = 0.5f;
+			dataPtr[i].tex_h = 0.5f;
 			dataPtr[i].r = 1.0f;
 			dataPtr[i].g = 1.0f;
 			dataPtr[i].b = 1.0f;

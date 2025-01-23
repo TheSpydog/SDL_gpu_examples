@@ -46,10 +46,15 @@ struct spvUnsafeArray
 
 struct SpriteData
 {
-    packed_float3 position;
-    float rotation;
-    float2 scale;
-    float4 color;
+    packed_float3 Position;
+    float Rotation;
+    float2 Scale;
+    float2 Padding;
+    float TexU;
+    float TexV;
+    float TexW;
+    float TexH;
+    float4 Color;
 };
 
 struct type_StructuredBuffer_SpriteData
@@ -62,8 +67,8 @@ struct type_UniformBlock
     float4x4 ViewProjectionMatrix;
 };
 
-constant spvUnsafeArray<uint, 6> _47 = spvUnsafeArray<uint, 6>({ 0u, 1u, 2u, 3u, 2u, 1u });
-constant spvUnsafeArray<float2, 4> _52 = spvUnsafeArray<float2, 4>({ float2(0.0), float2(1.0, 0.0), float2(0.0, 1.0), float2(1.0) });
+constant spvUnsafeArray<uint, 6> _46 = spvUnsafeArray<uint, 6>({ 0u, 1u, 2u, 3u, 2u, 1u });
+constant spvUnsafeArray<float2, 4> _51 = spvUnsafeArray<float2, 4>({ float2(0.0), float2(1.0, 0.0), float2(0.0, 1.0), float2(1.0) });
 
 struct main0_out
 {
@@ -75,13 +80,17 @@ struct main0_out
 vertex main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]], const device type_StructuredBuffer_SpriteData& DataBuffer [[buffer(1)]], uint gl_VertexIndex [[vertex_id]])
 {
     main0_out out = {};
-    uint _55 = gl_VertexIndex / 6u;
-    uint _63 = gl_VertexIndex - (_55 * 6u);
-    float _66 = cos(DataBuffer._m0[_55].rotation);
-    float _67 = sin(DataBuffer._m0[_55].rotation);
-    out.out_var_TEXCOORD0 = _52[_47[_63]];
-    out.out_var_TEXCOORD1 = DataBuffer._m0[_55].color;
-    out.gl_Position = UniformBlock.ViewProjectionMatrix * float4((float2x2(float2(_66, _67), float2(-_67, _66)) * (_52[_47[_63]] * DataBuffer._m0[_55].scale)) + float2(DataBuffer._m0[_55].position[0], DataBuffer._m0[_55].position[1]), DataBuffer._m0[_55].position[2], 1.0);
+    uint _62 = gl_VertexIndex / 6u;
+    uint _80 = gl_VertexIndex - (_62 * 6u);
+    float _83 = DataBuffer._m0[_62].TexU + DataBuffer._m0[_62].TexW;
+    float _84 = DataBuffer._m0[_62].TexV + DataBuffer._m0[_62].TexH;
+    spvUnsafeArray<float2, 4> _89 = spvUnsafeArray<float2, 4>({ float2(DataBuffer._m0[_62].TexU, DataBuffer._m0[_62].TexV), float2(_83, DataBuffer._m0[_62].TexV), float2(DataBuffer._m0[_62].TexU, _84), float2(_83, _84) });
+    spvUnsafeArray<float2, 4> _60 = _89;
+    float _90 = cos(DataBuffer._m0[_62].Rotation);
+    float _91 = sin(DataBuffer._m0[_62].Rotation);
+    out.out_var_TEXCOORD0 = _60[_46[_80]];
+    out.out_var_TEXCOORD1 = DataBuffer._m0[_62].Color;
+    out.gl_Position = UniformBlock.ViewProjectionMatrix * float4((float2x2(float2(_90, _91), float2(-_91, _90)) * (_51[_46[_80]] * DataBuffer._m0[_62].Scale)) + float2(DataBuffer._m0[_62].Position[0], DataBuffer._m0[_62].Position[1]), DataBuffer._m0[_62].Position[2], 1.0);
     return out;
 }
 
