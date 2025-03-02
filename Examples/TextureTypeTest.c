@@ -32,17 +32,32 @@ static int Init(Context* context)
 
 	// Load the images
 
-	SDL_Surface* baseMip = LoadImage("cube0.bmp", 4);
-	SDL_Surface* secondMip = LoadImage("cube0mip1.bmp", 4);
+	SDL_Surface* baseMips[4];
+	SDL_Surface* secondMips[4];
 
-	if (!baseMip || !secondMip)
-	{
-		SDL_Log("Failed to load images!");
-		return -1;
+#define LOAD_IMAGE(i) \
+	baseMips[i] = LoadImage("cube" #i ".bmp", 4); \
+	if (baseMips[i] == NULL) \
+	{ \
+		SDL_Log("Failed to load base mip for image %d", i); \
+		return -1; \
+	} \
+	secondMips[i] = LoadImage("cube" #i "mip1.bmp", 4); \
+	if (!secondMips[i]) \
+	{ \
+		SDL_Log("Failed to load second mip for image %d", i); \
+		return -1; \
 	}
 
-	int baseMipDataSize = baseMip->w * baseMip->h * 4;
-	int secondMipDataSize = secondMip->w * secondMip->h * 4;
+	LOAD_IMAGE(0);
+	LOAD_IMAGE(1);
+	LOAD_IMAGE(2);
+	LOAD_IMAGE(3);
+
+#undef LOAD_IMAGE
+
+	int baseMipDataSize = baseMips[0]->w * baseMips[0]->h * 4;
+	int secondMipDataSize = secondMips[0]->w * secondMips[0]->h * 4;
 
 	// Create the textures
 
@@ -50,8 +65,8 @@ static int Init(Context* context)
 	{
 		.type = SDL_GPU_TEXTURETYPE_2D,
 		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-		.width = 32,
-		.height = 32,
+		.width = 64,
+		.height = 64,
 		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.num_levels = 2,
 		.layer_count_or_depth = 1,
@@ -110,18 +125,22 @@ static int Init(Context* context)
 		return -1;
 	}
 
-	// Create and populate the transfer buffer
+	// Create and populate the upload transfer buffer
 
 	SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
-			.size = baseMipDataSize + secondMipDataSize
+			.size = (baseMipDataSize + secondMipDataSize) * 4
 		}
 	);
 
 	Uint8* transferPtr = SDL_MapGPUTransferBuffer(context->Device, transferBuffer, false);
-	SDL_memcpy(transferPtr, baseMip->pixels, baseMipDataSize);
-	SDL_memcpy(transferPtr + baseMipDataSize, secondMip->pixels, secondMipDataSize);
+	for (int i = 0; i < 4; i += 1)
+	{
+		Uint32 offset = i * (baseMipDataSize + secondMipDataSize);
+		SDL_memcpy(transferPtr + offset, baseMips[i]->pixels, baseMipDataSize);
+		SDL_memcpy(transferPtr + offset + baseMipDataSize, secondMips[i]->pixels, secondMipDataSize);
+	}
 	SDL_UnmapGPUTransferBuffer(context->Device, transferBuffer);
 
 	// Upload the texture data
@@ -129,36 +148,48 @@ static int Init(Context* context)
 	SDL_GPUCommandBuffer* uploadCommandBuffer = SDL_AcquireGPUCommandBuffer(context->Device);
 	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCommandBuffer);
 
-	SDL_GPUTextureTransferInfo baseMipTransferInfo = { transferBuffer, 0 };
-	SDL_GPUTextureTransferInfo secondMipTransferInfo = { transferBuffer, baseMipDataSize };
+	for (int i = 0; i < 4; i += 1)
+	{
+		Uint32 offset = i * (baseMipDataSize + secondMipDataSize);
+		Uint32 x0 = (i % 2) * 32;
+		Uint32 y0 = (i / 2) * 32;
+		Uint32 x1 = (i % 2) * 16;
+		Uint32 y1 = (i / 2) * 16;
 
-	// 2D
-	SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[0], 0, 0, 0, 0, 0, 32, 32, 1 }, false);
-	SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[0], 1, 0, 0, 0, 0, 16, 16, 1 }, false);
+		SDL_GPUTextureTransferInfo baseMipTransferInfo = { transferBuffer, offset };
+		SDL_GPUTextureTransferInfo secondMipTransferInfo = { transferBuffer, offset + baseMipDataSize };
 
-	// 2D Array
-	SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[1], 0, 1, 0, 0, 0, 32, 32, 1 }, false);
-	SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[1], 1, 1, 0, 0, 0, 16, 16, 1 }, false);
+		// 2D
+		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[0], 0, 0, x0, y0, 0, 32, 32, 1 }, false);
+		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[0], 1, 0, x1, y1, 0, 16, 16, 1 }, false);
 
-	// 3D
-	SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[2], 0, 0, 0, 0, 1, 32, 32, 1 }, false);
-	SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[2], 1, 0, 0, 0, 0, 16, 16, 1 }, false);
+		// 2D Array
+		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[1], 0, 1, x0, y0, 0, 32, 32, 1 }, false);
+		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[1], 1, 1, x1, y1, 0, 16, 16, 1 }, false);
 
-	// Cubemap
-	SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[3], 0, 1, 0, 0, 0, 32, 32, 1 }, false);
-	SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[3], 1, 1, 0, 0, 0, 16, 16, 1 }, false);
+		// 3D
+		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[2], 0, 0, x0, y0, 1, 32, 32, 1 }, false);
+		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[2], 1, 0, x1, y1, 0, 16, 16, 1 }, false);
 
-	// Cubemap Array
-	SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 0, 7, 0, 0, 0, 32, 32, 1 }, false);
-	SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 1, 7, 0, 0, 0, 16, 16, 1 }, false);
+		// Cubemap
+		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[3], 0, 1, x0, y0, 0, 32, 32, 1 }, false);
+		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[3], 1, 1, x1, y1, 0, 16, 16, 1 }, false);
+
+		// Cubemap Array
+		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 0, 7, x0, y0, 0, 32, 32, 1 }, false);
+		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 1, 7, x1, y1, 0, 16, 16, 1 }, false);
+	}
 
 	SDL_EndGPUCopyPass(copyPass);
 	SDL_SubmitGPUCommandBuffer(uploadCommandBuffer);
 
 	// Clean up
 
-	SDL_DestroySurface(baseMip);
-	SDL_DestroySurface(secondMip);
+	for (int i = 0; i < 4; i += 1)
+	{
+		SDL_DestroySurface(baseMips[i]);
+		SDL_DestroySurface(secondMips[i]);
+	}
 	SDL_ReleaseGPUTransferBuffer(context->Device, transferBuffer);
 
 	// Set up the program
@@ -232,43 +263,59 @@ static int Draw(Context* context)
 
 		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(cmdbuf);
 
-		SDL_CopyGPUTextureToTexture(
-			copyPass,
-			&(SDL_GPUTextureLocation){
-				.texture = SrcTextures[SrcTextureIndex],
-				.layer = (SrcTextureIndex == 2) ? 0 : BaseMipSlices[SrcTextureIndex],
-				.z = (SrcTextureIndex == 2) ? BaseMipSlices[SrcTextureIndex] : 0,
-			},
-			&(SDL_GPUTextureLocation){
-				.texture = DstTextures[DstTextureIndex],
-				.layer = (DstTextureIndex == 2) ? 0 : BaseMipSlices[DstTextureIndex],
-				.z = (DstTextureIndex == 2) ? BaseMipSlices[DstTextureIndex] : 0,
-			},
-			32,
-			32,
-			1,
-			false
-		);
+		for (int i = 0; i < 4; i += 1)
+		{
+			Uint32 x0 = (i % 2) * 32;
+			Uint32 y0 = (i / 2) * 32;
+			Uint32 x1 = (i % 2) * 16;
+			Uint32 y1 = (i / 2) * 16;
 
-		SDL_CopyGPUTextureToTexture(
-			copyPass,
-			&(SDL_GPUTextureLocation){
-				.texture = SrcTextures[SrcTextureIndex],
-				.mip_level = 1,
-				.layer = (SrcTextureIndex == 2) ? 0 : SecondMipSlices[SrcTextureIndex],
-				.z = (SrcTextureIndex == 2) ? SecondMipSlices[SrcTextureIndex] : 0,
-			},
-			&(SDL_GPUTextureLocation){
-				.texture = DstTextures[DstTextureIndex],
-				.mip_level = 1,
-				.layer = (DstTextureIndex == 2) ? 0 : SecondMipSlices[DstTextureIndex],
-				.z = (DstTextureIndex == 2) ? SecondMipSlices[DstTextureIndex] : 0,
-			},
-			16,
-			16,
-			1,
-			false
-		);
+			SDL_CopyGPUTextureToTexture(
+				copyPass,
+				&(SDL_GPUTextureLocation){
+					.texture = SrcTextures[SrcTextureIndex],
+					.layer = (SrcTextureIndex == 2) ? 0 : BaseMipSlices[SrcTextureIndex],
+					.x = x0,
+					.y = y0,
+					.z = (SrcTextureIndex == 2) ? BaseMipSlices[SrcTextureIndex] : 0,
+				},
+				&(SDL_GPUTextureLocation){
+					.texture = DstTextures[DstTextureIndex],
+					.layer = (DstTextureIndex == 2) ? 0 : BaseMipSlices[DstTextureIndex],
+					.x = x0,
+					.y = y0,
+					.z = (DstTextureIndex == 2) ? BaseMipSlices[DstTextureIndex] : 0,
+				},
+				32,
+				32,
+				1,
+				false
+			);
+
+			SDL_CopyGPUTextureToTexture(
+				copyPass,
+				&(SDL_GPUTextureLocation){
+					.texture = SrcTextures[SrcTextureIndex],
+					.mip_level = 1,
+					.layer = (SrcTextureIndex == 2) ? 0 : SecondMipSlices[SrcTextureIndex],
+					.x = x1,
+					.y = y1,
+					.z = (SrcTextureIndex == 2) ? SecondMipSlices[SrcTextureIndex] : 0,
+				},
+				&(SDL_GPUTextureLocation){
+					.texture = DstTextures[DstTextureIndex],
+					.mip_level = 1,
+					.layer = (DstTextureIndex == 2) ? 0 : SecondMipSlices[DstTextureIndex],
+					.x = x1,
+					.y = y1,
+					.z = (DstTextureIndex == 2) ? SecondMipSlices[DstTextureIndex] : 0,
+				},
+				16,
+				16,
+				1,
+				false
+			);
+		}
 
 		SDL_EndGPUCopyPass(copyPass);
 
@@ -277,8 +324,8 @@ static int Draw(Context* context)
 			cmdbuf,
 			&(SDL_GPUBlitInfo){
 				.source.texture = SrcTextures[SrcTextureIndex],
-				.source.w = 32,
-				.source.h = 32,
+				.source.w = 64,
+				.source.h = 64,
 				.source.layer_or_depth_plane = BaseMipSlices[SrcTextureIndex],
 				.destination.texture = swapchainTexture,
 				.destination.w = 128,
@@ -289,8 +336,8 @@ static int Draw(Context* context)
 			cmdbuf,
 			&(SDL_GPUBlitInfo){
 				.source.texture = SrcTextures[SrcTextureIndex],
-				.source.w = 16,
-				.source.h = 16,
+				.source.w = 32,
+				.source.h = 32,
 				.source.mip_level = 1,
 				.source.layer_or_depth_plane = SecondMipSlices[SrcTextureIndex],
 				.destination.texture = swapchainTexture,
@@ -305,8 +352,8 @@ static int Draw(Context* context)
 			cmdbuf,
 			&(SDL_GPUBlitInfo){
 				.source.texture = DstTextures[DstTextureIndex],
-				.source.w = 32,
-				.source.h = 32,
+				.source.w = 64,
+				.source.h = 64,
 				.source.layer_or_depth_plane = BaseMipSlices[DstTextureIndex],
 				.destination.texture = swapchainTexture,
 				.destination.x = 256,
@@ -318,8 +365,8 @@ static int Draw(Context* context)
 			cmdbuf,
 			&(SDL_GPUBlitInfo){
 				.source.texture = DstTextures[DstTextureIndex],
-				.source.w = 16,
-				.source.h = 16,
+				.source.w = 32,
+				.source.h = 32,
 				.source.mip_level = 1,
 				.source.layer_or_depth_plane = SecondMipSlices[DstTextureIndex],
 				.destination.texture = swapchainTexture,
