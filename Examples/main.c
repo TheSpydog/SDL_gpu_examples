@@ -35,7 +35,8 @@ static Example* Examples[] =
 	&Latency_Example,
 	&DepthSampler_Example,
 	&ComputeSpriteBatch_Example,
-	&PullSpriteBatch_Example
+	&PullSpriteBatch_Example,
+	&TextureTypeTest_Example,
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
