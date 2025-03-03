@@ -11,7 +11,7 @@ struct VertexOutput {
 struct UniformBlock {
     matrix_transform: mat4x4<f32>
 };
-@group(0) @binding(0) var<uniform> uniforms: UniformBlock;
+@group(1) @binding(0) var<uniform> uniforms: UniformBlock;
 
 @vertex
 fn main(in: VertexInput) -> VertexOutput {

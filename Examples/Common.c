@@ -78,7 +78,11 @@ SDL_GPUShader* LoadShader(
 	SDL_GPUShaderFormat format = SDL_GPU_SHADERFORMAT_INVALID;
 	const char *entrypoint;
 
-	if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV) {
+  if (backendFormats & SDL_GPU_SHADERFORMAT_WGSL) {
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/WGSL/%s.wgsl", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_WGSL;
+		entrypoint = "main";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV) {
 		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/SPIRV/%s.spv", BasePath, shaderFilename);
 		format = SDL_GPU_SHADERFORMAT_SPIRV;
 		entrypoint = "main";
@@ -91,7 +95,7 @@ SDL_GPUShader* LoadShader(
 		format = SDL_GPU_SHADERFORMAT_DXIL;
 		entrypoint = "main";
 	} else if (backendFormats & SDL_GPU_SHADERFORMAT_WGSL){
-		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/WGSL/%s.wgsl", BasePath, shaderFilename);
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Source/WGSL/%s.wgsl", BasePath, shaderFilename);
 		format = SDL_GPU_SHADERFORMAT_WGSL;
 		entrypoint = "main";
 	} else {
@@ -152,7 +156,11 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/DXIL/%s.dxil", BasePath, shaderFilename);
 		format = SDL_GPU_SHADERFORMAT_DXIL;
 		entrypoint = "main";
-	} else {
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_WGSL){
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Source/WGSL/%s.wgsl", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_WGSL;
+		entrypoint = "main";
+	}	else {
 		SDL_Log("%s", "Unrecognized backend shader format!");
 		return NULL;
 	}

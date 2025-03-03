@@ -1,11 +1,12 @@
 // Fragment shader
-@group(1) @binding(0) var Sampler: sampler;
-@group(1) @binding(1) var TextureInput: texture_2d<f32>;
+@group(2) @binding(0) var TextureInput: texture_2d<f32>;
+@group(2) @binding(1) var Sampler: sampler;
+
 
 struct UniformBlock {
     multiply_color: vec4<f32>
 };
-@group(2) @binding(0) var<uniform> uniforms: UniformBlock;
+@group(3) @binding(0) var<uniform> uniforms: UniformBlock;
 
 struct VertexOutput {
     @location(0) tex_coord: vec2<f32>,
