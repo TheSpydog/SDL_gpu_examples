@@ -31,12 +31,12 @@ static Example* Examples[] =
 	&BlitCube_Example,
 	&BlitMirror_Example,
 	&GenerateMipmaps_Example,
-	&ASTC_Example,
 	&Latency_Example,
 	&DepthSampler_Example,
 	&ComputeSpriteBatch_Example,
 	&PullSpriteBatch_Example,
 	&TextureTypeTest_Example,
+	&CompressedTextures_Example,
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)

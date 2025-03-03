@@ -34,11 +34,11 @@ add_executable(SDL_gpu_examples
     Examples/BlitCube.c
     Examples/BlitMirror.c
     Examples/GenerateMipmaps.c
-    Examples/ASTC.c
     Examples/Latency.c
     Examples/DepthSampler.c
     Examples/PullSpriteBatch.c
     Examples/TextureTypeTest.c
+    Examples/CompressedTextures.c
 )
 
 target_link_libraries(SDL_gpu_examples

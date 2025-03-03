@@ -222,7 +222,7 @@ float* LoadHDRImage(const char* imageFilename, int* pWidth, int* pHeight, int* p
 	return stbi_loadf(fullPath, pWidth, pHeight, pChannels, desiredChannels);
 }
 
-typedef struct AstcHeader
+typedef struct ASTCHeader
 {
 	Uint8 magic[4];
 	Uint8 blockX;
@@ -231,12 +231,49 @@ typedef struct AstcHeader
 	Uint8 dimX[3];
 	Uint8 dimY[3];
 	Uint8 dimZ[3];
-} AstcHeader;
+} ASTCHeader;
+
+typedef struct DDS_PIXELFORMAT {
+	int dwSize;
+	int dwFlags;
+	int dwFourCC;
+	int dwRGBBitCount;
+	int dwRBitMask;
+	int dwGBitMask;
+	int dwBBitMask;
+	int dwABitMask;
+} DDS_PIXELFORMAT;
+
+typedef struct DDS_HEADER {
+	int dwMagic;
+	int dwSize;
+	int dwFlags;
+	int dwHeight;
+	int dwWidth;
+	int dwPitchOrLinearSize;
+	int dwDepth;
+	int dwMipMapCount;
+	int dwReserved1[11];
+	DDS_PIXELFORMAT ddspf;
+	int dwCaps;
+	int dwCaps2;
+	int dwCaps3;
+	int dwCaps4;
+	int dwReserved2;
+} DDS_HEADER;
+
+typedef struct DDS_HEADER_DXT10 {
+  int dxgiFormat;
+  int resourceDimension;
+  unsigned int miscFlag;
+  unsigned int arraySize;
+  unsigned int miscFlags2;
+} DDS_HEADER_DXT10;
 
 void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* pImageDataLength)
 {
 	char fullPath[256];
-	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/astc/%s", BasePath, imageFilename);
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
 
 	size_t fileSize;
 	void* fileContents = SDL_LoadFile(fullPath, &fileSize);
@@ -246,7 +283,7 @@ void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* p
 		return NULL;
 	}
 
-	AstcHeader* header = (AstcHeader*)fileContents;
+	ASTCHeader* header = (ASTCHeader*)fileContents;
 	if (header->magic[0] != 0x13 || header->magic[1] != 0xAB || header->magic[2] != 0xA1 || header->magic[3] != 0x5C)
 	{
 		SDL_assert(!"Bad magic number!");
@@ -263,7 +300,40 @@ void* LoadASTCImage(const char* imageFilename, int* pWidth, int* pHeight, int* p
 	*pImageDataLength = block_count_x * block_count_y * 16;
 
 	void* data = SDL_malloc(*pImageDataLength);
-	SDL_memcpy(data, (char*)fileContents + sizeof(AstcHeader), *pImageDataLength);
+	SDL_memcpy(data, (char*)fileContents + sizeof(ASTCHeader), *pImageDataLength);
+	SDL_free(fileContents);
+
+	return data;
+}
+
+void* LoadDDSImage(const char* imageFilename, SDL_GPUTextureFormat format, int* pWidth, int* pHeight, int* pImageDataLength)
+{
+	char fullPath[256];
+	SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Images/%s", BasePath, imageFilename);
+
+	size_t fileSize;
+	void* fileContents = SDL_LoadFile(fullPath, &fileSize);
+	if (fileContents == NULL)
+	{
+		SDL_assert(!"Could not load DDS image!");
+		return NULL;
+	}
+
+	DDS_HEADER* header = (DDS_HEADER*)fileContents;
+	if (header->dwMagic != 0x20534444)
+	{
+		SDL_assert(!"Bad magic number!");
+		return NULL;
+	}
+
+	bool hasDX10Header = header->ddspf.dwFlags == 0x4 && header->ddspf.dwFourCC == 0x30315844;
+
+	*pWidth = header->dwWidth;
+	*pHeight = header->dwHeight;
+	*pImageDataLength = header->dwPitchOrLinearSize;
+
+	void* data = SDL_malloc(*pImageDataLength);
+	SDL_memcpy(data, (char*)fileContents + sizeof(DDS_HEADER) + (hasDX10Header ? sizeof(DDS_HEADER_DXT10) : 0), *pImageDataLength);
 	SDL_free(fileContents);
 
 	return data;
