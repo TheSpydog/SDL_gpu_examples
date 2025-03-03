@@ -10,8 +10,8 @@
 int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 {
 	context->Device = SDL_CreateGPUDevice(
-		SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL,
-		false,
+		SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_WGSL,
+		true,
 		NULL);
 
 	if (context->Device == NULL)
@@ -26,7 +26,7 @@ int CommonInit(Context* context, SDL_WindowFlags windowFlags)
 		SDL_Log("CreateWindow failed: %s", SDL_GetError());
 		return -1;
 	}
-
+	
 	if (!SDL_ClaimWindowForGPUDevice(context->Device, context->Window))
 	{
 		SDL_Log("GPUClaimWindow failed");
@@ -89,6 +89,10 @@ SDL_GPUShader* LoadShader(
 	} else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL) {
 		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Compiled/DXIL/%s.dxil", BasePath, shaderFilename);
 		format = SDL_GPU_SHADERFORMAT_DXIL;
+		entrypoint = "main";
+	} else if (backendFormats & SDL_GPU_SHADERFORMAT_WGSL){
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/WGSL/%s.wgsl", BasePath, shaderFilename);
+		format = SDL_GPU_SHADERFORMAT_WGSL;
 		entrypoint = "main";
 	} else {
 		SDL_Log("%s", "Unrecognized backend shader format!");
