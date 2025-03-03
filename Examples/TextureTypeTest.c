@@ -127,26 +127,35 @@ static int Init(Context* context)
 
 	// Create and populate the upload transfer buffer
 
-	SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(
+	SDL_GPUTransferBuffer* uploadTransferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.size = (baseMipDataSize + secondMipDataSize) * 4
 		}
 	);
 
-	Uint8* transferPtr = SDL_MapGPUTransferBuffer(context->Device, transferBuffer, false);
+	Uint8* transferPtr = SDL_MapGPUTransferBuffer(context->Device, uploadTransferBuffer, false);
 	for (int i = 0; i < 4; i += 1)
 	{
 		Uint32 offset = i * (baseMipDataSize + secondMipDataSize);
 		SDL_memcpy(transferPtr + offset, baseMips[i]->pixels, baseMipDataSize);
 		SDL_memcpy(transferPtr + offset + baseMipDataSize, secondMips[i]->pixels, secondMipDataSize);
 	}
-	SDL_UnmapGPUTransferBuffer(context->Device, transferBuffer);
+	SDL_UnmapGPUTransferBuffer(context->Device, uploadTransferBuffer);
+
+	// Create the download transfer buffer
+
+	SDL_GPUTransferBuffer* downloadTransferBuffer = SDL_CreateGPUTransferBuffer(
+		context->Device,
+		&(SDL_GPUTransferBufferCreateInfo) {
+			.size = (baseMipDataSize + secondMipDataSize) * 5
+		}
+	);
 
 	// Upload the texture data
 
-	SDL_GPUCommandBuffer* uploadCommandBuffer = SDL_AcquireGPUCommandBuffer(context->Device);
-	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCommandBuffer);
+	SDL_GPUCommandBuffer* commandBuffer = SDL_AcquireGPUCommandBuffer(context->Device);
+	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(commandBuffer);
 
 	for (int i = 0; i < 4; i += 1)
 	{
@@ -156,8 +165,8 @@ static int Init(Context* context)
 		Uint32 x1 = (i % 2) * 16;
 		Uint32 y1 = (i / 2) * 16;
 
-		SDL_GPUTextureTransferInfo baseMipTransferInfo = { transferBuffer, offset };
-		SDL_GPUTextureTransferInfo secondMipTransferInfo = { transferBuffer, offset + baseMipDataSize };
+		SDL_GPUTextureTransferInfo baseMipTransferInfo = { uploadTransferBuffer, offset };
+		SDL_GPUTextureTransferInfo secondMipTransferInfo = { uploadTransferBuffer, offset + baseMipDataSize };
 
 		// 2D
 		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[0], 0, 0, x0, y0, 0, 32, 32, 1 }, false);
@@ -178,10 +187,74 @@ static int Init(Context* context)
 		// Cubemap Array
 		SDL_UploadToGPUTexture(copyPass, &baseMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 0, 7, x0, y0, 0, 32, 32, 1 }, false);
 		SDL_UploadToGPUTexture(copyPass, &secondMipTransferInfo, &(SDL_GPUTextureRegion){ SrcTextures[4], 1, 7, x1, y1, 0, 16, 16, 1 }, false);
+
+		// On the final section, we'll download to sanity-check that the values are what we'd expect
+		if (i == 3)
+		{
+			Uint32 downloadOffset = 0;
+
+			// 2D
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[0], 0, 0, x0, y0, 0, 32, 32, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset });
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[0], 1, 0, x1, y1, 0, 16, 16, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset + baseMipDataSize });
+			downloadOffset += baseMipDataSize + secondMipDataSize;
+
+			// 2D Array
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[1], 0, 1, x0, y0, 0, 32, 32, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset });
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[1], 1, 1, x1, y1, 0, 16, 16, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset + baseMipDataSize });
+			downloadOffset += baseMipDataSize + secondMipDataSize;
+
+			// 3D
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[2], 0, 0, x0, y0, 1, 32, 32, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset });
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[2], 1, 0, x1, y1, 0, 16, 16, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset + baseMipDataSize });
+			downloadOffset += baseMipDataSize + secondMipDataSize;
+
+			// Cubemap
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[3], 0, 1, x0, y0, 0, 32, 32, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset });
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[3], 1, 1, x1, y1, 0, 16, 16, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset + baseMipDataSize });
+			downloadOffset += baseMipDataSize + secondMipDataSize;
+
+			// Cubemap Array
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[4], 0, 7, x0, y0, 0, 32, 32, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset });
+			SDL_DownloadFromGPUTexture(copyPass, &(SDL_GPUTextureRegion){ SrcTextures[4], 1, 7, x1, y1, 0, 16, 16, 1 }, &(SDL_GPUTextureTransferInfo){ downloadTransferBuffer, downloadOffset + baseMipDataSize });
+		}
 	}
 
 	SDL_EndGPUCopyPass(copyPass);
-	SDL_SubmitGPUCommandBuffer(uploadCommandBuffer);
+	SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(commandBuffer);
+
+	// Readback
+
+	if (!SDL_WaitForGPUFences(context->Device, true, &fence, 1))
+	{
+		SDL_Log("WaitForGPUFences failed: %s", SDL_GetError());
+		return -1;
+	}
+	SDL_ReleaseGPUFence(context->Device, fence);
+
+	Uint8* downloadPtr = SDL_MapGPUTransferBuffer(context->Device, downloadTransferBuffer, false);
+	for (int i = 0; i < 5; i += 1)
+	{
+		Uint32 offset = i * (baseMipDataSize + secondMipDataSize);
+
+		if (SDL_memcmp(downloadPtr + offset, baseMips[3]->pixels, baseMipDataSize) != 0)
+		{
+			SDL_Log("FAILURE: Download test for the %s base mip", TextureTypeNames[i]);
+		}
+		else
+		{
+			SDL_Log("SUCCESS: Download test for the %s base mip", TextureTypeNames[i]);
+		}
+
+		if (SDL_memcmp(downloadPtr + offset + baseMipDataSize, secondMips[3]->pixels, secondMipDataSize) != 0)
+		{
+			SDL_Log("FAILURE: Download test for the %s second mip", TextureTypeNames[i]);
+		}
+		else
+		{
+			SDL_Log("SUCCESS: Download test for the %s second mip", TextureTypeNames[i]);
+		}
+	}
+	SDL_UnmapGPUTransferBuffer(context->Device, downloadTransferBuffer);
 
 	// Clean up
 
@@ -190,7 +263,8 @@ static int Init(Context* context)
 		SDL_DestroySurface(baseMips[i]);
 		SDL_DestroySurface(secondMips[i]);
 	}
-	SDL_ReleaseGPUTransferBuffer(context->Device, transferBuffer);
+	SDL_ReleaseGPUTransferBuffer(context->Device, uploadTransferBuffer);
+	SDL_ReleaseGPUTransferBuffer(context->Device, downloadTransferBuffer);
 
 	// Set up the program
 
