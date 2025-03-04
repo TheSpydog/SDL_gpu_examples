@@ -165,7 +165,11 @@ int main(int argc, char **argv)
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
-				if (evt.key.key == SDLK_D)
+				if (evt.key.key == SDLK_Q)
+				{
+					quit = true;
+				}
+				else if (evt.key.key == SDLK_D)
 				{
 					gotoExampleIndex = exampleIndex + 1;
 					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
