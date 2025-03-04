@@ -3,8 +3,8 @@
 #define BC_IMAGE_COUNT 12
 #define ASTC_IMAGE_COUNT 14
 
-static SDL_GPUGraphicsPipeline* Pipeline;
-static SDL_GPUTexture* Textures[BC_IMAGE_COUNT + ASTC_IMAGE_COUNT];
+static SDL_GPUTexture* SrcTextures[BC_IMAGE_COUNT + ASTC_IMAGE_COUNT];
+static SDL_GPUTexture* DstTextures[BC_IMAGE_COUNT + ASTC_IMAGE_COUNT];
 
 static SDL_GPUTextureFormat TextureFormats[BC_IMAGE_COUNT + ASTC_IMAGE_COUNT] =
 {
@@ -81,15 +81,20 @@ static int Init(Context* context)
 		return result;
 	}
 
+	SDL_GPUTransferBuffer* downloadTransferBuffer = NULL;
+	Uint8* firstTextureData = NULL;
+	size_t firstTextureDataLength = 0;
+
 	SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
 	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
 
 	// Upload texture data
-	for (int i = 0; i < SDL_arraysize(Textures); i += 1)
+	for (int i = 0; i < SDL_arraysize(SrcTextures); i += 1)
 	{
 		if (!SDL_GPUTextureSupportsFormat(context->Device, TextureFormats[i], SDL_GPU_TEXTURETYPE_2D, SDL_GPU_TEXTUREUSAGE_SAMPLER))
 		{
-			Textures[i] = NULL;
+			SrcTextures[i] = NULL;
+			DstTextures[i] = NULL;
 			continue;
 		}
 
@@ -111,18 +116,28 @@ static int Init(Context* context)
 		}
 
 		// Create the texture
-		Textures[i] = SDL_CreateGPUTexture(
-			context->Device,
-			&(SDL_GPUTextureCreateInfo) {
-				.format = TextureFormats[i],
-				.width = imageWidth,
-				.height = imageHeight,
-				.layer_count_or_depth = 1,
-				.type = SDL_GPU_TEXTURETYPE_2D,
-				.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-				.num_levels = 1,
-			}
-		);
+		SDL_GPUTextureCreateInfo createInfo =
+		{
+			.format = TextureFormats[i],
+			.width = imageWidth,
+			.height = imageHeight,
+			.layer_count_or_depth = 1,
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+			.num_levels = 1,
+		};
+		SrcTextures[i] = SDL_CreateGPUTexture(context->Device, &createInfo);
+		if (!SrcTextures[i])
+		{
+			SDL_Log("Failed to create texture: %s", SDL_GetError());
+			return -1;
+		}
+		DstTextures[i] = SDL_CreateGPUTexture(context->Device, &createInfo);
+		if (!DstTextures[i])
+		{
+			SDL_Log("Failed to create texture: %s", SDL_GetError());
+			return -1;
+		}
 
 		// Set up texture transfer data
 		SDL_GPUTransferBuffer* textureTransferBuffer = SDL_CreateGPUTransferBuffer(
@@ -141,6 +156,7 @@ static int Init(Context* context)
 		SDL_memcpy(textureTransferPtr, imageData, imageDataLength);
 		SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
 
+		// Upload the texture data
 		SDL_UploadToGPUTexture(
 			copyPass,
 			&(SDL_GPUTextureTransferInfo) {
@@ -148,7 +164,7 @@ static int Init(Context* context)
 				.offset = 0, /* Zeros out the rest */
 			},
 			&(SDL_GPUTextureRegion){
-				.texture = Textures[i],
+				.texture = SrcTextures[i],
 				.w = imageWidth,
 				.h = imageHeight,
 				.d = 1
@@ -156,11 +172,72 @@ static int Init(Context* context)
 			false
 		);
 
+		SDL_CopyGPUTextureToTexture(
+			copyPass,
+			&(SDL_GPUTextureLocation){
+				.texture = SrcTextures[i]
+			},
+			&(SDL_GPUTextureLocation){
+				.texture = DstTextures[i]
+			},
+			256,
+			256,
+			1,
+			false
+		);
+
 		SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
+
+		// Testing if downloads work...
+		if (i == 0)
+		{
+			downloadTransferBuffer = SDL_CreateGPUTransferBuffer(
+				context->Device,
+				&(SDL_GPUTransferBufferCreateInfo){
+					.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
+					.size = imageDataLength
+				}
+			);
+
+			SDL_DownloadFromGPUTexture(
+				copyPass,
+				&(SDL_GPUTextureRegion){
+					.texture = SrcTextures[i],
+					.w = 256,
+					.h = 256,
+					.d = 1,
+				},
+				&(SDL_GPUTextureTransferInfo){
+					.transfer_buffer = downloadTransferBuffer
+				}
+			);
+
+			firstTextureData = SDL_malloc(imageDataLength);
+			firstTextureDataLength = imageDataLength;
+			SDL_memcpy(firstTextureData, imageData, imageDataLength);
+		}
+
+		SDL_free(imageData);
 	}
 
 	SDL_EndGPUCopyPass(copyPass);
-	SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
+	SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(uploadCmdBuf);
+
+	// Read the downloaded data
+	SDL_WaitForGPUFences(context->Device, true, &fence, 1);
+	SDL_ReleaseGPUFence(context->Device, fence);
+	Uint8* downloadPtr = SDL_MapGPUTransferBuffer(context->Device, downloadTransferBuffer, false);
+	if (SDL_memcmp(downloadPtr, firstTextureData, firstTextureDataLength) == 0)
+	{
+		SDL_Log("Success: Downloaded bytes match original texture bytes!");
+	}
+	else
+	{
+		SDL_Log("Failure: Downloaded bytes match original texture bytes!");
+	}
+	SDL_UnmapGPUTransferBuffer(context->Device, downloadTransferBuffer);
+	SDL_ReleaseGPUTransferBuffer(context->Device, downloadTransferBuffer);
+	SDL_free(firstTextureData);
 
 	// Finally, print instructions!
 	SDL_Log("Press Left/Right to switch between textures");
@@ -177,20 +254,20 @@ static int Update(Context* context)
 		CurrentTextureIndex -= 1;
 		if (CurrentTextureIndex < 0)
 		{
-			CurrentTextureIndex = SDL_arraysize(Textures) - 1;
+			CurrentTextureIndex = SDL_arraysize(SrcTextures) - 1;
 		}
 		changed = true;
 	}
 
 	if (context->RightPressed)
 	{
-		CurrentTextureIndex = (CurrentTextureIndex + 1) % SDL_arraysize(Textures);
+		CurrentTextureIndex = (CurrentTextureIndex + 1) % SDL_arraysize(SrcTextures);
 		changed = true;
 	}
 
 	if (changed)
 	{
-		if (Textures[CurrentTextureIndex] == NULL)
+		if (SrcTextures[CurrentTextureIndex] == NULL)
 		{
 			SDL_Log("Unsupported texture format: %s", TextureNames[CurrentTextureIndex]);
 		}
@@ -220,17 +297,29 @@ static int Draw(Context* context)
 
 	if (swapchainTexture != NULL)
 	{
-		if (Textures[CurrentTextureIndex] != NULL)
+		if (SrcTextures[CurrentTextureIndex] != NULL)
 		{
 			SDL_BlitGPUTexture(
 				cmdbuf,
 				&(SDL_GPUBlitInfo){
 					.clear_color = (SDL_FColor){ 1.0f, 1.0f, 1.0f, 1.0f },
 					.load_op = SDL_GPU_LOADOP_CLEAR,
-					.source.texture = Textures[CurrentTextureIndex],
+					.source.texture = SrcTextures[CurrentTextureIndex],
 					.source.w = 256,
 					.source.h = 256,
 					.destination.texture = swapchainTexture,
+					.destination.w = 256,
+					.destination.h = 256,
+				}
+			);
+			SDL_BlitGPUTexture(
+				cmdbuf,
+				&(SDL_GPUBlitInfo){
+					.source.texture = DstTextures[CurrentTextureIndex],
+					.source.w = 256,
+					.source.h = 256,
+					.destination.texture = swapchainTexture,
+					.destination.x = 512,
 					.destination.w = 256,
 					.destination.h = 256,
 				}
@@ -259,10 +348,12 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	for (int i = 0; i < SDL_arraysize(Textures); i += 1)
+	for (int i = 0; i < SDL_arraysize(SrcTextures); i += 1)
 	{
-		SDL_ReleaseGPUTexture(context->Device, Textures[i]);
-		Textures[i] = NULL;
+		SDL_ReleaseGPUTexture(context->Device, SrcTextures[i]);
+		SDL_ReleaseGPUTexture(context->Device, DstTextures[i]);
+		SrcTextures[i] = NULL;
+		DstTextures[i] = NULL;
 	}
 
 	CurrentTextureIndex = 0;
