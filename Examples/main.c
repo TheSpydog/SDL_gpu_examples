@@ -165,7 +165,13 @@ int main(int argc, char **argv)
 			}
 			else if (evt.type == SDL_EVENT_KEY_DOWN)
 			{
-				if (evt.key.key == SDLK_D)
+				if (evt.key.key == SDLK_Q)
+				{
+					quit = true;
+          Examples[exampleIndex]->Quit(&context);
+				  SDL_zero(context);
+				}
+				else if (evt.key.key == SDLK_D)
 				{
 					gotoExampleIndex = exampleIndex + 1;
 					if (gotoExampleIndex >= SDL_arraysize(Examples)) {
@@ -258,6 +264,8 @@ int main(int argc, char **argv)
 		float newTime = SDL_GetTicks() / 1000.0f;
 		context.DeltaTime = newTime - lastTime;
 		lastTime = newTime;
+		SDL_Log("DT: %f", context.DeltaTime);
+		SDL_Log("FPS: %.4f", 1 / context.DeltaTime);
 
 		if (Examples[exampleIndex]->Update(&context) < 0)
 		{

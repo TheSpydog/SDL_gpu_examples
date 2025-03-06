@@ -114,7 +114,7 @@ static int Init(Context* context)
 		false
 	);
 
-    transferData[0] = (PositionTextureVertex) { -1, -1, 0, 0, 0 };
+  transferData[0] = (PositionTextureVertex) { -1, -1, 0, 0, 0 };
 	transferData[1] = (PositionTextureVertex) {  1, -1, 0, 1, 0 };
 	transferData[2] = (PositionTextureVertex) {  1,  1, 0, 1, 1 };
 	transferData[3] = (PositionTextureVertex) { -1, -1, 0, 0, 0 };
@@ -123,7 +123,7 @@ static int Init(Context* context)
 
 	SDL_UnmapGPUTransferBuffer(context->Device, transferBuffer);
 
-	SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
+  SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
 	SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(cmdBuf);
 
 	SDL_UploadToGPUBuffer(
@@ -141,8 +141,7 @@ static int Init(Context* context)
 	);
 
 	SDL_EndGPUCopyPass(copyPass);
-
-    SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
+  SDL_GPUComputePass* computePass = SDL_BeginGPUComputePass(
         cmdBuf,
         (SDL_GPUStorageTextureReadWriteBinding[]){{
             .texture = Texture
@@ -150,18 +149,17 @@ static int Init(Context* context)
         1,
         NULL,
         0
-    );
+  );
 
-    SDL_BindGPUComputePipeline(computePass, fillTexturePipeline);
-    SDL_DispatchGPUCompute(computePass, w / 8, h / 8, 1);
-    SDL_EndGPUComputePass(computePass);
-
+  SDL_BindGPUComputePipeline(computePass, fillTexturePipeline);
+  SDL_DispatchGPUCompute(computePass, w / 8, h / 8, 1);
+  SDL_EndGPUComputePass(computePass);
 	SDL_SubmitGPUCommandBuffer(cmdBuf);
 
-    SDL_ReleaseGPUComputePipeline(context->Device, fillTexturePipeline);
+  SDL_ReleaseGPUComputePipeline(context->Device, fillTexturePipeline);
 	SDL_ReleaseGPUTransferBuffer(context->Device, transferBuffer);
 
-    return 0;
+  return 0;
 }
 
 static int Update(Context* context)
