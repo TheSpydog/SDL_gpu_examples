@@ -157,7 +157,7 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 		format = SDL_GPU_SHADERFORMAT_DXIL;
 		entrypoint = "main";
 	} else if (backendFormats & SDL_GPU_SHADERFORMAT_WGSL){
-		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/Source/WGSL/%s.wgsl", BasePath, shaderFilename);
+		SDL_snprintf(fullPath, sizeof(fullPath), "%sContent/Shaders/WGSL/%s.wgsl", BasePath, shaderFilename);
 		format = SDL_GPU_SHADERFORMAT_WGSL;
 		entrypoint = "main";
 	}	else {

@@ -11,11 +11,12 @@ static int Init(Context* context)
     }
 
     SDL_GPUTextureFormat swapchainFormat = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window);
-
+    SDL_GPUTextureType type = SDL_GPU_TEXTURETYPE_2D_ARRAY;
+        
     Texture3D = SDL_CreateGPUTexture(
         context->Device,
         &(SDL_GPUTextureCreateInfo){
-            .type = SDL_GPU_TEXTURETYPE_3D,
+            .type = type,
             .format = swapchainFormat,
             .width = 64,
             .height = 64,
