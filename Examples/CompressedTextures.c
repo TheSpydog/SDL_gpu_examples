@@ -319,7 +319,7 @@ static int Draw(Context* context)
 					.source.w = 256,
 					.source.h = 256,
 					.destination.texture = swapchainTexture,
-					.destination.x = 512,
+					.destination.x = 384,
 					.destination.w = 256,
 					.destination.h = 256,
 				}
