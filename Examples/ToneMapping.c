@@ -131,7 +131,7 @@ static int Init(Context* context)
 
 	TransferTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.type = SDL_GPU_TEXTURETYPE_2D,
-		.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
 		.width = w,
 		.height = h,
 		.layer_count_or_depth = 1,

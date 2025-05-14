@@ -16,8 +16,8 @@ struct main0_in
 fragment main0_out main0(main0_in in [[stage_in]], texture2d_array<float> Texture [[texture(0)]], sampler Sampler [[sampler(0)]])
 {
     main0_out out = {};
-    float3 _35 = float3(in.in_var_TEXCOORD0, float(uint(int(in.in_var_TEXCOORD0.y > 0.5))));
-    out.out_var_SV_Target0 = Texture.sample(Sampler, _35.xy, uint(rint(_35.z)));
+    float3 _38 = float3(in.in_var_TEXCOORD0, float(uint(int(in.in_var_TEXCOORD0.y > 0.5))));
+    out.out_var_SV_Target0 = Texture.sample(Sampler, _38.xy, uint(rint(_38.z)));
     return out;
 }
 

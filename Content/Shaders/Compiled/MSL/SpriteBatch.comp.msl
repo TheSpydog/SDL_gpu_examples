@@ -35,34 +35,34 @@ struct type_RWStructuredBuffer_SpriteVertex
 
 kernel void main0(const device type_StructuredBuffer_SpriteComputeData& ComputeBuffer [[buffer(0)]], device type_RWStructuredBuffer_SpriteVertex& VertexBuffer [[buffer(1)]], uint3 gl_GlobalInvocationID [[thread_position_in_grid]])
 {
-    float3 _54 = float3(ComputeBuffer._m0[gl_GlobalInvocationID.x].Position);
-    float _56 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Rotation;
-    float2 _58 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Scale;
-    float _60 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexU;
-    float _62 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexV;
-    float _64 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexW;
-    float _66 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexH;
-    float4 _68 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Color;
-    float _74 = cos(_56);
-    float _75 = sin(_56);
-    float4x4 _86 = (float4x4(float4(1.0, 0.0, 0.0, 0.0), float4(0.0, 1.0, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(_54, 1.0)) * float4x4(float4(_74, _75, 0.0, 0.0), float4(-_75, _74, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0))) * float4x4(float4(_58.x, 0.0, 0.0, 0.0), float4(0.0, _58.y, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0));
-    uint _88 = gl_GlobalInvocationID.x * 4u;
-    VertexBuffer._m0[_88].Position = _86 * float4(0.0, 0.0, 0.0, 1.0);
-    uint _91 = _88 + 1u;
-    VertexBuffer._m0[_91].Position = _86 * float4(1.0, 0.0, 0.0, 1.0);
-    uint _94 = _88 + 2u;
-    VertexBuffer._m0[_94].Position = _86 * float4(0.0, 1.0, 0.0, 1.0);
-    uint _97 = _88 + 3u;
-    VertexBuffer._m0[_97].Position = _86 * float4(1.0, 1.0, 0.0, 1.0);
-    VertexBuffer._m0[_88].Texcoord = float2(_60, _62);
-    float _101 = _60 + _64;
-    VertexBuffer._m0[_91].Texcoord = float2(_101, _62);
-    float _104 = _62 + _66;
-    VertexBuffer._m0[_94].Texcoord = float2(_60, _104);
-    VertexBuffer._m0[_97].Texcoord = float2(_101, _104);
-    VertexBuffer._m0[_88].Color = _68;
-    VertexBuffer._m0[_91].Color = _68;
-    VertexBuffer._m0[_94].Color = _68;
-    VertexBuffer._m0[_97].Color = _68;
+    float3 _55 = float3(ComputeBuffer._m0[gl_GlobalInvocationID.x].Position);
+    float _57 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Rotation;
+    float2 _59 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Scale;
+    float _61 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexU;
+    float _63 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexV;
+    float _65 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexW;
+    float _67 = ComputeBuffer._m0[gl_GlobalInvocationID.x].TexH;
+    float4 _69 = ComputeBuffer._m0[gl_GlobalInvocationID.x].Color;
+    float _75 = cos(_57);
+    float _76 = sin(_57);
+    float4x4 _87 = (float4x4(float4(1.0, 0.0, 0.0, 0.0), float4(0.0, 1.0, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(_55, 1.0)) * float4x4(float4(_75, _76, 0.0, 0.0), float4(-_76, _75, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0))) * float4x4(float4(_59.x, 0.0, 0.0, 0.0), float4(0.0, _59.y, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0));
+    uint _89 = gl_GlobalInvocationID.x * 4u;
+    VertexBuffer._m0[_89].Position = _87 * float4(0.0, 0.0, 0.0, 1.0);
+    uint _92 = _89 + 1u;
+    VertexBuffer._m0[_92].Position = _87 * float4(1.0, 0.0, 0.0, 1.0);
+    uint _95 = _89 + 2u;
+    VertexBuffer._m0[_95].Position = _87 * float4(0.0, 1.0, 0.0, 1.0);
+    uint _98 = _89 + 3u;
+    VertexBuffer._m0[_98].Position = _87 * float4(1.0, 1.0, 0.0, 1.0);
+    VertexBuffer._m0[_89].Texcoord = float2(_61, _63);
+    float _102 = _61 + _65;
+    VertexBuffer._m0[_92].Texcoord = float2(_102, _63);
+    float _105 = _63 + _67;
+    VertexBuffer._m0[_95].Texcoord = float2(_61, _105);
+    VertexBuffer._m0[_98].Texcoord = float2(_102, _105);
+    VertexBuffer._m0[_89].Color = _69;
+    VertexBuffer._m0[_92].Color = _69;
+    VertexBuffer._m0[_95].Color = _69;
+    VertexBuffer._m0[_98].Color = _69;
 }
 

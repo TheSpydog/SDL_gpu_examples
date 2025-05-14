@@ -1,4 +1,5 @@
 Texture2D<float4> inImage : register(t0, space0);
+[[vk::image_format("rgba16f")]]
 RWTexture2D<float4> outImage : register(u0, space1);
 
 float3 reinhard(float3 v)

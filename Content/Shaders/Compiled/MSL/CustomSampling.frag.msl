@@ -21,25 +21,25 @@ struct main0_in
 fragment main0_out main0(main0_in in [[stage_in]], constant type_UBO& UBO [[buffer(0)]], texture2d<float> Texture [[texture(0)]])
 {
     main0_out out = {};
-    float4 _74;
+    float4 _79;
     do
     {
         uint2 _37 = uint2(Texture.get_width(), Texture.get_height());
         int2 _44 = int2(float2(float(_37.x), float(_37.y)) * in.in_var_TEXCOORD0);
-        float4 _46 = Texture.read(uint2(uint2(_44)), 0u);
+        float4 _47 = Texture.read(uint2(uint2(_44)), 0u);
         if (UBO.mode == 0)
         {
-            _74 = _46;
+            _79 = _47;
             break;
         }
         else
         {
-            _74 = ((((_46 * 0.20000000298023223876953125) + (Texture.read(uint2(uint2(_44 + int2(0, 1))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(-1, 0))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(0, -1))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(1, 0))), 0u) * 0.20000000298023223876953125);
+            _79 = ((((_47 * 0.20000000298023223876953125) + (Texture.read(uint2(uint2(_44 + int2(0, 1))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(-1, 0))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(0, -1))), 0u) * 0.20000000298023223876953125)) + (Texture.read(uint2(uint2(_44 + int2(1, 0))), 0u) * 0.20000000298023223876953125);
             break;
         }
         break; // unreachable workaround
     } while(false);
-    out.out_var_SV_Target0 = _74;
+    out.out_var_SV_Target0 = _79;
     return out;
 }
 

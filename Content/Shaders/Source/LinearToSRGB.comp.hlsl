@@ -1,5 +1,6 @@
 Texture2D<float4> InImage : register(t0, space0);
-RWTexture2D<unorm float4> OutImage : register(u0, space1);
+[[vk::image_format("rgba8")]]
+RWTexture2D<float4> OutImage : register(u0, space1);
 
 float3 LinearToSRGB(float3 color)
 {
