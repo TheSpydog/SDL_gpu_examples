@@ -1,4 +1,4 @@
-rem Requires shadercross CLI installed from SDL_shadercross
+:: Requires shadercross CLI installed from SDL_shadercross
 @echo off
 setlocal enabledelayedexpansion
 
