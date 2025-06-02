@@ -5,7 +5,9 @@ cbuffer UBO : register(b0, space2)
 
 Texture2D<float4> inImage : register(t0, space0);
 SamplerState inImageSampler : register(s0, space0);
-RWTexture2D<unorm float4> outImage : register(u0, space1);
+
+[[vk::image_format("rgba8")]]
+RWTexture2D<float4> outImage : register(u0, space1);
 
 [numthreads(8, 8, 1)]
 void main(uint3 GlobalInvocationID : SV_DispatchThreadID)
