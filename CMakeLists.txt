@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
 project(SDL_gpu_examples)
-find_package(SDL3 REQUIRED)
+find_package(SDL3 CONFIG QUIET)
+
+if(NOT SDL3_FOUND)
+    message(STATUS "SDL3 not found. Building it from source.")
+    include(FetchContent)
+    FetchContent_Declare(
+            SDL
+            GIT_REPOSITORY https://github.com/libsdl-org/SDL
+            GIT_TAG        "release-3.2.16"
+    )
+    FetchContent_MakeAvailable(SDL)
+else()
+    find_package(SDL3 REQUIRED)
+endif()
 
 add_executable(SDL_gpu_examples
     Examples/main.c
