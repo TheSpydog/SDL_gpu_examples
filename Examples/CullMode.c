@@ -2,12 +2,12 @@
 
 static const char* ModeNames[] =
 {
-	"CW_CullNone",
-	"CW_CullFront",
-	"CW_CullBack",
 	"CCW_CullNone",
 	"CCW_CullFront",
-	"CCW_CullBack"
+	"CCW_CullBack",
+	"CW_CullNone",
+	"CW_CullFront",
+	"CW_CullBack"
 };
 
 static SDL_GPUGraphicsPipeline* Pipelines[SDL_arraysize(ModeNames)];
