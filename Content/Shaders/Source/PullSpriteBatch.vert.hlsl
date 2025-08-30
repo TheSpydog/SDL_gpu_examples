@@ -15,6 +15,10 @@ struct Output
     float4 Position : SV_Position;
 };
 
+// WARNING: StructuredBuffers are not natively supported by SDL's GPU API.
+// They will work with SDL_shadercross because it does special processing to
+// support them, but not with direct compilation via dxc.
+// See https://github.com/libsdl-org/SDL/issues/12200 for details.
 StructuredBuffer<SpriteData> DataBuffer : register(t0, space0);
 
 cbuffer UniformBlock : register(b0, space1)
