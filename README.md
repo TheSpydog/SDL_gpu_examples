@@ -7,6 +7,7 @@ cd SDL
 mkdir build
 cd build
 cmake ..
+make
 
 cd ../..
 git clone https://github.com/TheSpydog/SDL_gpu_examples
