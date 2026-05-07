@@ -30,7 +30,7 @@ static int Init(Context* context)
 			return -1;
 		}
 
-        SDL_GPUShader* sceneFragmentShader = LoadShader(context->Device, "SolidColor.frag", 0, 0, 0, 0);
+        SDL_GPUShader* sceneFragmentShader = LoadShader(context->Device, "Empty.frag", 0, 0, 0, 0);
         if (sceneFragmentShader == NULL)
         {
             SDL_Log("Failed to create fragment shader!");
