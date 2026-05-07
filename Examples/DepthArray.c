@@ -152,7 +152,7 @@ static int Init(Context* context)
 		SceneDepthTexture = SDL_CreateGPUTexture(
 			context->Device,
 			&(SDL_GPUTextureCreateInfo) {
-				.type = SDL_GPU_TEXTURETYPE_2D,
+				.type = SDL_GPU_TEXTURETYPE_2D_ARRAY,
 				.width = SceneWidth,
 				.height = SceneHeight,
 				.layer_count_or_depth = 2,
@@ -358,7 +358,6 @@ static int Draw(Context* context)
 		SDL_GPUDepthStencilTargetInfo depthStencilTargetInfo = { 0 };
 		depthStencilTargetInfo.texture = SceneDepthTexture;
         depthStencilTargetInfo.layer = 0;
-		depthStencilTargetInfo.cycle = true;
 		depthStencilTargetInfo.clear_depth = 1;
 		depthStencilTargetInfo.clear_stencil = 0;
 		depthStencilTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
@@ -380,8 +379,6 @@ static int Draw(Context* context)
         SDL_PushGPUVertexUniformData(cmdbuf, 0, &viewproj2, sizeof(viewproj2));
 
         depthStencilTargetInfo.layer = 1;
-        depthStencilTargetInfo.cycle = false;
-        depthStencilTargetInfo.load_op = SDL_GPU_LOADOP_LOAD;
 
         renderPass = SDL_BeginGPURenderPass(cmdbuf, NULL, 0, &depthStencilTargetInfo);
         SDL_SetGPUViewport(renderPass, &viewport2);
