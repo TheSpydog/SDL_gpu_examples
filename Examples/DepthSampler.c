@@ -1,6 +1,6 @@
 #include "Common.h"
 
-static SDL_GPUGraphicsPipeline* DepthPipeline;
+static SDL_GPUGraphicsPipeline* ScenePipeline;
 static SDL_GPUBuffer* SceneVertexBuffer;
 static SDL_GPUBuffer* SceneIndexBuffer;
 static SDL_GPUTexture* SceneColorTexture;
@@ -99,8 +99,8 @@ static int Init(Context* context)
 			.fragment_shader = sceneFragmentShader
 		};
 
-		DepthPipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
-		if (DepthPipeline == NULL)
+		ScenePipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
+		if (ScenePipeline == NULL)
 		{
 			SDL_Log("Failed to create Scene pipeline!");
 			return -1;
@@ -471,7 +471,7 @@ static int Draw(Context* context)
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, &depthStencilTargetInfo);
 		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = SceneVertexBuffer, .offset = 0 }, 1);
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = SceneIndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
-		SDL_BindGPUGraphicsPipeline(renderPass, DepthPipeline);
+		SDL_BindGPUGraphicsPipeline(renderPass, ScenePipeline);
 		SDL_DrawGPUIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
 		SDL_EndGPURenderPass(renderPass);
 
@@ -501,7 +501,7 @@ static int Draw(Context* context)
 
 static void Quit(Context* context)
 {
-	SDL_ReleaseGPUGraphicsPipeline(context->Device, DepthPipeline);
+	SDL_ReleaseGPUGraphicsPipeline(context->Device, ScenePipeline);
 	SDL_ReleaseGPUTexture(context->Device, SceneColorTexture);
 	SDL_ReleaseGPUTexture(context->Device, SceneDepthTexture);
 	SDL_ReleaseGPUBuffer(context->Device, SceneVertexBuffer);
