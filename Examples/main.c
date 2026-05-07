@@ -33,6 +33,7 @@ static Example* Examples[] =
 	&GenerateMipmaps_Example,
 	&Latency_Example,
 	&DepthSampler_Example,
+	&DepthArray_Example,
 	&ComputeSpriteBatch_Example,
 	&PullSpriteBatch_Example,
 	&TextureTypeTest_Example,
