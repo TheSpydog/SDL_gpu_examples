@@ -13,7 +13,7 @@ static SDL_GPUGraphicsPipeline* DownsamplePipeline;
 static SDL_GPUGraphicsPipeline* UpsamplePipeline;
 static SDL_GPUGraphicsPipeline* BlendPipeline;
 
-static int w, h;
+static int img_w, img_h;
 
 static float Weight = 0.01f;
 static float FilterRadius = 0.04f;
@@ -26,15 +26,15 @@ static int Init(Context* context)
 		return result;
 	}
 
-	int img_x, img_y, n;
-	float* hdrImageData = LoadHDRImage("memorial.hdr", &img_x, &img_y, &n, 4);
+	int n;
+	float* hdrImageData = LoadHDRImage("memorial.hdr", &img_w, &img_h, &n, 4);
 
 	if (hdrImageData == NULL) {
 		SDL_Log("Could not load HDR image data!");
 		return -1;
 	}
 
-	SDL_GetWindowSizeInPixels(context->Window, &w, &h);
+	SDL_SetWindowSize(context->Window, img_w, img_h);
 
 	/* Create the downsample pipeline */
 	{
@@ -282,8 +282,8 @@ static int Init(Context* context)
 
 	InputTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
-			.width = img_x,
-			.height = img_y,
+			.width = img_w,
+			.height = img_h,
 			.layer_count_or_depth = 1,
 			.num_levels = 1,
 			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
@@ -291,8 +291,8 @@ static int Init(Context* context)
 	});
 
 
-	int mipSizeX = img_x;
-	int mipSizeY = img_y;
+	int mipSizeX = img_h;
+	int mipSizeY = img_w;
 	for (int i = 0; i < SDL_arraysize(IntermediateTextures); i++) {
 		mipSizeX /= 2;
 		mipSizeY /= 2;
@@ -311,8 +311,8 @@ static int Init(Context* context)
 
 	OutputTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
 		.format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
-			.width = img_x,
-			.height = img_y,
+			.width = img_w,
+			.height = img_h,
 			.layer_count_or_depth = 1,
 			.num_levels = 1,
 			.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
@@ -356,7 +356,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = sizeof(float) * 4 * img_x * img_y
+			.size = sizeof(float) * 4 * img_w * img_h
 		}
 	);
 
@@ -366,7 +366,7 @@ static int Init(Context* context)
 			imageDataTransferBuffer,
 			false);
 
-	SDL_memcpy(transferData, hdrImageData, sizeof(float) * 4 * img_x * img_y);
+	SDL_memcpy(transferData, hdrImageData, sizeof(float) * 4 * img_w * img_h);
 
 	SDL_UnmapGPUTransferBuffer(context->Device, imageDataTransferBuffer);
 	SDL_free(hdrImageData);
@@ -411,8 +411,8 @@ static int Init(Context* context)
 		},
 		&(SDL_GPUTextureRegion) {
 			.texture = InputTexture,
-			.w = img_x,
-			.h = img_y,
+			.w = img_w,
+			.h = img_h,
 			.d = 1
 		},
 		false
@@ -462,9 +462,9 @@ static int Draw(Context* context) {
 		return -1;
 	}
 
-	Uint32 w, h;
+	Uint32 swapchainWidth, swapchainHeight;
 	SDL_GPUTexture *swapchainTexture;
-	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &w, &h)) {
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &swapchainWidth, &swapchainHeight)) {
 		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
 		return -1;
 	}
@@ -549,13 +549,13 @@ static int Draw(Context* context) {
 			.load_op = SDL_GPU_LOADOP_DONT_CARE,
 			.source = (SDL_GPUBlitRegion){
 				.texture = OutputTexture,
-				.w = w,
-				.h = h
+				.w = img_w,
+				.h = img_h
 			},
 			.destination = (SDL_GPUBlitRegion) {
 				.texture = swapchainTexture,
-				.w = w,
-				.h = h
+				.w = swapchainWidth,
+				.h = swapchainHeight
 			},
 			.filter = SDL_GPU_FILTER_LINEAR
 		}
