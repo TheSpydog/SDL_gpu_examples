@@ -272,7 +272,7 @@ static int Draw(Context* context)
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_BindGPUFragmentSamplers(renderPass, 0, &(SDL_GPUTextureSamplerBinding){ .texture = Texture, .sampler = Sampler }, 1);
 
-		// Top-left
+		// Bottom-left
 		Matrix4x4 matrixUniform = Matrix4x4_Multiply(
 			Matrix4x4_CreateRotationZ(t),
 			Matrix4x4_CreateTranslation(-0.5f, -0.5f, 0)
@@ -281,7 +281,7 @@ static int Draw(Context* context)
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
 		SDL_DrawGPUIndexedPrimitives(renderPass, 6, 1, 0, 0, 0);
 
-		// Top-right
+		// Bottom-right
 		matrixUniform = Matrix4x4_Multiply(
 			Matrix4x4_CreateRotationZ((2.0f * SDL_PI_F) - t),
 			Matrix4x4_CreateTranslation(0.5f, -0.5f, 0)
@@ -290,7 +290,7 @@ static int Draw(Context* context)
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_cosf(t) * 0.5f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
 		SDL_DrawGPUIndexedPrimitives(renderPass, 6, 1, 0, 0, 0);
 
-		// Bottom-left
+		// Top-left
 		matrixUniform = Matrix4x4_Multiply(
 			Matrix4x4_CreateRotationZ(t),
 			Matrix4x4_CreateTranslation(-0.5f, 0.5f, 0)
@@ -299,7 +299,7 @@ static int Draw(Context* context)
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, &(FragMultiplyUniform){ 1.0f, 0.5f + SDL_sinf(t) * 0.2f, 1.0f, 1.0f }, sizeof(FragMultiplyUniform));
 		SDL_DrawGPUIndexedPrimitives(renderPass, 6, 1, 0, 0, 0);
 
-		// Bottom-right
+		// Top-right
 		matrixUniform = Matrix4x4_Multiply(
 			Matrix4x4_CreateRotationZ(t),
 			Matrix4x4_CreateTranslation(0.5f, 0.5f, 0)
