@@ -412,6 +412,7 @@ static int Draw(Context* context)
 static void Quit(Context* context)
 {
 	SDL_ReleaseGPUGraphicsPipeline(context->Device, DepthPipeline);
+	SDL_ReleaseGPUGraphicsPipeline(context->Device, DepthSamplePipeline);
 	SDL_ReleaseGPUTexture(context->Device, SceneDepthTexture);
 	SDL_ReleaseGPUBuffer(context->Device, SceneVertexBuffer);
 	SDL_ReleaseGPUBuffer(context->Device, SceneIndexBuffer);
