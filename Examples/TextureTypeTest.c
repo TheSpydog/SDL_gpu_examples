@@ -148,6 +148,7 @@ static int Init(Context* context)
 	SDL_GPUTransferBuffer* downloadTransferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
 			.size = (baseMipDataSize + secondMipDataSize) * 5
 		}
 	);
