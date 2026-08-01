@@ -30,26 +30,26 @@ static int Init(Context* context)
 			return -1;
 		}
 
-        SDL_GPUShader* sceneFragmentShader = LoadShader(context->Device, "Empty.frag", 0, 0, 0, 0);
-        if (sceneFragmentShader == NULL)
-        {
-            SDL_Log("Failed to create fragment shader!");
-            return -1;
-        }
+		SDL_GPUShader* sceneFragmentShader = LoadShader(context->Device, "Empty.frag", 0, 0, 0, 0);
+		if (sceneFragmentShader == NULL)
+		{
+			SDL_Log("Failed to create fragment shader!");
+			return -1;
+		}
 
-        SDL_GPUShader* fullscreenVertexShader = LoadShader(context->Device, "Fullscreen.vert", 0, 0, 0, 0);
-        if (fullscreenVertexShader == NULL)
-        {
-            SDL_Log("Failed to create fullscreen vertex shader!");
-            return -1;
-        }
+		SDL_GPUShader* fullscreenVertexShader = LoadShader(context->Device, "Fullscreen.vert", 0, 0, 0, 0);
+		if (fullscreenVertexShader == NULL)
+		{
+			SDL_Log("Failed to create fullscreen vertex shader!");
+			return -1;
+		}
 
-        SDL_GPUShader* depthFragmentShader = LoadShader(context->Device, "DepthSample.frag", 1, 0, 0, 0);
-        if (depthFragmentShader == NULL)
-        {
-            SDL_Log("Failed to create depth sample shader!");
-            return -1;
-        }
+		SDL_GPUShader* depthFragmentShader = LoadShader(context->Device, "DepthSample.frag", 1, 0, 0, 0);
+		if (depthFragmentShader == NULL)
+		{
+			SDL_Log("Failed to create depth sample shader!");
+			return -1;
+		}
 
 		SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = {
 			.target_info = {
@@ -102,8 +102,8 @@ static int Init(Context* context)
 			return -1;
 		}
 
-        SDL_GPUGraphicsPipelineCreateInfo depthSamplerPipelineCreateInfo = {
-            .target_info = {
+		SDL_GPUGraphicsPipelineCreateInfo depthSamplerPipelineCreateInfo = {
+			.target_info = {
 				.num_color_targets = 1,
 				.color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
 					.format = SDL_GetGPUSwapchainTextureFormat(context->Device, context->Window),
@@ -126,19 +126,19 @@ static int Init(Context* context)
 			.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
 			.vertex_shader = fullscreenVertexShader,
 			.fragment_shader = depthFragmentShader
-        };
+		};
 
-        DepthSamplePipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &depthSamplerPipelineCreateInfo);
-        if (DepthSamplePipeline == NULL)
-        {
-            SDL_Log("Failed to create Depth Sample pipeline!");
-            return -1;
-        }
+		DepthSamplePipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &depthSamplerPipelineCreateInfo);
+		if (DepthSamplePipeline == NULL)
+		{
+			SDL_Log("Failed to create Depth Sample pipeline!");
+			return -1;
+		}
 
 		SDL_ReleaseGPUShader(context->Device, sceneVertexShader);
 		SDL_ReleaseGPUShader(context->Device, sceneFragmentShader);
-        SDL_ReleaseGPUShader(context->Device, fullscreenVertexShader);
-        SDL_ReleaseGPUShader(context->Device, depthFragmentShader);
+		SDL_ReleaseGPUShader(context->Device, fullscreenVertexShader);
+		SDL_ReleaseGPUShader(context->Device, depthFragmentShader);
 	}
 
 	// Create the Scene Textures
@@ -328,36 +328,36 @@ static int Draw(Context* context)
 			(Vector3) { 0, 0, 0 },
 			(Vector3) { 0, 1, 0 }
 		);
-        Matrix4x4 view2 = Matrix4x4_CreateLookAt(
+		Matrix4x4 view2 = Matrix4x4_CreateLookAt(
 			(Vector3) { SDL_cosf(Time) * 30, 30, SDL_cosf(Time) * 30 },
 			(Vector3) { 0, 0, 0 },
 			(Vector3) { 0, 1, 0 }
-        );
+		);
 
 		Matrix4x4 viewproj = Matrix4x4_Multiply(view, proj);
-        Matrix4x4 viewproj2 = Matrix4x4_Multiply(view2, proj);
+		Matrix4x4 viewproj2 = Matrix4x4_Multiply(view2, proj);
 
-        SDL_GPUViewport viewport = {
-            .x = 0,
-            .y = 0,
-            .w = SceneWidth / 2,
-            .h = SceneHeight / 2,
-            .min_depth = 0,
-            .max_depth = 1
-        };
+		SDL_GPUViewport viewport = {
+			.x = 0,
+			.y = 0,
+			.w = SceneWidth / 2,
+			.h = SceneHeight / 2,
+			.min_depth = 0,
+			.max_depth = 1
+		};
 
-        SDL_GPUViewport viewport2 = {
-            .x = SceneWidth / 2,
-            .y = SceneHeight / 2,
-            .w = SceneWidth / 2,
-            .h = SceneHeight / 2,
-            .min_depth = 0,
-            .max_depth = 1
-        };
+		SDL_GPUViewport viewport2 = {
+			.x = SceneWidth / 2,
+			.y = SceneHeight / 2,
+			.w = SceneWidth / 2,
+			.h = SceneHeight / 2,
+			.min_depth = 0,
+			.max_depth = 1
+		};
 
 		SDL_GPUDepthStencilTargetInfo depthStencilTargetInfo = { 0 };
 		depthStencilTargetInfo.texture = SceneDepthTexture;
-        depthStencilTargetInfo.layer = 0;
+		depthStencilTargetInfo.layer = 0;
 		depthStencilTargetInfo.clear_depth = 1;
 		depthStencilTargetInfo.clear_stencil = 0;
 		depthStencilTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
@@ -369,24 +369,24 @@ static int Draw(Context* context)
 		SDL_PushGPUFragmentUniformData(cmdbuf, 0, (float[]) { nearPlane, farPlane }, 8);
 
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, NULL, 0, &depthStencilTargetInfo);
-        SDL_SetGPUViewport(renderPass, &viewport);
+		SDL_SetGPUViewport(renderPass, &viewport);
 		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = SceneVertexBuffer, .offset = 0 }, 1);
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = SceneIndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_BindGPUGraphicsPipeline(renderPass, DepthPipeline);
 		SDL_DrawGPUIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
 		SDL_EndGPURenderPass(renderPass);
 
-        SDL_PushGPUVertexUniformData(cmdbuf, 0, &viewproj2, sizeof(viewproj2));
+		SDL_PushGPUVertexUniformData(cmdbuf, 0, &viewproj2, sizeof(viewproj2));
 
-        depthStencilTargetInfo.layer = 1;
+		depthStencilTargetInfo.layer = 1;
 
-        renderPass = SDL_BeginGPURenderPass(cmdbuf, NULL, 0, &depthStencilTargetInfo);
-        SDL_SetGPUViewport(renderPass, &viewport2);
-        SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = SceneVertexBuffer, .offset = 0 }, 1);
+		renderPass = SDL_BeginGPURenderPass(cmdbuf, NULL, 0, &depthStencilTargetInfo);
+		SDL_SetGPUViewport(renderPass, &viewport2);
+		SDL_BindGPUVertexBuffers(renderPass, 0, &(SDL_GPUBufferBinding){.buffer = SceneVertexBuffer, .offset = 0 }, 1);
 		SDL_BindGPUIndexBuffer(renderPass, &(SDL_GPUBufferBinding){ .buffer = SceneIndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 		SDL_BindGPUGraphicsPipeline(renderPass, DepthPipeline);
 		SDL_DrawGPUIndexedPrimitives(renderPass, 36, 1, 0, 0, 0);
-        SDL_EndGPURenderPass(renderPass);
+		SDL_EndGPURenderPass(renderPass);
 
 		// Render the Outline Effect that samples from the Color/Depth textures
 		SDL_GPUColorTargetInfo swapchainTargetInfo = { 0 };
@@ -416,7 +416,7 @@ static void Quit(Context* context)
 	SDL_ReleaseGPUTexture(context->Device, SceneDepthTexture);
 	SDL_ReleaseGPUBuffer(context->Device, SceneVertexBuffer);
 	SDL_ReleaseGPUBuffer(context->Device, SceneIndexBuffer);
-    SDL_ReleaseGPUSampler(context->Device, NearestSampler);
+	SDL_ReleaseGPUSampler(context->Device, NearestSampler);
 
 	CommonQuit(context);
 }

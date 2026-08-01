@@ -6,13 +6,13 @@ SamplerState SecondarySampler : register(s1, space2);
 
 cbuffer UBO : register(b0, space3)
 {
-    float Weight;
+	float Weight;
 };
 
 float4 main(float2 TexCoord : TEXCOORD0) : SV_Target0
 {
-    float4 primary = PrimaryTexture.Sample(PrimarySampler, TexCoord);
-    float4 secondary = SecondaryTexture.Sample(SecondarySampler, TexCoord);
+	float4 primary = PrimaryTexture.Sample(PrimarySampler, TexCoord);
+	float4 secondary = SecondaryTexture.Sample(SecondarySampler, TexCoord);
 
-    return lerp(primary, secondary, Weight);
+	return lerp(primary, secondary, Weight);
 }

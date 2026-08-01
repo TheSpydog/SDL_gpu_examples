@@ -185,7 +185,7 @@ static int Init(Context* context)
 	SDL_EndGPUCopyPass(copyPass);
 	SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
 
-    SDL_DestroySurface(imageData);
+	SDL_DestroySurface(imageData);
 	SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
 
 	return 0;
@@ -210,18 +210,18 @@ static int Draw(Context* context)
 		-1
 	);
 
-    SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
-    if (cmdBuf == NULL)
-    {
-        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	if (cmdBuf == NULL)
+	{
+		SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    SDL_GPUTexture* swapchainTexture;
-    if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdBuf, context->Window, &swapchainTexture, NULL, NULL)) {
-        SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUTexture* swapchainTexture;
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdBuf, context->Window, &swapchainTexture, NULL, NULL)) {
+		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
 
 	if (swapchainTexture != NULL)
 	{
@@ -288,7 +288,7 @@ static int Draw(Context* context)
 		SDL_BindGPUVertexStorageBuffers(
 			renderPass,
 			0,
-            &SpriteDataBuffer,
+			&SpriteDataBuffer,
 			1
 		);
 		SDL_BindGPUFragmentSamplers(

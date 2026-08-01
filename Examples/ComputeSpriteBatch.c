@@ -321,18 +321,18 @@ static int Draw(Context* context)
 		-1
 	);
 
-    SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
-    if (cmdBuf == NULL)
-    {
-        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUCommandBuffer* cmdBuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	if (cmdBuf == NULL)
+	{
+		SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    SDL_GPUTexture* swapchainTexture;
-    if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdBuf, context->Window, &swapchainTexture, NULL, NULL)) {
-        SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUTexture* swapchainTexture;
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdBuf, context->Window, &swapchainTexture, NULL, NULL)) {
+		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
 
 	if (swapchainTexture != NULL)
 	{

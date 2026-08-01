@@ -19,7 +19,7 @@ static int CurrentSamplerIndex;
 
 static int Init(Context* context)
 {
-    int result = CommonInit(context, 0);
+	int result = CommonInit(context, 0);
 	if (result < 0)
 	{
 		return result;
@@ -48,28 +48,28 @@ static int Init(Context* context)
 		"Ravioli Texture 🖼️"
 	);
 
-    WriteTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
-        .type = SDL_GPU_TEXTURETYPE_2D,
-        .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
-        .width = 640,
-        .height = 480,
-        .layer_count_or_depth =1,
-        .num_levels = 1,
-        .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
-    });
+	WriteTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){
+		.type = SDL_GPU_TEXTURETYPE_2D,
+		.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+		.width = 640,
+		.height = 480,
+		.layer_count_or_depth =1,
+		.num_levels = 1,
+		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
+	});
 
-    Pipeline = CreateComputePipelineFromShader(
-        context->Device,
-        "TexturedQuad.comp",
-        &(SDL_GPUComputePipelineCreateInfo){
-            .num_samplers = 1,
-            .num_readwrite_storage_textures = 1,
-            .num_uniform_buffers = 1,
-            .threadcount_x = 8,
-            .threadcount_y = 8,
-            .threadcount_z = 1,
-        }
-    );
+	Pipeline = CreateComputePipelineFromShader(
+		context->Device,
+		"TexturedQuad.comp",
+		&(SDL_GPUComputePipelineCreateInfo){
+			.num_samplers = 1,
+			.num_readwrite_storage_textures = 1,
+			.num_uniform_buffers = 1,
+			.threadcount_x = 8,
+			.threadcount_y = 8,
+			.threadcount_z = 1,
+		}
+	);
 
    	// PointClamp
 	Samplers[0] = SDL_CreateGPUSampler(context->Device, &(SDL_GPUSamplerCreateInfo){
@@ -130,7 +130,7 @@ static int Init(Context* context)
 		.max_anisotropy = 4
 	});
 
-    // Set up texture data
+	// Set up texture data
 	SDL_GPUTransferBuffer* textureTransferBuffer = SDL_CreateGPUTransferBuffer(
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
@@ -166,7 +166,7 @@ static int Init(Context* context)
 		false
 	);
 
-    SDL_EndGPUCopyPass(copyPass);
+	SDL_EndGPUCopyPass(copyPass);
 	SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
 
 	SDL_ReleaseGPUTransferBuffer(context->Device, textureTransferBuffer);
@@ -202,74 +202,74 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-    if (cmdbuf == NULL)
-    {
-        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	if (cmdbuf == NULL)
+	{
+		SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    SDL_GPUTexture* swapchainTexture;
+	SDL_GPUTexture* swapchainTexture;
 	Uint32 w, h;
-    if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &w, &h)) {
-        SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
-        return -1;
-    }
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, &w, &h)) {
+		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    if (swapchainTexture != NULL)
-    {
-        SDL_GPUComputePass *computePass = SDL_BeginGPUComputePass(
-            cmdbuf,
-            &(SDL_GPUStorageTextureReadWriteBinding){
-                .texture = WriteTexture,
-                .layer = 0,
-                .mip_level = 0,
-                .cycle = true
-            },
-            1,
-            NULL,
-            0);
+	if (swapchainTexture != NULL)
+	{
+		SDL_GPUComputePass *computePass = SDL_BeginGPUComputePass(
+			cmdbuf,
+			&(SDL_GPUStorageTextureReadWriteBinding){
+				.texture = WriteTexture,
+				.layer = 0,
+				.mip_level = 0,
+				.cycle = true
+			},
+			1,
+			NULL,
+			0);
 
-        SDL_BindGPUComputePipeline(computePass, Pipeline);
-        SDL_BindGPUComputeSamplers(
-            computePass,
-            0,
-            &(SDL_GPUTextureSamplerBinding){
-                .texture = Texture,
-                .sampler = Samplers[CurrentSamplerIndex]
-            },
-            1);
-        float texcoordMultiplier = 0.25f;
-        SDL_PushGPUComputeUniformData(cmdbuf, 0, &texcoordMultiplier, sizeof(float));
+		SDL_BindGPUComputePipeline(computePass, Pipeline);
+		SDL_BindGPUComputeSamplers(
+			computePass,
+			0,
+			&(SDL_GPUTextureSamplerBinding){
+				.texture = Texture,
+				.sampler = Samplers[CurrentSamplerIndex]
+			},
+			1);
+		float texcoordMultiplier = 0.25f;
+		SDL_PushGPUComputeUniformData(cmdbuf, 0, &texcoordMultiplier, sizeof(float));
 
-        SDL_DispatchGPUCompute(computePass, w / 8, h / 8, 1);
-        SDL_EndGPUComputePass(computePass);
+		SDL_DispatchGPUCompute(computePass, w / 8, h / 8, 1);
+		SDL_EndGPUComputePass(computePass);
 
-        SDL_BlitGPUTexture(
-            cmdbuf,
-            &(SDL_GPUBlitInfo){
-                .source.texture = WriteTexture,
-                .source.w = 640,
-                .source.h = 480,
-                .destination.texture = swapchainTexture,
-                .destination.w = w,
-                .destination.h = h,
-                .load_op = SDL_GPU_LOADOP_DONT_CARE,
-                .filter = SDL_GPU_FILTER_NEAREST
-            }
-        );
-    }
+		SDL_BlitGPUTexture(
+			cmdbuf,
+			&(SDL_GPUBlitInfo){
+				.source.texture = WriteTexture,
+				.source.w = 640,
+				.source.h = 480,
+				.destination.texture = swapchainTexture,
+				.destination.w = w,
+				.destination.h = h,
+				.load_op = SDL_GPU_LOADOP_DONT_CARE,
+				.filter = SDL_GPU_FILTER_NEAREST
+			}
+		);
+	}
 
-    SDL_SubmitGPUCommandBuffer(cmdbuf);
+	SDL_SubmitGPUCommandBuffer(cmdbuf);
 
-    return 0;
+	return 0;
 }
 
 static void Quit(Context* context)
 {
 	SDL_ReleaseGPUComputePipeline(context->Device, Pipeline);
 	SDL_ReleaseGPUTexture(context->Device, Texture);
-    SDL_ReleaseGPUTexture(context->Device, WriteTexture);
+	SDL_ReleaseGPUTexture(context->Device, WriteTexture);
 
 	for (int i = 0; i < SDL_arraysize(Samplers); i += 1)
 	{

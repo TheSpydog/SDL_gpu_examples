@@ -85,13 +85,13 @@ static int Init(Context* context)
 		}
 	);
 
-    IndexBuffer = SDL_CreateGPUBuffer(
-        context->Device,
+	IndexBuffer = SDL_CreateGPUBuffer(
+		context->Device,
 		&(SDL_GPUBufferCreateInfo) {
 			.usage = SDL_GPU_BUFFERUSAGE_INDEX,
 			.size = sizeof(Uint16) * 6
 		}
-    );
+	);
 
 	// Set the buffer data
 	SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(
@@ -120,11 +120,11 @@ static int Init(Context* context)
 	transferData[7] = (PositionColorVertex) {  1, -1, 0, 255, 255, 255, 255 };
 	transferData[8] = (PositionColorVertex) {  0,  1, 0, 255, 255, 255, 255 };
 
-    Uint16* indexData = (Uint16*) &transferData[9];
-    for (Uint16 i = 0; i < 6; i += 1)
-    {
-        indexData[i] = i;
-    }
+	Uint16* indexData = (Uint16*) &transferData[9];
+	for (Uint16 i = 0; i < 6; i += 1)
+	{
+		indexData[i] = i;
+	}
 
 	SDL_UnmapGPUTransferBuffer(context->Device, transferBuffer);
 
@@ -169,22 +169,22 @@ static int Init(Context* context)
 
 static int Update(Context* context)
 {
-    if (context->LeftPressed)
-    {
-        UseVertexOffset = !UseVertexOffset;
-        SDL_Log("Using vertex offset: %s", UseVertexOffset ? "true" : "false");
-    }
+	if (context->LeftPressed)
+	{
+		UseVertexOffset = !UseVertexOffset;
+		SDL_Log("Using vertex offset: %s", UseVertexOffset ? "true" : "false");
+	}
 
-    if (context->RightPressed)
-    {
-        UseIndexOffset = !UseIndexOffset;
-        SDL_Log("Using index offset: %s", UseIndexOffset ? "true" : "false");
-    }
+	if (context->RightPressed)
+	{
+		UseIndexOffset = !UseIndexOffset;
+		SDL_Log("Using index offset: %s", UseIndexOffset ? "true" : "false");
+	}
 
 	if (context->UpPressed)
 	{
 		UseIndexBuffer = !UseIndexBuffer;
-        SDL_Log("Using index buffer: %s", UseIndexBuffer ? "true" : "false");
+		SDL_Log("Using index buffer: %s", UseIndexBuffer ? "true" : "false");
 	}
 
 	return 0;
@@ -192,21 +192,21 @@ static int Update(Context* context)
 
 static int Draw(Context* context)
 {
-    Uint32 vertexOffset = UseVertexOffset ? 3 : 0;
-    Uint32 indexOffset = UseIndexOffset ? 3 : 0;
+	Uint32 vertexOffset = UseVertexOffset ? 3 : 0;
+	Uint32 indexOffset = UseIndexOffset ? 3 : 0;
 
-    SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
-    if (cmdbuf == NULL)
-    {
-        SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(context->Device);
+	if (cmdbuf == NULL)
+	{
+		SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+		return -1;
+	}
 
-    SDL_GPUTexture* swapchainTexture;
-    if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, NULL, NULL)) {
-        SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
-        return -1;
-    }
+	SDL_GPUTexture* swapchainTexture;
+	if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, context->Window, &swapchainTexture, NULL, NULL)) {
+		SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+		return -1;
+	}
 
 	if (swapchainTexture != NULL)
 	{
@@ -241,10 +241,10 @@ static void Quit(Context* context)
 {
 	SDL_ReleaseGPUGraphicsPipeline(context->Device, Pipeline);
 	SDL_ReleaseGPUBuffer(context->Device, VertexBuffer);
-    SDL_ReleaseGPUBuffer(context->Device, IndexBuffer);
+	SDL_ReleaseGPUBuffer(context->Device, IndexBuffer);
 
-    UseVertexOffset = false;
-    UseIndexOffset = false;
+	UseVertexOffset = false;
+	UseIndexOffset = false;
 	UseIndexBuffer = true;
 
 	CommonQuit(context);
