@@ -125,5 +125,6 @@ extern Example PullSpriteBatch_Example;
 extern Example TextureTypeTest_Example;
 extern Example CompressedTextures_Example;
 extern Example Bloom_Example;
+extern Example UploadStride_Example;
 
 #endif

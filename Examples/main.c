@@ -38,7 +38,8 @@ static Example* Examples[] =
 	&PullSpriteBatch_Example,
 	&TextureTypeTest_Example,
 	&CompressedTextures_Example,
-	&Bloom_Example
+	&Bloom_Example,
+	&UploadStride_Example
 };
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event)
