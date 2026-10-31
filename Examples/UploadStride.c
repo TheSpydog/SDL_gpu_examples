@@ -125,19 +125,20 @@ static int Init(Context* context)
         }
     );
 
-    void *mapPointer = SDL_MapGPUTransferBuffer(context->Device, transferBuffer, false);
+    Uint8 *mapPointer = SDL_MapGPUTransferBuffer(context->Device, transferBuffer, false);
     SDL_memset(mapPointer, 0, transferBufferSize);
 
     SDL_LockSurface(imageData);
+    Uint8 *pixels = imageData->pixels;
 
     // Pad the memory.
-    for (Sint32 layer = 0; layer < layerCount; layer += 1)
+    for (Uint32 layer = 0; layer < layerCount; layer += 1)
     {
         for (Sint32 row = 0; row < imageData->h; row += 1)
         {
             SDL_memcpy(
                 mapPointer + (layer * layerSize) + 4 * (imageData->w + rowPadding) * row,
-                &imageData->pixels[4 * imageData->w * row],
+                &pixels[4 * imageData->w * row],
                 4 * imageData->w);
         }
     }
