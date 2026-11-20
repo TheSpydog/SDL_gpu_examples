@@ -54,6 +54,7 @@ add_executable(SDL_gpu_examples
     Examples/TextureTypeTest.c
     Examples/CompressedTextures.c
     Examples/Bloom.c
+    Examples/UploadStride.c
 )
 
 target_link_libraries(SDL_gpu_examples
